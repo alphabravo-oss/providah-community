@@ -249,6 +249,7 @@ export function ActionForm({
                     {...common}
                     onChange={(e) => field.handleChange(e.target.value)}
                   >
+                    {!f.options?.some(o=>o.value==="") && <option value="" disabled>Choose an option…</option>}
                     {f.options?.map((o) => (
                       <option key={o.value} value={o.value}>
                         {o.label}

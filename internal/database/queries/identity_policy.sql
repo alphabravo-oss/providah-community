@@ -3,7 +3,7 @@ SELECT identity_allows(sqlc.arg(org_id)::text,sqlc.arg(user_id)::text,sqlc.narg(
 -- name: SetSessionIdentity :exec
 UPDATE sessions SET oidc_id=$2 WHERE id=$1;
 -- name: OrganizationsForSession :many
-SELECT o.id,o.name,m.permissions,mfa_required(o.id)::boolean AS mfa_required,identity_allows(o.id,m.user_id,sqlc.narg(oidc_id)::uuid)::boolean AS allowed FROM organizations o JOIN effective_memberships m ON m.org_id=o.id WHERE m.user_id=sqlc.arg(user_id) ORDER BY o.name,o.id;
+SELECT o.id,o.name,(CASE WHEN o.creation_enabled THEN m.permissions ELSE array_remove(m.permissions,'operations.create') END)::text[] AS permissions,mfa_required(o.id)::boolean AS mfa_required,identity_allows(o.id,m.user_id,sqlc.narg(oidc_id)::uuid)::boolean AS allowed FROM organizations o JOIN effective_memberships m ON m.org_id=o.id WHERE m.user_id=sqlc.arg(user_id) ORDER BY o.name,o.id;
 -- name: GetIdentityPolicy :one
 SELECT o.id AS org_id,coalesce(p.enabled,false)::boolean AS enabled,coalesce(p.issuer,'')::text AS issuer,coalesce(p.recovery_users,'{}')::text[] AS recovery_users,coalesce(p.revision,0)::bigint AS revision FROM organizations o LEFT JOIN identity_policies p ON p.org_id=o.id WHERE o.id=$1;
 -- name: SaveIdentityPolicy :exec

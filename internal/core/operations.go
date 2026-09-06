@@ -150,6 +150,9 @@ func (s *Service) requestOperation(ctx context.Context, r *pb.RequestOperationRe
 		if !identityAllowed(ctx, q, r.OrganizationId, actor(ctx).UserID, actor(ctx).OIDC) || !powerPermission(ctx, q, r.OrganizationId, actor(ctx).UserID, "operations.request") {
 			return denied()
 		}
+		if !creationPermitted(ctx, q, r.OrganizationId, r.Action) {
+			return conflict("This organization only manages existing resources.")
+		}
 		if r.Action == "snapshot" && !powerPermission(ctx, q, r.OrganizationId, actor(ctx).UserID, "operations.create") {
 			return denied()
 		}
@@ -258,6 +261,9 @@ func (s *Service) ReviewOperation(ctx context.Context, req *connect.Request[pb.R
 		}
 		status := "rejected"
 		if r.Approve {
+			if !creationPermitted(ctx, q, o.OrgID, o.Action) {
+				return conflict("This organization only manages existing resources.")
+			}
 			if err := requireModule(ctx, q, o.OrgID, c.Provider, o.ModuleRevision); err != nil {
 				return err
 			}
@@ -482,6 +488,9 @@ func (s *Service) runOperation(ctx context.Context, job database.Operation) erro
 		}
 		if !c.Enabled || c.DeletedAt.Valid || c.Revision != o.ConnectionRevision {
 			failure = "Connection or credential changed."
+		}
+		if dispatch && !creationPermitted(ctx, q, o.OrgID, o.Action) {
+			failure = "Organization resource creation was disabled."
 		}
 		if dispatch && !s.runtimeCapabilities(o.Provider, o.RuntimeID).SupportsResourceAction(o.ResourceKind, o.Action) {
 			failure = "Original runtime does not support this action."

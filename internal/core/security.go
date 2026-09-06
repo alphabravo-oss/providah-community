@@ -216,6 +216,11 @@ func (s *Service) Interceptor() connect.Interceptor {
 			case "CreateAutomationProject", "PublishServerTemplate", "SetServerTemplateStatus", "ImportAutomationSource", "PublishAutomationVersion", "SetAutomationVersionStatus", "RequestAutomationValidation", "CancelAutomationValidation":
 				permission = "templates.publish"
 				stepUp = true
+			case "GetResourcePolicy":
+				permission = "roles.manage"
+			case "SaveResourcePolicy":
+				permission = "roles.manage"
+				stepUp = true
 			case "GetIdentityPolicy":
 				permission = "identity.manage"
 			case "SaveIdentityPolicy":

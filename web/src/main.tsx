@@ -357,6 +357,7 @@ function Shell() {
     ["/admin/audit-export", "Audit export", ShieldCheck, "audit.read"],
     ["/admin/access", "Team & access", KeyRound, "members.read"],
     ["/admin/identity", "Sign-in policy", ShieldCheck, "identity.manage"],
+    ["/admin/resource-policy", "Resource management", Server, "roles.manage"],
   ] as const : [
     ["/app", "Overview", LayoutDashboard, ""],
     ["/app/resources", "Inventory", Server, "resources.read"],
@@ -877,7 +878,7 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
         setSorting(spec.sortBy ? [{id:spec.sortBy,desc:spec.descending}] : []);
         setVisibility(Object.fromEntries(spec.hiddenColumns.map(id=>[id,false])));
         setPage("");setParams(p=>{p.set("org",org.id);p.set("view",id);p.delete("filters");p.delete("resource");return p;});
-      }}/><InventoryLink org={org.id} spec={settings}/><BulkPowerButton org={org} resources={q.data?.resources??[]}/><CreateResourceButton org={org}/><CreateResourceButton org={org} sshKey/></div></PageHeader>
+      }}/><InventoryLink org={org.id} spec={settings}/><BulkPowerButton org={org} resources={q.data?.resources??[]}/><CreateResourceButton org={org}/></div></PageHeader>
       {linked&&<p className="notice">This link restores its filter snapshot. After editing, use Link to current filters to create an updated link. Access still follows your current permissions.</p>}
       {initialView&&<><nav className="breadcrumbs" aria-label="Saved view breadcrumb"><NavLink to="/app/resources">Inventory</NavLink><ChevronRight size={13}/><span aria-current="page">{initialView.name}</span></nav><p className="notice">This link restores the saved settings. Use Saved views to replace them after making changes.</p></>}
       <div className="filters">
@@ -1222,6 +1223,7 @@ const router = createBrowserRouter([
       { path: "admin/health", Component: InstallationHealth },
       { path: "admin/audit-export", lazy: async () => ({Component:(await import("./audit_export")).AuditExportPage}) },
       { path: "admin/access", lazy: async () => ({Component:(await import("./access")).AccessPage}) },
+      { path: "admin/resource-policy", lazy: async () => ({Component:(await import("./resource-policy")).ResourcePolicyPage}) },
       { path: "admin/identity", lazy: async () => ({Component:(await import("./identity-policy")).IdentityPolicyPage}) },
       { path: "app/operations", lazy: async () => ({Component:(await import("./operations-page")).OperationsPage}) },
       { path: "app/schedules", lazy: async () => ({Component:(await import("./schedules")).SchedulesPage}) },

@@ -15551,6 +15551,170 @@ func (x *RequestSSHKeyCreationRequest) GetIdempotencyKey() string {
 	return ""
 }
 
+type GetResourcePolicyRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	OrganizationId string                 `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetResourcePolicyRequest) Reset() {
+	*x = GetResourcePolicyRequest{}
+	mi := &file_providah_v1_console_proto_msgTypes[233]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetResourcePolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetResourcePolicyRequest) ProtoMessage() {}
+
+func (x *GetResourcePolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_providah_v1_console_proto_msgTypes[233]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetResourcePolicyRequest.ProtoReflect.Descriptor instead.
+func (*GetResourcePolicyRequest) Descriptor() ([]byte, []int) {
+	return file_providah_v1_console_proto_rawDescGZIP(), []int{233}
+}
+
+func (x *GetResourcePolicyRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+type ResourcePolicy struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	CreationEnabled bool                   `protobuf:"varint,1,opt,name=creation_enabled,json=creationEnabled,proto3" json:"creation_enabled,omitempty"`
+	Revision        int64                  `protobuf:"varint,2,opt,name=revision,proto3" json:"revision,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ResourcePolicy) Reset() {
+	*x = ResourcePolicy{}
+	mi := &file_providah_v1_console_proto_msgTypes[234]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResourcePolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResourcePolicy) ProtoMessage() {}
+
+func (x *ResourcePolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_providah_v1_console_proto_msgTypes[234]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResourcePolicy.ProtoReflect.Descriptor instead.
+func (*ResourcePolicy) Descriptor() ([]byte, []int) {
+	return file_providah_v1_console_proto_rawDescGZIP(), []int{234}
+}
+
+func (x *ResourcePolicy) GetCreationEnabled() bool {
+	if x != nil {
+		return x.CreationEnabled
+	}
+	return false
+}
+
+func (x *ResourcePolicy) GetRevision() int64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
+type SaveResourcePolicyRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	OrganizationId   string                 `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	CreationEnabled  bool                   `protobuf:"varint,2,opt,name=creation_enabled,json=creationEnabled,proto3" json:"creation_enabled,omitempty"`
+	ExpectedRevision int64                  `protobuf:"varint,3,opt,name=expected_revision,json=expectedRevision,proto3" json:"expected_revision,omitempty"`
+	Reason           string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SaveResourcePolicyRequest) Reset() {
+	*x = SaveResourcePolicyRequest{}
+	mi := &file_providah_v1_console_proto_msgTypes[235]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaveResourcePolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaveResourcePolicyRequest) ProtoMessage() {}
+
+func (x *SaveResourcePolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_providah_v1_console_proto_msgTypes[235]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaveResourcePolicyRequest.ProtoReflect.Descriptor instead.
+func (*SaveResourcePolicyRequest) Descriptor() ([]byte, []int) {
+	return file_providah_v1_console_proto_rawDescGZIP(), []int{235}
+}
+
+func (x *SaveResourcePolicyRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *SaveResourcePolicyRequest) GetCreationEnabled() bool {
+	if x != nil {
+		return x.CreationEnabled
+	}
+	return false
+}
+
+func (x *SaveResourcePolicyRequest) GetExpectedRevision() int64 {
+	if x != nil {
+		return x.ExpectedRevision
+	}
+	return 0
+}
+
+func (x *SaveResourcePolicyRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
 var File_providah_v1_console_proto protoreflect.FileDescriptor
 
 const file_providah_v1_console_proto_rawDesc = "" +
@@ -16803,7 +16967,17 @@ const file_providah_v1_console_proto_rawDesc = "" +
 	"\x06region\x18\x03 \x01(\tR\x06region\x125\n" +
 	"\bcreation\x18\x04 \x01(\v2\x19.providah.v1.SSHKeyCreateR\bcreation\x12\x16\n" +
 	"\x06reason\x18\x05 \x01(\tR\x06reason\x12'\n" +
-	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKey*\xa4\x01\n" +
+	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKey\"C\n" +
+	"\x18GetResourcePolicyRequest\x12'\n" +
+	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\"W\n" +
+	"\x0eResourcePolicy\x12)\n" +
+	"\x10creation_enabled\x18\x01 \x01(\bR\x0fcreationEnabled\x12\x1a\n" +
+	"\brevision\x18\x02 \x01(\x03R\brevision\"\xb4\x01\n" +
+	"\x19SaveResourcePolicyRequest\x12'\n" +
+	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\x12)\n" +
+	"\x10creation_enabled\x18\x02 \x01(\bR\x0fcreationEnabled\x12+\n" +
+	"\x11expected_revision\x18\x03 \x01(\x03R\x10expectedRevision\x12\x16\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason*\xa4\x01\n" +
 	"\n" +
 	"ScanStatus\x12\x1b\n" +
 	"\x17SCAN_STATUS_UNSPECIFIED\x10\x00\x12\x15\n" +
@@ -16825,8 +16999,10 @@ const file_providah_v1_console_proto_rawDesc = "" +
 	"\x19OPERATION_STATUS_CANCELED\x10\t\x12\x1c\n" +
 	"\x18OPERATION_STATUS_EXPIRED\x10\n" +
 	"\x12\x1d\n" +
-	"\x19OPERATION_STATUS_RESOLVED\x10\v2\xb5a\n" +
-	"\x0eConsoleService\x12b\n" +
+	"\x19OPERATION_STATUS_RESOLVED\x10\v2\xe9b\n" +
+	"\x0eConsoleService\x12W\n" +
+	"\x11GetResourcePolicy\x12%.providah.v1.GetResourcePolicyRequest\x1a\x1b.providah.v1.ResourcePolicy\x12Y\n" +
+	"\x12SaveResourcePolicy\x12&.providah.v1.SaveResourcePolicyRequest\x1a\x1b.providah.v1.ResourcePolicy\x12b\n" +
 	"\x15RequestSSHKeyCreation\x12).providah.v1.RequestSSHKeyCreationRequest\x1a\x1e.providah.v1.OperationResponse\x12k\n" +
 	"\x14ListProjectOwnership\x12(.providah.v1.ListProjectOwnershipRequest\x1a).providah.v1.ListProjectOwnershipResponse\x12`\n" +
 	"\x14GetAutomationProject\x12(.providah.v1.GetAutomationProjectRequest\x1a\x1e.providah.v1.AutomationProject\x12q\n" +
@@ -16974,7 +17150,7 @@ func file_providah_v1_console_proto_rawDescGZIP() []byte {
 }
 
 var file_providah_v1_console_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_providah_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 234)
+var file_providah_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 237)
 var file_providah_v1_console_proto_goTypes = []any{
 	(ScanStatus)(0),                                  // 0: providah.v1.ScanStatus
 	(OperationStatus)(0),                             // 1: providah.v1.OperationStatus
@@ -17211,7 +17387,10 @@ var file_providah_v1_console_proto_goTypes = []any{
 	(*SetOrganizationSmtpRequest)(nil),               // 232: providah.v1.SetOrganizationSmtpRequest
 	(*SSHKeyCreate)(nil),                             // 233: providah.v1.SSHKeyCreate
 	(*RequestSSHKeyCreationRequest)(nil),             // 234: providah.v1.RequestSSHKeyCreationRequest
-	nil,                                              // 235: providah.v1.ResourceTags.LabelsEntry
+	(*GetResourcePolicyRequest)(nil),                 // 235: providah.v1.GetResourcePolicyRequest
+	(*ResourcePolicy)(nil),                           // 236: providah.v1.ResourcePolicy
+	(*SaveResourcePolicyRequest)(nil),                // 237: providah.v1.SaveResourcePolicyRequest
+	nil,                                              // 238: providah.v1.ResourceTags.LabelsEntry
 }
 var file_providah_v1_console_proto_depIdxs = []int32{
 	12,  // 0: providah.v1.SessionResponse.organizations:type_name -> providah.v1.Organization
@@ -17219,7 +17398,7 @@ var file_providah_v1_console_proto_depIdxs = []int32{
 	0,   // 2: providah.v1.Connection.scan_status:type_name -> providah.v1.ScanStatus
 	16,  // 3: providah.v1.ConnectionResponse.connection:type_name -> providah.v1.Connection
 	195, // 4: providah.v1.ListResourcesRequest.tag_conditions:type_name -> providah.v1.TagCondition
-	235, // 5: providah.v1.ResourceTags.labels:type_name -> providah.v1.ResourceTags.LabelsEntry
+	238, // 5: providah.v1.ResourceTags.labels:type_name -> providah.v1.ResourceTags.LabelsEntry
 	22,  // 6: providah.v1.Resource.tags:type_name -> providah.v1.ResourceTags
 	23,  // 7: providah.v1.ListResourcesResponse.resources:type_name -> providah.v1.Resource
 	26,  // 8: providah.v1.ListAuditResponse.events:type_name -> providah.v1.AuditEvent
@@ -17296,264 +17475,268 @@ var file_providah_v1_console_proto_depIdxs = []int32{
 	229, // 79: providah.v1.ListProjectOwnershipResponse.references:type_name -> providah.v1.ProjectOwnershipReference
 	76,  // 80: providah.v1.SetOrganizationSmtpRequest.smtp:type_name -> providah.v1.SmtpSettings
 	233, // 81: providah.v1.RequestSSHKeyCreationRequest.creation:type_name -> providah.v1.SSHKeyCreate
-	234, // 82: providah.v1.ConsoleService.RequestSSHKeyCreation:input_type -> providah.v1.RequestSSHKeyCreationRequest
-	228, // 83: providah.v1.ConsoleService.ListProjectOwnership:input_type -> providah.v1.ListProjectOwnershipRequest
-	177, // 84: providah.v1.ConsoleService.GetAutomationProject:input_type -> providah.v1.GetAutomationProjectRequest
-	178, // 85: providah.v1.ConsoleService.ListAutomationProjects:input_type -> providah.v1.ListAutomationProjectsRequest
-	180, // 86: providah.v1.ConsoleService.CreateAutomationProject:input_type -> providah.v1.CreateAutomationProjectRequest
-	182, // 87: providah.v1.ConsoleService.ListAutomationStates:input_type -> providah.v1.ListAutomationStatesRequest
-	172, // 88: providah.v1.ConsoleService.GetAutomationValidation:input_type -> providah.v1.GetAutomationValidationRequest
-	173, // 89: providah.v1.ConsoleService.ListAutomationValidations:input_type -> providah.v1.ListAutomationValidationsRequest
-	224, // 90: providah.v1.ConsoleService.CancelAutomationValidation:input_type -> providah.v1.CancelAutomationValidationRequest
-	175, // 91: providah.v1.ConsoleService.RequestAutomationValidation:input_type -> providah.v1.RequestAutomationValidationRequest
-	166, // 92: providah.v1.ConsoleService.GetAutomationVersion:input_type -> providah.v1.GetAutomationVersionRequest
-	167, // 93: providah.v1.ConsoleService.ListAutomationVersions:input_type -> providah.v1.ListAutomationVersionsRequest
-	169, // 94: providah.v1.ConsoleService.PublishAutomationVersion:input_type -> providah.v1.PublishAutomationVersionRequest
-	170, // 95: providah.v1.ConsoleService.SetAutomationVersionStatus:input_type -> providah.v1.SetAutomationVersionStatusRequest
-	216, // 96: providah.v1.ConsoleService.GetAutomationSource:input_type -> providah.v1.GetAutomationSourceRequest
-	160, // 97: providah.v1.ConsoleService.ListAutomationSources:input_type -> providah.v1.ListAutomationSourcesRequest
-	162, // 98: providah.v1.ConsoleService.ImportAutomationSource:input_type -> providah.v1.ImportAutomationSourceRequest
-	159, // 99: providah.v1.ConsoleService.BeginMFAEnrollment:input_type -> providah.v1.BeginMFAEnrollmentRequest
-	156, // 100: providah.v1.ConsoleService.GetMFAPolicy:input_type -> providah.v1.GetMFAPolicyRequest
-	158, // 101: providah.v1.ConsoleService.SaveMFAPolicy:input_type -> providah.v1.SaveMFAPolicyRequest
-	217, // 102: providah.v1.ConsoleService.GetServerTemplate:input_type -> providah.v1.GetServerTemplateRequest
-	152, // 103: providah.v1.ConsoleService.ListServerTemplates:input_type -> providah.v1.ListServerTemplatesRequest
-	154, // 104: providah.v1.ConsoleService.PublishServerTemplate:input_type -> providah.v1.PublishServerTemplateRequest
-	155, // 105: providah.v1.ConsoleService.SetServerTemplateStatus:input_type -> providah.v1.SetServerTemplateStatusRequest
-	150, // 106: providah.v1.ConsoleService.CreateOrganization:input_type -> providah.v1.CreateOrganizationRequest
-	149, // 107: providah.v1.ConsoleService.SetAccountMFA:input_type -> providah.v1.SetAccountMFARequest
-	2,   // 108: providah.v1.ConsoleService.SetupStatus:input_type -> providah.v1.SetupStatusRequest
-	4,   // 109: providah.v1.ConsoleService.BeginSetup:input_type -> providah.v1.BeginSetupRequest
-	6,   // 110: providah.v1.ConsoleService.FinishSetup:input_type -> providah.v1.FinishSetupRequest
-	125, // 111: providah.v1.ConsoleService.GetIdentityPolicy:input_type -> providah.v1.GetIdentityPolicyRequest
-	127, // 112: providah.v1.ConsoleService.SaveIdentityPolicy:input_type -> providah.v1.SaveIdentityPolicyRequest
-	119, // 113: providah.v1.ConsoleService.GetOIDCStatus:input_type -> providah.v1.GetOIDCStatusRequest
-	121, // 114: providah.v1.ConsoleService.BeginOIDCLogin:input_type -> providah.v1.BeginOIDCLoginRequest
-	122, // 115: providah.v1.ConsoleService.CompleteOIDCLogin:input_type -> providah.v1.CompleteOIDCLoginRequest
-	123, // 116: providah.v1.ConsoleService.BeginOIDCLink:input_type -> providah.v1.OIDCAccountRequest
-	123, // 117: providah.v1.ConsoleService.UnlinkOIDC:input_type -> providah.v1.OIDCAccountRequest
-	7,   // 118: providah.v1.ConsoleService.Login:input_type -> providah.v1.LoginRequest
-	8,   // 119: providah.v1.ConsoleService.Refresh:input_type -> providah.v1.RefreshRequest
-	9,   // 120: providah.v1.ConsoleService.Logout:input_type -> providah.v1.LogoutRequest
-	205, // 121: providah.v1.ConsoleService.GetInstallationHealth:input_type -> providah.v1.GetInstallationHealthRequest
-	204, // 122: providah.v1.ConsoleService.SetInstallationOrganization:input_type -> providah.v1.SetInstallationOrganizationRequest
-	203, // 123: providah.v1.ConsoleService.SetInstallationUser:input_type -> providah.v1.SetInstallationUserRequest
-	199, // 124: providah.v1.ConsoleService.ListInstallationDirectory:input_type -> providah.v1.ListInstallationDirectoryRequest
-	11,  // 125: providah.v1.ConsoleService.GetSession:input_type -> providah.v1.GetSessionRequest
-	107, // 126: providah.v1.ConsoleService.ListProviderModules:input_type -> providah.v1.ListProviderModulesRequest
-	112, // 127: providah.v1.ConsoleService.SetProviderRuntime:input_type -> providah.v1.SetProviderRuntimeRequest
-	110, // 128: providah.v1.ConsoleService.SetProviderModule:input_type -> providah.v1.SetProviderModuleRequest
-	223, // 129: providah.v1.ConsoleService.GetConnection:input_type -> providah.v1.GetConnectionRequest
-	14,  // 130: providah.v1.ConsoleService.ListConnections:input_type -> providah.v1.ListConnectionsRequest
-	17,  // 131: providah.v1.ConsoleService.CreateConnection:input_type -> providah.v1.CreateConnectionRequest
-	19,  // 132: providah.v1.ConsoleService.SetConnectionEnabled:input_type -> providah.v1.SetConnectionEnabledRequest
-	20,  // 133: providah.v1.ConsoleService.RotateCredential:input_type -> providah.v1.RotateCredentialRequest
-	188, // 134: providah.v1.ConsoleService.ListDashboardTeams:input_type -> providah.v1.ListDashboardsRequest
-	188, // 135: providah.v1.ConsoleService.ListDashboards:input_type -> providah.v1.ListDashboardsRequest
-	190, // 136: providah.v1.ConsoleService.SaveDashboard:input_type -> providah.v1.SaveDashboardRequest
-	191, // 137: providah.v1.ConsoleService.DeleteDashboard:input_type -> providah.v1.DeleteDashboardRequest
-	140, // 138: providah.v1.ConsoleService.ListInventoryViews:input_type -> providah.v1.ListInventoryViewsRequest
-	142, // 139: providah.v1.ConsoleService.SaveInventoryView:input_type -> providah.v1.SaveInventoryViewRequest
-	143, // 140: providah.v1.ConsoleService.DeleteInventoryView:input_type -> providah.v1.DeleteInventoryViewRequest
-	196, // 141: providah.v1.ConsoleService.ListResourceScopes:input_type -> providah.v1.ListResourceScopesRequest
-	192, // 142: providah.v1.ConsoleService.GetResourceSummary:input_type -> providah.v1.GetResourceSummaryRequest
-	21,  // 143: providah.v1.ConsoleService.ListResources:input_type -> providah.v1.ListResourcesRequest
-	28,  // 144: providah.v1.ConsoleService.RefreshConnection:input_type -> providah.v1.RefreshConnectionRequest
-	134, // 145: providah.v1.ConsoleService.GetResourceMetrics:input_type -> providah.v1.GetResourceMetricsRequest
-	30,  // 146: providah.v1.ConsoleService.GetResource:input_type -> providah.v1.GetResourceRequest
-	88,  // 147: providah.v1.ConsoleService.ListMaintenancePolicies:input_type -> providah.v1.ListMaintenancePoliciesRequest
-	91,  // 148: providah.v1.ConsoleService.SaveMaintenancePolicy:input_type -> providah.v1.SaveMaintenancePolicyRequest
-	92,  // 149: providah.v1.ConsoleService.DeleteMaintenancePolicy:input_type -> providah.v1.DeleteMaintenancePolicyRequest
-	222, // 150: providah.v1.ConsoleService.DeleteNotificationDestination:input_type -> providah.v1.DeleteNotificationDestinationRequest
-	221, // 151: providah.v1.ConsoleService.GetNotificationDestination:input_type -> providah.v1.GetNotificationRecordRequest
-	221, // 152: providah.v1.ConsoleService.GetNotificationDelivery:input_type -> providah.v1.GetNotificationRecordRequest
-	73,  // 153: providah.v1.ConsoleService.ListNotificationDestinations:input_type -> providah.v1.ListNotificationDestinationsRequest
-	73,  // 154: providah.v1.ConsoleService.GetOrganizationSmtp:input_type -> providah.v1.ListNotificationDestinationsRequest
-	232, // 155: providah.v1.ConsoleService.SetOrganizationSmtp:input_type -> providah.v1.SetOrganizationSmtpRequest
-	73,  // 156: providah.v1.ConsoleService.GetNotificationGrouping:input_type -> providah.v1.ListNotificationDestinationsRequest
-	226, // 157: providah.v1.ConsoleService.SetNotificationGrouping:input_type -> providah.v1.SetNotificationGroupingRequest
-	220, // 158: providah.v1.ConsoleService.SetNotificationSubscriptions:input_type -> providah.v1.SetNotificationSubscriptionsRequest
-	77,  // 159: providah.v1.ConsoleService.SaveNotificationDestination:input_type -> providah.v1.SaveNotificationDestinationRequest
-	78,  // 160: providah.v1.ConsoleService.SetNotificationDestinationEnabled:input_type -> providah.v1.SetNotificationDestinationEnabledRequest
-	79,  // 161: providah.v1.ConsoleService.SendNotificationTest:input_type -> providah.v1.SendNotificationTestRequest
-	80,  // 162: providah.v1.ConsoleService.VerifyNotificationDestination:input_type -> providah.v1.VerifyNotificationDestinationRequest
-	81,  // 163: providah.v1.ConsoleService.ListNotificationDeliveries:input_type -> providah.v1.ListNotificationDeliveriesRequest
-	84,  // 164: providah.v1.ConsoleService.ListNotificationAttempts:input_type -> providah.v1.ListNotificationAttemptsRequest
-	87,  // 165: providah.v1.ConsoleService.RedeliverNotification:input_type -> providah.v1.RedeliverNotificationRequest
-	59,  // 166: providah.v1.ConsoleService.GetSchedule:input_type -> providah.v1.GetScheduleRequest
-	60,  // 167: providah.v1.ConsoleService.ListSchedules:input_type -> providah.v1.ListSchedulesRequest
-	62,  // 168: providah.v1.ConsoleService.SaveSchedule:input_type -> providah.v1.SaveScheduleRequest
-	64,  // 169: providah.v1.ConsoleService.PreviewSchedule:input_type -> providah.v1.PreviewScheduleRequest
-	67,  // 170: providah.v1.ConsoleService.ApproveSchedule:input_type -> providah.v1.ApproveScheduleRequest
-	68,  // 171: providah.v1.ConsoleService.SetScheduleEnabled:input_type -> providah.v1.SetScheduleEnabledRequest
-	72,  // 172: providah.v1.ConsoleService.DeleteSchedule:input_type -> providah.v1.DeleteScheduleRequest
-	69,  // 173: providah.v1.ConsoleService.ListScheduleOccurrences:input_type -> providah.v1.ListScheduleOccurrencesRequest
-	118, // 174: providah.v1.ConsoleService.RequestServerCreation:input_type -> providah.v1.RequestServerCreationRequest
-	115, // 175: providah.v1.ConsoleService.PreviewDeletion:input_type -> providah.v1.PreviewDeletionRequest
-	128, // 176: providah.v1.ConsoleService.PreviewBulkPower:input_type -> providah.v1.PreviewBulkPowerRequest
-	131, // 177: providah.v1.ConsoleService.RequestBulkPower:input_type -> providah.v1.RequestBulkPowerRequest
-	49,  // 178: providah.v1.ConsoleService.RequestOperation:input_type -> providah.v1.RequestOperationRequest
-	50,  // 179: providah.v1.ConsoleService.GetOperation:input_type -> providah.v1.GetOperationRequest
-	218, // 180: providah.v1.ConsoleService.GetOperationsOverview:input_type -> providah.v1.GetOperationsOverviewRequest
-	51,  // 181: providah.v1.ConsoleService.ListOperations:input_type -> providah.v1.ListOperationsRequest
-	53,  // 182: providah.v1.ConsoleService.ReviewOperation:input_type -> providah.v1.ReviewOperationRequest
-	56,  // 183: providah.v1.ConsoleService.CancelOperation:input_type -> providah.v1.CancelOperationRequest
-	54,  // 184: providah.v1.ConsoleService.ReconcileOperation:input_type -> providah.v1.ReconcileOperationRequest
-	55,  // 185: providah.v1.ConsoleService.ResolveOperation:input_type -> providah.v1.ResolveOperationRequest
-	209, // 186: providah.v1.ConsoleService.ListTeams:input_type -> providah.v1.ListTeamsRequest
-	213, // 187: providah.v1.ConsoleService.DeleteTeam:input_type -> providah.v1.DeleteTeamRequest
-	212, // 188: providah.v1.ConsoleService.SaveTeam:input_type -> providah.v1.SaveTeamRequest
-	32,  // 189: providah.v1.ConsoleService.ListAccess:input_type -> providah.v1.ListAccessRequest
-	38,  // 190: providah.v1.ConsoleService.SaveRole:input_type -> providah.v1.SaveRoleRequest
-	39,  // 191: providah.v1.ConsoleService.UpdateMember:input_type -> providah.v1.UpdateMemberRequest
-	40,  // 192: providah.v1.ConsoleService.CreateInvitation:input_type -> providah.v1.CreateInvitationRequest
-	42,  // 193: providah.v1.ConsoleService.RevokeInvitation:input_type -> providah.v1.RevokeInvitationRequest
-	43,  // 194: providah.v1.ConsoleService.BeginInvitation:input_type -> providah.v1.BeginInvitationRequest
-	45,  // 195: providah.v1.ConsoleService.AcceptInvitation:input_type -> providah.v1.AcceptInvitationRequest
-	113, // 196: providah.v1.ConsoleService.ChangePassword:input_type -> providah.v1.ChangePasswordRequest
-	144, // 197: providah.v1.ConsoleService.ListAccountSessions:input_type -> providah.v1.ListAccountSessionsRequest
-	147, // 198: providah.v1.ConsoleService.RevokeAccountSession:input_type -> providah.v1.RevokeAccountSessionRequest
-	102, // 199: providah.v1.ConsoleService.GetAccountSecurity:input_type -> providah.v1.GetAccountSecurityRequest
-	105, // 200: providah.v1.ConsoleService.GenerateRecoveryCodes:input_type -> providah.v1.GenerateRecoveryCodesRequest
-	46,  // 201: providah.v1.ConsoleService.VerifyMfa:input_type -> providah.v1.VerifyMfaRequest
-	93,  // 202: providah.v1.ConsoleService.GetAuditExport:input_type -> providah.v1.GetAuditExportRequest
-	95,  // 203: providah.v1.ConsoleService.SaveAuditExport:input_type -> providah.v1.SaveAuditExportRequest
-	96,  // 204: providah.v1.ConsoleService.TestAuditExport:input_type -> providah.v1.TestAuditExportRequest
-	97,  // 205: providah.v1.ConsoleService.SetAuditExportEnabled:input_type -> providah.v1.SetAuditExportEnabledRequest
-	98,  // 206: providah.v1.ConsoleService.RetryAuditExport:input_type -> providah.v1.RetryAuditExportRequest
-	99,  // 207: providah.v1.ConsoleService.ListAuditExportBatches:input_type -> providah.v1.ListAuditExportBatchesRequest
-	25,  // 208: providah.v1.ConsoleService.ListInstallationAudit:input_type -> providah.v1.ListAuditRequest
-	25,  // 209: providah.v1.ConsoleService.ListAudit:input_type -> providah.v1.ListAuditRequest
-	48,  // 210: providah.v1.ConsoleService.RequestSSHKeyCreation:output_type -> providah.v1.OperationResponse
-	230, // 211: providah.v1.ConsoleService.ListProjectOwnership:output_type -> providah.v1.ListProjectOwnershipResponse
-	176, // 212: providah.v1.ConsoleService.GetAutomationProject:output_type -> providah.v1.AutomationProject
-	179, // 213: providah.v1.ConsoleService.ListAutomationProjects:output_type -> providah.v1.ListAutomationProjectsResponse
-	176, // 214: providah.v1.ConsoleService.CreateAutomationProject:output_type -> providah.v1.AutomationProject
-	183, // 215: providah.v1.ConsoleService.ListAutomationStates:output_type -> providah.v1.ListAutomationStatesResponse
-	171, // 216: providah.v1.ConsoleService.GetAutomationValidation:output_type -> providah.v1.AutomationValidation
-	174, // 217: providah.v1.ConsoleService.ListAutomationValidations:output_type -> providah.v1.ListAutomationValidationsResponse
-	171, // 218: providah.v1.ConsoleService.CancelAutomationValidation:output_type -> providah.v1.AutomationValidation
-	171, // 219: providah.v1.ConsoleService.RequestAutomationValidation:output_type -> providah.v1.AutomationValidation
-	165, // 220: providah.v1.ConsoleService.GetAutomationVersion:output_type -> providah.v1.AutomationVersion
-	168, // 221: providah.v1.ConsoleService.ListAutomationVersions:output_type -> providah.v1.ListAutomationVersionsResponse
-	165, // 222: providah.v1.ConsoleService.PublishAutomationVersion:output_type -> providah.v1.AutomationVersion
-	165, // 223: providah.v1.ConsoleService.SetAutomationVersionStatus:output_type -> providah.v1.AutomationVersion
-	163, // 224: providah.v1.ConsoleService.GetAutomationSource:output_type -> providah.v1.AutomationSource
-	161, // 225: providah.v1.ConsoleService.ListAutomationSources:output_type -> providah.v1.ListAutomationSourcesResponse
-	163, // 226: providah.v1.ConsoleService.ImportAutomationSource:output_type -> providah.v1.AutomationSource
-	5,   // 227: providah.v1.ConsoleService.BeginMFAEnrollment:output_type -> providah.v1.BeginSetupResponse
-	157, // 228: providah.v1.ConsoleService.GetMFAPolicy:output_type -> providah.v1.MFAPolicy
-	157, // 229: providah.v1.ConsoleService.SaveMFAPolicy:output_type -> providah.v1.MFAPolicy
-	151, // 230: providah.v1.ConsoleService.GetServerTemplate:output_type -> providah.v1.ServerTemplate
-	153, // 231: providah.v1.ConsoleService.ListServerTemplates:output_type -> providah.v1.ListServerTemplatesResponse
-	151, // 232: providah.v1.ConsoleService.PublishServerTemplate:output_type -> providah.v1.ServerTemplate
-	151, // 233: providah.v1.ConsoleService.SetServerTemplateStatus:output_type -> providah.v1.ServerTemplate
-	12,  // 234: providah.v1.ConsoleService.CreateOrganization:output_type -> providah.v1.Organization
-	37,  // 235: providah.v1.ConsoleService.SetAccountMFA:output_type -> providah.v1.AccessMutationResponse
-	3,   // 236: providah.v1.ConsoleService.SetupStatus:output_type -> providah.v1.SetupStatusResponse
-	5,   // 237: providah.v1.ConsoleService.BeginSetup:output_type -> providah.v1.BeginSetupResponse
-	13,  // 238: providah.v1.ConsoleService.FinishSetup:output_type -> providah.v1.SessionResponse
-	126, // 239: providah.v1.ConsoleService.GetIdentityPolicy:output_type -> providah.v1.IdentityPolicyResponse
-	126, // 240: providah.v1.ConsoleService.SaveIdentityPolicy:output_type -> providah.v1.IdentityPolicyResponse
-	120, // 241: providah.v1.ConsoleService.GetOIDCStatus:output_type -> providah.v1.GetOIDCStatusResponse
-	124, // 242: providah.v1.ConsoleService.BeginOIDCLogin:output_type -> providah.v1.OIDCRedirectResponse
-	13,  // 243: providah.v1.ConsoleService.CompleteOIDCLogin:output_type -> providah.v1.SessionResponse
-	124, // 244: providah.v1.ConsoleService.BeginOIDCLink:output_type -> providah.v1.OIDCRedirectResponse
-	37,  // 245: providah.v1.ConsoleService.UnlinkOIDC:output_type -> providah.v1.AccessMutationResponse
-	13,  // 246: providah.v1.ConsoleService.Login:output_type -> providah.v1.SessionResponse
-	13,  // 247: providah.v1.ConsoleService.Refresh:output_type -> providah.v1.SessionResponse
-	10,  // 248: providah.v1.ConsoleService.Logout:output_type -> providah.v1.LogoutResponse
-	207, // 249: providah.v1.ConsoleService.GetInstallationHealth:output_type -> providah.v1.InstallationHealth
-	37,  // 250: providah.v1.ConsoleService.SetInstallationOrganization:output_type -> providah.v1.AccessMutationResponse
-	37,  // 251: providah.v1.ConsoleService.SetInstallationUser:output_type -> providah.v1.AccessMutationResponse
-	202, // 252: providah.v1.ConsoleService.ListInstallationDirectory:output_type -> providah.v1.ListInstallationDirectoryResponse
-	13,  // 253: providah.v1.ConsoleService.GetSession:output_type -> providah.v1.SessionResponse
-	108, // 254: providah.v1.ConsoleService.ListProviderModules:output_type -> providah.v1.ListProviderModulesResponse
-	37,  // 255: providah.v1.ConsoleService.SetProviderRuntime:output_type -> providah.v1.AccessMutationResponse
-	37,  // 256: providah.v1.ConsoleService.SetProviderModule:output_type -> providah.v1.AccessMutationResponse
-	18,  // 257: providah.v1.ConsoleService.GetConnection:output_type -> providah.v1.ConnectionResponse
-	15,  // 258: providah.v1.ConsoleService.ListConnections:output_type -> providah.v1.ListConnectionsResponse
-	18,  // 259: providah.v1.ConsoleService.CreateConnection:output_type -> providah.v1.ConnectionResponse
-	18,  // 260: providah.v1.ConsoleService.SetConnectionEnabled:output_type -> providah.v1.ConnectionResponse
-	18,  // 261: providah.v1.ConsoleService.RotateCredential:output_type -> providah.v1.ConnectionResponse
-	215, // 262: providah.v1.ConsoleService.ListDashboardTeams:output_type -> providah.v1.ListDashboardTeamsResponse
-	189, // 263: providah.v1.ConsoleService.ListDashboards:output_type -> providah.v1.ListDashboardsResponse
-	187, // 264: providah.v1.ConsoleService.SaveDashboard:output_type -> providah.v1.Dashboard
-	37,  // 265: providah.v1.ConsoleService.DeleteDashboard:output_type -> providah.v1.AccessMutationResponse
-	141, // 266: providah.v1.ConsoleService.ListInventoryViews:output_type -> providah.v1.ListInventoryViewsResponse
-	139, // 267: providah.v1.ConsoleService.SaveInventoryView:output_type -> providah.v1.InventoryView
-	37,  // 268: providah.v1.ConsoleService.DeleteInventoryView:output_type -> providah.v1.AccessMutationResponse
-	198, // 269: providah.v1.ConsoleService.ListResourceScopes:output_type -> providah.v1.ListResourceScopesResponse
-	194, // 270: providah.v1.ConsoleService.GetResourceSummary:output_type -> providah.v1.GetResourceSummaryResponse
-	24,  // 271: providah.v1.ConsoleService.ListResources:output_type -> providah.v1.ListResourcesResponse
-	29,  // 272: providah.v1.ConsoleService.RefreshConnection:output_type -> providah.v1.RefreshConnectionResponse
-	137, // 273: providah.v1.ConsoleService.GetResourceMetrics:output_type -> providah.v1.GetResourceMetricsResponse
-	31,  // 274: providah.v1.ConsoleService.GetResource:output_type -> providah.v1.GetResourceResponse
-	90,  // 275: providah.v1.ConsoleService.ListMaintenancePolicies:output_type -> providah.v1.ListMaintenancePoliciesResponse
-	37,  // 276: providah.v1.ConsoleService.SaveMaintenancePolicy:output_type -> providah.v1.AccessMutationResponse
-	37,  // 277: providah.v1.ConsoleService.DeleteMaintenancePolicy:output_type -> providah.v1.AccessMutationResponse
-	37,  // 278: providah.v1.ConsoleService.DeleteNotificationDestination:output_type -> providah.v1.AccessMutationResponse
-	74,  // 279: providah.v1.ConsoleService.GetNotificationDestination:output_type -> providah.v1.NotificationDestination
-	82,  // 280: providah.v1.ConsoleService.GetNotificationDelivery:output_type -> providah.v1.NotificationDelivery
-	75,  // 281: providah.v1.ConsoleService.ListNotificationDestinations:output_type -> providah.v1.ListNotificationDestinationsResponse
-	231, // 282: providah.v1.ConsoleService.GetOrganizationSmtp:output_type -> providah.v1.OrganizationSmtp
-	231, // 283: providah.v1.ConsoleService.SetOrganizationSmtp:output_type -> providah.v1.OrganizationSmtp
-	225, // 284: providah.v1.ConsoleService.GetNotificationGrouping:output_type -> providah.v1.NotificationGrouping
-	225, // 285: providah.v1.ConsoleService.SetNotificationGrouping:output_type -> providah.v1.NotificationGrouping
-	37,  // 286: providah.v1.ConsoleService.SetNotificationSubscriptions:output_type -> providah.v1.AccessMutationResponse
-	37,  // 287: providah.v1.ConsoleService.SaveNotificationDestination:output_type -> providah.v1.AccessMutationResponse
-	37,  // 288: providah.v1.ConsoleService.SetNotificationDestinationEnabled:output_type -> providah.v1.AccessMutationResponse
-	37,  // 289: providah.v1.ConsoleService.SendNotificationTest:output_type -> providah.v1.AccessMutationResponse
-	37,  // 290: providah.v1.ConsoleService.VerifyNotificationDestination:output_type -> providah.v1.AccessMutationResponse
-	83,  // 291: providah.v1.ConsoleService.ListNotificationDeliveries:output_type -> providah.v1.ListNotificationDeliveriesResponse
-	86,  // 292: providah.v1.ConsoleService.ListNotificationAttempts:output_type -> providah.v1.ListNotificationAttemptsResponse
-	37,  // 293: providah.v1.ConsoleService.RedeliverNotification:output_type -> providah.v1.AccessMutationResponse
-	63,  // 294: providah.v1.ConsoleService.GetSchedule:output_type -> providah.v1.ScheduleResponse
-	61,  // 295: providah.v1.ConsoleService.ListSchedules:output_type -> providah.v1.ListSchedulesResponse
-	63,  // 296: providah.v1.ConsoleService.SaveSchedule:output_type -> providah.v1.ScheduleResponse
-	66,  // 297: providah.v1.ConsoleService.PreviewSchedule:output_type -> providah.v1.PreviewScheduleResponse
-	63,  // 298: providah.v1.ConsoleService.ApproveSchedule:output_type -> providah.v1.ScheduleResponse
-	63,  // 299: providah.v1.ConsoleService.SetScheduleEnabled:output_type -> providah.v1.ScheduleResponse
-	37,  // 300: providah.v1.ConsoleService.DeleteSchedule:output_type -> providah.v1.AccessMutationResponse
-	71,  // 301: providah.v1.ConsoleService.ListScheduleOccurrences:output_type -> providah.v1.ListScheduleOccurrencesResponse
-	48,  // 302: providah.v1.ConsoleService.RequestServerCreation:output_type -> providah.v1.OperationResponse
-	116, // 303: providah.v1.ConsoleService.PreviewDeletion:output_type -> providah.v1.PreviewDeletionResponse
-	130, // 304: providah.v1.ConsoleService.PreviewBulkPower:output_type -> providah.v1.PreviewBulkPowerResponse
-	133, // 305: providah.v1.ConsoleService.RequestBulkPower:output_type -> providah.v1.RequestBulkPowerResponse
-	48,  // 306: providah.v1.ConsoleService.RequestOperation:output_type -> providah.v1.OperationResponse
-	48,  // 307: providah.v1.ConsoleService.GetOperation:output_type -> providah.v1.OperationResponse
-	219, // 308: providah.v1.ConsoleService.GetOperationsOverview:output_type -> providah.v1.OperationsOverview
-	52,  // 309: providah.v1.ConsoleService.ListOperations:output_type -> providah.v1.ListOperationsResponse
-	48,  // 310: providah.v1.ConsoleService.ReviewOperation:output_type -> providah.v1.OperationResponse
-	48,  // 311: providah.v1.ConsoleService.CancelOperation:output_type -> providah.v1.OperationResponse
-	48,  // 312: providah.v1.ConsoleService.ReconcileOperation:output_type -> providah.v1.OperationResponse
-	48,  // 313: providah.v1.ConsoleService.ResolveOperation:output_type -> providah.v1.OperationResponse
-	211, // 314: providah.v1.ConsoleService.ListTeams:output_type -> providah.v1.ListTeamsResponse
-	37,  // 315: providah.v1.ConsoleService.DeleteTeam:output_type -> providah.v1.AccessMutationResponse
-	37,  // 316: providah.v1.ConsoleService.SaveTeam:output_type -> providah.v1.AccessMutationResponse
-	36,  // 317: providah.v1.ConsoleService.ListAccess:output_type -> providah.v1.ListAccessResponse
-	37,  // 318: providah.v1.ConsoleService.SaveRole:output_type -> providah.v1.AccessMutationResponse
-	37,  // 319: providah.v1.ConsoleService.UpdateMember:output_type -> providah.v1.AccessMutationResponse
-	41,  // 320: providah.v1.ConsoleService.CreateInvitation:output_type -> providah.v1.CreateInvitationResponse
-	37,  // 321: providah.v1.ConsoleService.RevokeInvitation:output_type -> providah.v1.AccessMutationResponse
-	44,  // 322: providah.v1.ConsoleService.BeginInvitation:output_type -> providah.v1.BeginInvitationResponse
-	13,  // 323: providah.v1.ConsoleService.AcceptInvitation:output_type -> providah.v1.SessionResponse
-	114, // 324: providah.v1.ConsoleService.ChangePassword:output_type -> providah.v1.ChangePasswordResponse
-	146, // 325: providah.v1.ConsoleService.ListAccountSessions:output_type -> providah.v1.ListAccountSessionsResponse
-	148, // 326: providah.v1.ConsoleService.RevokeAccountSession:output_type -> providah.v1.RevokeAccountSessionResponse
-	103, // 327: providah.v1.ConsoleService.GetAccountSecurity:output_type -> providah.v1.GetAccountSecurityResponse
-	106, // 328: providah.v1.ConsoleService.GenerateRecoveryCodes:output_type -> providah.v1.GenerateRecoveryCodesResponse
-	37,  // 329: providah.v1.ConsoleService.VerifyMfa:output_type -> providah.v1.AccessMutationResponse
-	94,  // 330: providah.v1.ConsoleService.GetAuditExport:output_type -> providah.v1.GetAuditExportResponse
-	37,  // 331: providah.v1.ConsoleService.SaveAuditExport:output_type -> providah.v1.AccessMutationResponse
-	37,  // 332: providah.v1.ConsoleService.TestAuditExport:output_type -> providah.v1.AccessMutationResponse
-	37,  // 333: providah.v1.ConsoleService.SetAuditExportEnabled:output_type -> providah.v1.AccessMutationResponse
-	37,  // 334: providah.v1.ConsoleService.RetryAuditExport:output_type -> providah.v1.AccessMutationResponse
-	101, // 335: providah.v1.ConsoleService.ListAuditExportBatches:output_type -> providah.v1.ListAuditExportBatchesResponse
-	27,  // 336: providah.v1.ConsoleService.ListInstallationAudit:output_type -> providah.v1.ListAuditResponse
-	27,  // 337: providah.v1.ConsoleService.ListAudit:output_type -> providah.v1.ListAuditResponse
-	210, // [210:338] is the sub-list for method output_type
-	82,  // [82:210] is the sub-list for method input_type
+	235, // 82: providah.v1.ConsoleService.GetResourcePolicy:input_type -> providah.v1.GetResourcePolicyRequest
+	237, // 83: providah.v1.ConsoleService.SaveResourcePolicy:input_type -> providah.v1.SaveResourcePolicyRequest
+	234, // 84: providah.v1.ConsoleService.RequestSSHKeyCreation:input_type -> providah.v1.RequestSSHKeyCreationRequest
+	228, // 85: providah.v1.ConsoleService.ListProjectOwnership:input_type -> providah.v1.ListProjectOwnershipRequest
+	177, // 86: providah.v1.ConsoleService.GetAutomationProject:input_type -> providah.v1.GetAutomationProjectRequest
+	178, // 87: providah.v1.ConsoleService.ListAutomationProjects:input_type -> providah.v1.ListAutomationProjectsRequest
+	180, // 88: providah.v1.ConsoleService.CreateAutomationProject:input_type -> providah.v1.CreateAutomationProjectRequest
+	182, // 89: providah.v1.ConsoleService.ListAutomationStates:input_type -> providah.v1.ListAutomationStatesRequest
+	172, // 90: providah.v1.ConsoleService.GetAutomationValidation:input_type -> providah.v1.GetAutomationValidationRequest
+	173, // 91: providah.v1.ConsoleService.ListAutomationValidations:input_type -> providah.v1.ListAutomationValidationsRequest
+	224, // 92: providah.v1.ConsoleService.CancelAutomationValidation:input_type -> providah.v1.CancelAutomationValidationRequest
+	175, // 93: providah.v1.ConsoleService.RequestAutomationValidation:input_type -> providah.v1.RequestAutomationValidationRequest
+	166, // 94: providah.v1.ConsoleService.GetAutomationVersion:input_type -> providah.v1.GetAutomationVersionRequest
+	167, // 95: providah.v1.ConsoleService.ListAutomationVersions:input_type -> providah.v1.ListAutomationVersionsRequest
+	169, // 96: providah.v1.ConsoleService.PublishAutomationVersion:input_type -> providah.v1.PublishAutomationVersionRequest
+	170, // 97: providah.v1.ConsoleService.SetAutomationVersionStatus:input_type -> providah.v1.SetAutomationVersionStatusRequest
+	216, // 98: providah.v1.ConsoleService.GetAutomationSource:input_type -> providah.v1.GetAutomationSourceRequest
+	160, // 99: providah.v1.ConsoleService.ListAutomationSources:input_type -> providah.v1.ListAutomationSourcesRequest
+	162, // 100: providah.v1.ConsoleService.ImportAutomationSource:input_type -> providah.v1.ImportAutomationSourceRequest
+	159, // 101: providah.v1.ConsoleService.BeginMFAEnrollment:input_type -> providah.v1.BeginMFAEnrollmentRequest
+	156, // 102: providah.v1.ConsoleService.GetMFAPolicy:input_type -> providah.v1.GetMFAPolicyRequest
+	158, // 103: providah.v1.ConsoleService.SaveMFAPolicy:input_type -> providah.v1.SaveMFAPolicyRequest
+	217, // 104: providah.v1.ConsoleService.GetServerTemplate:input_type -> providah.v1.GetServerTemplateRequest
+	152, // 105: providah.v1.ConsoleService.ListServerTemplates:input_type -> providah.v1.ListServerTemplatesRequest
+	154, // 106: providah.v1.ConsoleService.PublishServerTemplate:input_type -> providah.v1.PublishServerTemplateRequest
+	155, // 107: providah.v1.ConsoleService.SetServerTemplateStatus:input_type -> providah.v1.SetServerTemplateStatusRequest
+	150, // 108: providah.v1.ConsoleService.CreateOrganization:input_type -> providah.v1.CreateOrganizationRequest
+	149, // 109: providah.v1.ConsoleService.SetAccountMFA:input_type -> providah.v1.SetAccountMFARequest
+	2,   // 110: providah.v1.ConsoleService.SetupStatus:input_type -> providah.v1.SetupStatusRequest
+	4,   // 111: providah.v1.ConsoleService.BeginSetup:input_type -> providah.v1.BeginSetupRequest
+	6,   // 112: providah.v1.ConsoleService.FinishSetup:input_type -> providah.v1.FinishSetupRequest
+	125, // 113: providah.v1.ConsoleService.GetIdentityPolicy:input_type -> providah.v1.GetIdentityPolicyRequest
+	127, // 114: providah.v1.ConsoleService.SaveIdentityPolicy:input_type -> providah.v1.SaveIdentityPolicyRequest
+	119, // 115: providah.v1.ConsoleService.GetOIDCStatus:input_type -> providah.v1.GetOIDCStatusRequest
+	121, // 116: providah.v1.ConsoleService.BeginOIDCLogin:input_type -> providah.v1.BeginOIDCLoginRequest
+	122, // 117: providah.v1.ConsoleService.CompleteOIDCLogin:input_type -> providah.v1.CompleteOIDCLoginRequest
+	123, // 118: providah.v1.ConsoleService.BeginOIDCLink:input_type -> providah.v1.OIDCAccountRequest
+	123, // 119: providah.v1.ConsoleService.UnlinkOIDC:input_type -> providah.v1.OIDCAccountRequest
+	7,   // 120: providah.v1.ConsoleService.Login:input_type -> providah.v1.LoginRequest
+	8,   // 121: providah.v1.ConsoleService.Refresh:input_type -> providah.v1.RefreshRequest
+	9,   // 122: providah.v1.ConsoleService.Logout:input_type -> providah.v1.LogoutRequest
+	205, // 123: providah.v1.ConsoleService.GetInstallationHealth:input_type -> providah.v1.GetInstallationHealthRequest
+	204, // 124: providah.v1.ConsoleService.SetInstallationOrganization:input_type -> providah.v1.SetInstallationOrganizationRequest
+	203, // 125: providah.v1.ConsoleService.SetInstallationUser:input_type -> providah.v1.SetInstallationUserRequest
+	199, // 126: providah.v1.ConsoleService.ListInstallationDirectory:input_type -> providah.v1.ListInstallationDirectoryRequest
+	11,  // 127: providah.v1.ConsoleService.GetSession:input_type -> providah.v1.GetSessionRequest
+	107, // 128: providah.v1.ConsoleService.ListProviderModules:input_type -> providah.v1.ListProviderModulesRequest
+	112, // 129: providah.v1.ConsoleService.SetProviderRuntime:input_type -> providah.v1.SetProviderRuntimeRequest
+	110, // 130: providah.v1.ConsoleService.SetProviderModule:input_type -> providah.v1.SetProviderModuleRequest
+	223, // 131: providah.v1.ConsoleService.GetConnection:input_type -> providah.v1.GetConnectionRequest
+	14,  // 132: providah.v1.ConsoleService.ListConnections:input_type -> providah.v1.ListConnectionsRequest
+	17,  // 133: providah.v1.ConsoleService.CreateConnection:input_type -> providah.v1.CreateConnectionRequest
+	19,  // 134: providah.v1.ConsoleService.SetConnectionEnabled:input_type -> providah.v1.SetConnectionEnabledRequest
+	20,  // 135: providah.v1.ConsoleService.RotateCredential:input_type -> providah.v1.RotateCredentialRequest
+	188, // 136: providah.v1.ConsoleService.ListDashboardTeams:input_type -> providah.v1.ListDashboardsRequest
+	188, // 137: providah.v1.ConsoleService.ListDashboards:input_type -> providah.v1.ListDashboardsRequest
+	190, // 138: providah.v1.ConsoleService.SaveDashboard:input_type -> providah.v1.SaveDashboardRequest
+	191, // 139: providah.v1.ConsoleService.DeleteDashboard:input_type -> providah.v1.DeleteDashboardRequest
+	140, // 140: providah.v1.ConsoleService.ListInventoryViews:input_type -> providah.v1.ListInventoryViewsRequest
+	142, // 141: providah.v1.ConsoleService.SaveInventoryView:input_type -> providah.v1.SaveInventoryViewRequest
+	143, // 142: providah.v1.ConsoleService.DeleteInventoryView:input_type -> providah.v1.DeleteInventoryViewRequest
+	196, // 143: providah.v1.ConsoleService.ListResourceScopes:input_type -> providah.v1.ListResourceScopesRequest
+	192, // 144: providah.v1.ConsoleService.GetResourceSummary:input_type -> providah.v1.GetResourceSummaryRequest
+	21,  // 145: providah.v1.ConsoleService.ListResources:input_type -> providah.v1.ListResourcesRequest
+	28,  // 146: providah.v1.ConsoleService.RefreshConnection:input_type -> providah.v1.RefreshConnectionRequest
+	134, // 147: providah.v1.ConsoleService.GetResourceMetrics:input_type -> providah.v1.GetResourceMetricsRequest
+	30,  // 148: providah.v1.ConsoleService.GetResource:input_type -> providah.v1.GetResourceRequest
+	88,  // 149: providah.v1.ConsoleService.ListMaintenancePolicies:input_type -> providah.v1.ListMaintenancePoliciesRequest
+	91,  // 150: providah.v1.ConsoleService.SaveMaintenancePolicy:input_type -> providah.v1.SaveMaintenancePolicyRequest
+	92,  // 151: providah.v1.ConsoleService.DeleteMaintenancePolicy:input_type -> providah.v1.DeleteMaintenancePolicyRequest
+	222, // 152: providah.v1.ConsoleService.DeleteNotificationDestination:input_type -> providah.v1.DeleteNotificationDestinationRequest
+	221, // 153: providah.v1.ConsoleService.GetNotificationDestination:input_type -> providah.v1.GetNotificationRecordRequest
+	221, // 154: providah.v1.ConsoleService.GetNotificationDelivery:input_type -> providah.v1.GetNotificationRecordRequest
+	73,  // 155: providah.v1.ConsoleService.ListNotificationDestinations:input_type -> providah.v1.ListNotificationDestinationsRequest
+	73,  // 156: providah.v1.ConsoleService.GetOrganizationSmtp:input_type -> providah.v1.ListNotificationDestinationsRequest
+	232, // 157: providah.v1.ConsoleService.SetOrganizationSmtp:input_type -> providah.v1.SetOrganizationSmtpRequest
+	73,  // 158: providah.v1.ConsoleService.GetNotificationGrouping:input_type -> providah.v1.ListNotificationDestinationsRequest
+	226, // 159: providah.v1.ConsoleService.SetNotificationGrouping:input_type -> providah.v1.SetNotificationGroupingRequest
+	220, // 160: providah.v1.ConsoleService.SetNotificationSubscriptions:input_type -> providah.v1.SetNotificationSubscriptionsRequest
+	77,  // 161: providah.v1.ConsoleService.SaveNotificationDestination:input_type -> providah.v1.SaveNotificationDestinationRequest
+	78,  // 162: providah.v1.ConsoleService.SetNotificationDestinationEnabled:input_type -> providah.v1.SetNotificationDestinationEnabledRequest
+	79,  // 163: providah.v1.ConsoleService.SendNotificationTest:input_type -> providah.v1.SendNotificationTestRequest
+	80,  // 164: providah.v1.ConsoleService.VerifyNotificationDestination:input_type -> providah.v1.VerifyNotificationDestinationRequest
+	81,  // 165: providah.v1.ConsoleService.ListNotificationDeliveries:input_type -> providah.v1.ListNotificationDeliveriesRequest
+	84,  // 166: providah.v1.ConsoleService.ListNotificationAttempts:input_type -> providah.v1.ListNotificationAttemptsRequest
+	87,  // 167: providah.v1.ConsoleService.RedeliverNotification:input_type -> providah.v1.RedeliverNotificationRequest
+	59,  // 168: providah.v1.ConsoleService.GetSchedule:input_type -> providah.v1.GetScheduleRequest
+	60,  // 169: providah.v1.ConsoleService.ListSchedules:input_type -> providah.v1.ListSchedulesRequest
+	62,  // 170: providah.v1.ConsoleService.SaveSchedule:input_type -> providah.v1.SaveScheduleRequest
+	64,  // 171: providah.v1.ConsoleService.PreviewSchedule:input_type -> providah.v1.PreviewScheduleRequest
+	67,  // 172: providah.v1.ConsoleService.ApproveSchedule:input_type -> providah.v1.ApproveScheduleRequest
+	68,  // 173: providah.v1.ConsoleService.SetScheduleEnabled:input_type -> providah.v1.SetScheduleEnabledRequest
+	72,  // 174: providah.v1.ConsoleService.DeleteSchedule:input_type -> providah.v1.DeleteScheduleRequest
+	69,  // 175: providah.v1.ConsoleService.ListScheduleOccurrences:input_type -> providah.v1.ListScheduleOccurrencesRequest
+	118, // 176: providah.v1.ConsoleService.RequestServerCreation:input_type -> providah.v1.RequestServerCreationRequest
+	115, // 177: providah.v1.ConsoleService.PreviewDeletion:input_type -> providah.v1.PreviewDeletionRequest
+	128, // 178: providah.v1.ConsoleService.PreviewBulkPower:input_type -> providah.v1.PreviewBulkPowerRequest
+	131, // 179: providah.v1.ConsoleService.RequestBulkPower:input_type -> providah.v1.RequestBulkPowerRequest
+	49,  // 180: providah.v1.ConsoleService.RequestOperation:input_type -> providah.v1.RequestOperationRequest
+	50,  // 181: providah.v1.ConsoleService.GetOperation:input_type -> providah.v1.GetOperationRequest
+	218, // 182: providah.v1.ConsoleService.GetOperationsOverview:input_type -> providah.v1.GetOperationsOverviewRequest
+	51,  // 183: providah.v1.ConsoleService.ListOperations:input_type -> providah.v1.ListOperationsRequest
+	53,  // 184: providah.v1.ConsoleService.ReviewOperation:input_type -> providah.v1.ReviewOperationRequest
+	56,  // 185: providah.v1.ConsoleService.CancelOperation:input_type -> providah.v1.CancelOperationRequest
+	54,  // 186: providah.v1.ConsoleService.ReconcileOperation:input_type -> providah.v1.ReconcileOperationRequest
+	55,  // 187: providah.v1.ConsoleService.ResolveOperation:input_type -> providah.v1.ResolveOperationRequest
+	209, // 188: providah.v1.ConsoleService.ListTeams:input_type -> providah.v1.ListTeamsRequest
+	213, // 189: providah.v1.ConsoleService.DeleteTeam:input_type -> providah.v1.DeleteTeamRequest
+	212, // 190: providah.v1.ConsoleService.SaveTeam:input_type -> providah.v1.SaveTeamRequest
+	32,  // 191: providah.v1.ConsoleService.ListAccess:input_type -> providah.v1.ListAccessRequest
+	38,  // 192: providah.v1.ConsoleService.SaveRole:input_type -> providah.v1.SaveRoleRequest
+	39,  // 193: providah.v1.ConsoleService.UpdateMember:input_type -> providah.v1.UpdateMemberRequest
+	40,  // 194: providah.v1.ConsoleService.CreateInvitation:input_type -> providah.v1.CreateInvitationRequest
+	42,  // 195: providah.v1.ConsoleService.RevokeInvitation:input_type -> providah.v1.RevokeInvitationRequest
+	43,  // 196: providah.v1.ConsoleService.BeginInvitation:input_type -> providah.v1.BeginInvitationRequest
+	45,  // 197: providah.v1.ConsoleService.AcceptInvitation:input_type -> providah.v1.AcceptInvitationRequest
+	113, // 198: providah.v1.ConsoleService.ChangePassword:input_type -> providah.v1.ChangePasswordRequest
+	144, // 199: providah.v1.ConsoleService.ListAccountSessions:input_type -> providah.v1.ListAccountSessionsRequest
+	147, // 200: providah.v1.ConsoleService.RevokeAccountSession:input_type -> providah.v1.RevokeAccountSessionRequest
+	102, // 201: providah.v1.ConsoleService.GetAccountSecurity:input_type -> providah.v1.GetAccountSecurityRequest
+	105, // 202: providah.v1.ConsoleService.GenerateRecoveryCodes:input_type -> providah.v1.GenerateRecoveryCodesRequest
+	46,  // 203: providah.v1.ConsoleService.VerifyMfa:input_type -> providah.v1.VerifyMfaRequest
+	93,  // 204: providah.v1.ConsoleService.GetAuditExport:input_type -> providah.v1.GetAuditExportRequest
+	95,  // 205: providah.v1.ConsoleService.SaveAuditExport:input_type -> providah.v1.SaveAuditExportRequest
+	96,  // 206: providah.v1.ConsoleService.TestAuditExport:input_type -> providah.v1.TestAuditExportRequest
+	97,  // 207: providah.v1.ConsoleService.SetAuditExportEnabled:input_type -> providah.v1.SetAuditExportEnabledRequest
+	98,  // 208: providah.v1.ConsoleService.RetryAuditExport:input_type -> providah.v1.RetryAuditExportRequest
+	99,  // 209: providah.v1.ConsoleService.ListAuditExportBatches:input_type -> providah.v1.ListAuditExportBatchesRequest
+	25,  // 210: providah.v1.ConsoleService.ListInstallationAudit:input_type -> providah.v1.ListAuditRequest
+	25,  // 211: providah.v1.ConsoleService.ListAudit:input_type -> providah.v1.ListAuditRequest
+	236, // 212: providah.v1.ConsoleService.GetResourcePolicy:output_type -> providah.v1.ResourcePolicy
+	236, // 213: providah.v1.ConsoleService.SaveResourcePolicy:output_type -> providah.v1.ResourcePolicy
+	48,  // 214: providah.v1.ConsoleService.RequestSSHKeyCreation:output_type -> providah.v1.OperationResponse
+	230, // 215: providah.v1.ConsoleService.ListProjectOwnership:output_type -> providah.v1.ListProjectOwnershipResponse
+	176, // 216: providah.v1.ConsoleService.GetAutomationProject:output_type -> providah.v1.AutomationProject
+	179, // 217: providah.v1.ConsoleService.ListAutomationProjects:output_type -> providah.v1.ListAutomationProjectsResponse
+	176, // 218: providah.v1.ConsoleService.CreateAutomationProject:output_type -> providah.v1.AutomationProject
+	183, // 219: providah.v1.ConsoleService.ListAutomationStates:output_type -> providah.v1.ListAutomationStatesResponse
+	171, // 220: providah.v1.ConsoleService.GetAutomationValidation:output_type -> providah.v1.AutomationValidation
+	174, // 221: providah.v1.ConsoleService.ListAutomationValidations:output_type -> providah.v1.ListAutomationValidationsResponse
+	171, // 222: providah.v1.ConsoleService.CancelAutomationValidation:output_type -> providah.v1.AutomationValidation
+	171, // 223: providah.v1.ConsoleService.RequestAutomationValidation:output_type -> providah.v1.AutomationValidation
+	165, // 224: providah.v1.ConsoleService.GetAutomationVersion:output_type -> providah.v1.AutomationVersion
+	168, // 225: providah.v1.ConsoleService.ListAutomationVersions:output_type -> providah.v1.ListAutomationVersionsResponse
+	165, // 226: providah.v1.ConsoleService.PublishAutomationVersion:output_type -> providah.v1.AutomationVersion
+	165, // 227: providah.v1.ConsoleService.SetAutomationVersionStatus:output_type -> providah.v1.AutomationVersion
+	163, // 228: providah.v1.ConsoleService.GetAutomationSource:output_type -> providah.v1.AutomationSource
+	161, // 229: providah.v1.ConsoleService.ListAutomationSources:output_type -> providah.v1.ListAutomationSourcesResponse
+	163, // 230: providah.v1.ConsoleService.ImportAutomationSource:output_type -> providah.v1.AutomationSource
+	5,   // 231: providah.v1.ConsoleService.BeginMFAEnrollment:output_type -> providah.v1.BeginSetupResponse
+	157, // 232: providah.v1.ConsoleService.GetMFAPolicy:output_type -> providah.v1.MFAPolicy
+	157, // 233: providah.v1.ConsoleService.SaveMFAPolicy:output_type -> providah.v1.MFAPolicy
+	151, // 234: providah.v1.ConsoleService.GetServerTemplate:output_type -> providah.v1.ServerTemplate
+	153, // 235: providah.v1.ConsoleService.ListServerTemplates:output_type -> providah.v1.ListServerTemplatesResponse
+	151, // 236: providah.v1.ConsoleService.PublishServerTemplate:output_type -> providah.v1.ServerTemplate
+	151, // 237: providah.v1.ConsoleService.SetServerTemplateStatus:output_type -> providah.v1.ServerTemplate
+	12,  // 238: providah.v1.ConsoleService.CreateOrganization:output_type -> providah.v1.Organization
+	37,  // 239: providah.v1.ConsoleService.SetAccountMFA:output_type -> providah.v1.AccessMutationResponse
+	3,   // 240: providah.v1.ConsoleService.SetupStatus:output_type -> providah.v1.SetupStatusResponse
+	5,   // 241: providah.v1.ConsoleService.BeginSetup:output_type -> providah.v1.BeginSetupResponse
+	13,  // 242: providah.v1.ConsoleService.FinishSetup:output_type -> providah.v1.SessionResponse
+	126, // 243: providah.v1.ConsoleService.GetIdentityPolicy:output_type -> providah.v1.IdentityPolicyResponse
+	126, // 244: providah.v1.ConsoleService.SaveIdentityPolicy:output_type -> providah.v1.IdentityPolicyResponse
+	120, // 245: providah.v1.ConsoleService.GetOIDCStatus:output_type -> providah.v1.GetOIDCStatusResponse
+	124, // 246: providah.v1.ConsoleService.BeginOIDCLogin:output_type -> providah.v1.OIDCRedirectResponse
+	13,  // 247: providah.v1.ConsoleService.CompleteOIDCLogin:output_type -> providah.v1.SessionResponse
+	124, // 248: providah.v1.ConsoleService.BeginOIDCLink:output_type -> providah.v1.OIDCRedirectResponse
+	37,  // 249: providah.v1.ConsoleService.UnlinkOIDC:output_type -> providah.v1.AccessMutationResponse
+	13,  // 250: providah.v1.ConsoleService.Login:output_type -> providah.v1.SessionResponse
+	13,  // 251: providah.v1.ConsoleService.Refresh:output_type -> providah.v1.SessionResponse
+	10,  // 252: providah.v1.ConsoleService.Logout:output_type -> providah.v1.LogoutResponse
+	207, // 253: providah.v1.ConsoleService.GetInstallationHealth:output_type -> providah.v1.InstallationHealth
+	37,  // 254: providah.v1.ConsoleService.SetInstallationOrganization:output_type -> providah.v1.AccessMutationResponse
+	37,  // 255: providah.v1.ConsoleService.SetInstallationUser:output_type -> providah.v1.AccessMutationResponse
+	202, // 256: providah.v1.ConsoleService.ListInstallationDirectory:output_type -> providah.v1.ListInstallationDirectoryResponse
+	13,  // 257: providah.v1.ConsoleService.GetSession:output_type -> providah.v1.SessionResponse
+	108, // 258: providah.v1.ConsoleService.ListProviderModules:output_type -> providah.v1.ListProviderModulesResponse
+	37,  // 259: providah.v1.ConsoleService.SetProviderRuntime:output_type -> providah.v1.AccessMutationResponse
+	37,  // 260: providah.v1.ConsoleService.SetProviderModule:output_type -> providah.v1.AccessMutationResponse
+	18,  // 261: providah.v1.ConsoleService.GetConnection:output_type -> providah.v1.ConnectionResponse
+	15,  // 262: providah.v1.ConsoleService.ListConnections:output_type -> providah.v1.ListConnectionsResponse
+	18,  // 263: providah.v1.ConsoleService.CreateConnection:output_type -> providah.v1.ConnectionResponse
+	18,  // 264: providah.v1.ConsoleService.SetConnectionEnabled:output_type -> providah.v1.ConnectionResponse
+	18,  // 265: providah.v1.ConsoleService.RotateCredential:output_type -> providah.v1.ConnectionResponse
+	215, // 266: providah.v1.ConsoleService.ListDashboardTeams:output_type -> providah.v1.ListDashboardTeamsResponse
+	189, // 267: providah.v1.ConsoleService.ListDashboards:output_type -> providah.v1.ListDashboardsResponse
+	187, // 268: providah.v1.ConsoleService.SaveDashboard:output_type -> providah.v1.Dashboard
+	37,  // 269: providah.v1.ConsoleService.DeleteDashboard:output_type -> providah.v1.AccessMutationResponse
+	141, // 270: providah.v1.ConsoleService.ListInventoryViews:output_type -> providah.v1.ListInventoryViewsResponse
+	139, // 271: providah.v1.ConsoleService.SaveInventoryView:output_type -> providah.v1.InventoryView
+	37,  // 272: providah.v1.ConsoleService.DeleteInventoryView:output_type -> providah.v1.AccessMutationResponse
+	198, // 273: providah.v1.ConsoleService.ListResourceScopes:output_type -> providah.v1.ListResourceScopesResponse
+	194, // 274: providah.v1.ConsoleService.GetResourceSummary:output_type -> providah.v1.GetResourceSummaryResponse
+	24,  // 275: providah.v1.ConsoleService.ListResources:output_type -> providah.v1.ListResourcesResponse
+	29,  // 276: providah.v1.ConsoleService.RefreshConnection:output_type -> providah.v1.RefreshConnectionResponse
+	137, // 277: providah.v1.ConsoleService.GetResourceMetrics:output_type -> providah.v1.GetResourceMetricsResponse
+	31,  // 278: providah.v1.ConsoleService.GetResource:output_type -> providah.v1.GetResourceResponse
+	90,  // 279: providah.v1.ConsoleService.ListMaintenancePolicies:output_type -> providah.v1.ListMaintenancePoliciesResponse
+	37,  // 280: providah.v1.ConsoleService.SaveMaintenancePolicy:output_type -> providah.v1.AccessMutationResponse
+	37,  // 281: providah.v1.ConsoleService.DeleteMaintenancePolicy:output_type -> providah.v1.AccessMutationResponse
+	37,  // 282: providah.v1.ConsoleService.DeleteNotificationDestination:output_type -> providah.v1.AccessMutationResponse
+	74,  // 283: providah.v1.ConsoleService.GetNotificationDestination:output_type -> providah.v1.NotificationDestination
+	82,  // 284: providah.v1.ConsoleService.GetNotificationDelivery:output_type -> providah.v1.NotificationDelivery
+	75,  // 285: providah.v1.ConsoleService.ListNotificationDestinations:output_type -> providah.v1.ListNotificationDestinationsResponse
+	231, // 286: providah.v1.ConsoleService.GetOrganizationSmtp:output_type -> providah.v1.OrganizationSmtp
+	231, // 287: providah.v1.ConsoleService.SetOrganizationSmtp:output_type -> providah.v1.OrganizationSmtp
+	225, // 288: providah.v1.ConsoleService.GetNotificationGrouping:output_type -> providah.v1.NotificationGrouping
+	225, // 289: providah.v1.ConsoleService.SetNotificationGrouping:output_type -> providah.v1.NotificationGrouping
+	37,  // 290: providah.v1.ConsoleService.SetNotificationSubscriptions:output_type -> providah.v1.AccessMutationResponse
+	37,  // 291: providah.v1.ConsoleService.SaveNotificationDestination:output_type -> providah.v1.AccessMutationResponse
+	37,  // 292: providah.v1.ConsoleService.SetNotificationDestinationEnabled:output_type -> providah.v1.AccessMutationResponse
+	37,  // 293: providah.v1.ConsoleService.SendNotificationTest:output_type -> providah.v1.AccessMutationResponse
+	37,  // 294: providah.v1.ConsoleService.VerifyNotificationDestination:output_type -> providah.v1.AccessMutationResponse
+	83,  // 295: providah.v1.ConsoleService.ListNotificationDeliveries:output_type -> providah.v1.ListNotificationDeliveriesResponse
+	86,  // 296: providah.v1.ConsoleService.ListNotificationAttempts:output_type -> providah.v1.ListNotificationAttemptsResponse
+	37,  // 297: providah.v1.ConsoleService.RedeliverNotification:output_type -> providah.v1.AccessMutationResponse
+	63,  // 298: providah.v1.ConsoleService.GetSchedule:output_type -> providah.v1.ScheduleResponse
+	61,  // 299: providah.v1.ConsoleService.ListSchedules:output_type -> providah.v1.ListSchedulesResponse
+	63,  // 300: providah.v1.ConsoleService.SaveSchedule:output_type -> providah.v1.ScheduleResponse
+	66,  // 301: providah.v1.ConsoleService.PreviewSchedule:output_type -> providah.v1.PreviewScheduleResponse
+	63,  // 302: providah.v1.ConsoleService.ApproveSchedule:output_type -> providah.v1.ScheduleResponse
+	63,  // 303: providah.v1.ConsoleService.SetScheduleEnabled:output_type -> providah.v1.ScheduleResponse
+	37,  // 304: providah.v1.ConsoleService.DeleteSchedule:output_type -> providah.v1.AccessMutationResponse
+	71,  // 305: providah.v1.ConsoleService.ListScheduleOccurrences:output_type -> providah.v1.ListScheduleOccurrencesResponse
+	48,  // 306: providah.v1.ConsoleService.RequestServerCreation:output_type -> providah.v1.OperationResponse
+	116, // 307: providah.v1.ConsoleService.PreviewDeletion:output_type -> providah.v1.PreviewDeletionResponse
+	130, // 308: providah.v1.ConsoleService.PreviewBulkPower:output_type -> providah.v1.PreviewBulkPowerResponse
+	133, // 309: providah.v1.ConsoleService.RequestBulkPower:output_type -> providah.v1.RequestBulkPowerResponse
+	48,  // 310: providah.v1.ConsoleService.RequestOperation:output_type -> providah.v1.OperationResponse
+	48,  // 311: providah.v1.ConsoleService.GetOperation:output_type -> providah.v1.OperationResponse
+	219, // 312: providah.v1.ConsoleService.GetOperationsOverview:output_type -> providah.v1.OperationsOverview
+	52,  // 313: providah.v1.ConsoleService.ListOperations:output_type -> providah.v1.ListOperationsResponse
+	48,  // 314: providah.v1.ConsoleService.ReviewOperation:output_type -> providah.v1.OperationResponse
+	48,  // 315: providah.v1.ConsoleService.CancelOperation:output_type -> providah.v1.OperationResponse
+	48,  // 316: providah.v1.ConsoleService.ReconcileOperation:output_type -> providah.v1.OperationResponse
+	48,  // 317: providah.v1.ConsoleService.ResolveOperation:output_type -> providah.v1.OperationResponse
+	211, // 318: providah.v1.ConsoleService.ListTeams:output_type -> providah.v1.ListTeamsResponse
+	37,  // 319: providah.v1.ConsoleService.DeleteTeam:output_type -> providah.v1.AccessMutationResponse
+	37,  // 320: providah.v1.ConsoleService.SaveTeam:output_type -> providah.v1.AccessMutationResponse
+	36,  // 321: providah.v1.ConsoleService.ListAccess:output_type -> providah.v1.ListAccessResponse
+	37,  // 322: providah.v1.ConsoleService.SaveRole:output_type -> providah.v1.AccessMutationResponse
+	37,  // 323: providah.v1.ConsoleService.UpdateMember:output_type -> providah.v1.AccessMutationResponse
+	41,  // 324: providah.v1.ConsoleService.CreateInvitation:output_type -> providah.v1.CreateInvitationResponse
+	37,  // 325: providah.v1.ConsoleService.RevokeInvitation:output_type -> providah.v1.AccessMutationResponse
+	44,  // 326: providah.v1.ConsoleService.BeginInvitation:output_type -> providah.v1.BeginInvitationResponse
+	13,  // 327: providah.v1.ConsoleService.AcceptInvitation:output_type -> providah.v1.SessionResponse
+	114, // 328: providah.v1.ConsoleService.ChangePassword:output_type -> providah.v1.ChangePasswordResponse
+	146, // 329: providah.v1.ConsoleService.ListAccountSessions:output_type -> providah.v1.ListAccountSessionsResponse
+	148, // 330: providah.v1.ConsoleService.RevokeAccountSession:output_type -> providah.v1.RevokeAccountSessionResponse
+	103, // 331: providah.v1.ConsoleService.GetAccountSecurity:output_type -> providah.v1.GetAccountSecurityResponse
+	106, // 332: providah.v1.ConsoleService.GenerateRecoveryCodes:output_type -> providah.v1.GenerateRecoveryCodesResponse
+	37,  // 333: providah.v1.ConsoleService.VerifyMfa:output_type -> providah.v1.AccessMutationResponse
+	94,  // 334: providah.v1.ConsoleService.GetAuditExport:output_type -> providah.v1.GetAuditExportResponse
+	37,  // 335: providah.v1.ConsoleService.SaveAuditExport:output_type -> providah.v1.AccessMutationResponse
+	37,  // 336: providah.v1.ConsoleService.TestAuditExport:output_type -> providah.v1.AccessMutationResponse
+	37,  // 337: providah.v1.ConsoleService.SetAuditExportEnabled:output_type -> providah.v1.AccessMutationResponse
+	37,  // 338: providah.v1.ConsoleService.RetryAuditExport:output_type -> providah.v1.AccessMutationResponse
+	101, // 339: providah.v1.ConsoleService.ListAuditExportBatches:output_type -> providah.v1.ListAuditExportBatchesResponse
+	27,  // 340: providah.v1.ConsoleService.ListInstallationAudit:output_type -> providah.v1.ListAuditResponse
+	27,  // 341: providah.v1.ConsoleService.ListAudit:output_type -> providah.v1.ListAuditResponse
+	212, // [212:342] is the sub-list for method output_type
+	82,  // [82:212] is the sub-list for method input_type
 	82,  // [82:82] is the sub-list for extension type_name
 	82,  // [82:82] is the sub-list for extension extendee
 	0,   // [0:82] is the sub-list for field type_name
@@ -17570,7 +17753,7 @@ func file_providah_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_providah_v1_console_proto_rawDesc), len(file_providah_v1_console_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   234,
+			NumMessages:   237,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

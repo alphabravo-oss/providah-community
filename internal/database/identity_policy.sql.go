@@ -81,7 +81,7 @@ func (q *Queries) IdentityRecoveryMissing(ctx context.Context, orgID string) (bo
 }
 
 const organizationsForSession = `-- name: OrganizationsForSession :many
-SELECT o.id,o.name,m.permissions,mfa_required(o.id)::boolean AS mfa_required,identity_allows(o.id,m.user_id,$1::uuid)::boolean AS allowed FROM organizations o JOIN effective_memberships m ON m.org_id=o.id WHERE m.user_id=$2 ORDER BY o.name,o.id
+SELECT o.id,o.name,(CASE WHEN o.creation_enabled THEN m.permissions ELSE array_remove(m.permissions,'operations.create') END)::text[] AS permissions,mfa_required(o.id)::boolean AS mfa_required,identity_allows(o.id,m.user_id,$1::uuid)::boolean AS allowed FROM organizations o JOIN effective_memberships m ON m.org_id=o.id WHERE m.user_id=$2 ORDER BY o.name,o.id
 `
 
 type OrganizationsForSessionParams struct {

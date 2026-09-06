@@ -33,6 +33,12 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// ConsoleServiceGetResourcePolicyProcedure is the fully-qualified name of the ConsoleService's
+	// GetResourcePolicy RPC.
+	ConsoleServiceGetResourcePolicyProcedure = "/providah.v1.ConsoleService/GetResourcePolicy"
+	// ConsoleServiceSaveResourcePolicyProcedure is the fully-qualified name of the ConsoleService's
+	// SaveResourcePolicy RPC.
+	ConsoleServiceSaveResourcePolicyProcedure = "/providah.v1.ConsoleService/SaveResourcePolicy"
 	// ConsoleServiceRequestSSHKeyCreationProcedure is the fully-qualified name of the ConsoleService's
 	// RequestSSHKeyCreation RPC.
 	ConsoleServiceRequestSSHKeyCreationProcedure = "/providah.v1.ConsoleService/RequestSSHKeyCreation"
@@ -416,6 +422,8 @@ const (
 
 // ConsoleServiceClient is a client for the providah.v1.ConsoleService service.
 type ConsoleServiceClient interface {
+	GetResourcePolicy(context.Context, *connect.Request[v1.GetResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error)
+	SaveResourcePolicy(context.Context, *connect.Request[v1.SaveResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error)
 	RequestSSHKeyCreation(context.Context, *connect.Request[v1.RequestSSHKeyCreationRequest]) (*connect.Response[v1.OperationResponse], error)
 	ListProjectOwnership(context.Context, *connect.Request[v1.ListProjectOwnershipRequest]) (*connect.Response[v1.ListProjectOwnershipResponse], error)
 	GetAutomationProject(context.Context, *connect.Request[v1.GetAutomationProjectRequest]) (*connect.Response[v1.AutomationProject], error)
@@ -557,6 +565,18 @@ func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 	baseURL = strings.TrimRight(baseURL, "/")
 	consoleServiceMethods := v1.File_providah_v1_console_proto.Services().ByName("ConsoleService").Methods()
 	return &consoleServiceClient{
+		getResourcePolicy: connect.NewClient[v1.GetResourcePolicyRequest, v1.ResourcePolicy](
+			httpClient,
+			baseURL+ConsoleServiceGetResourcePolicyProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("GetResourcePolicy")),
+			connect.WithClientOptions(opts...),
+		),
+		saveResourcePolicy: connect.NewClient[v1.SaveResourcePolicyRequest, v1.ResourcePolicy](
+			httpClient,
+			baseURL+ConsoleServiceSaveResourcePolicyProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("SaveResourcePolicy")),
+			connect.WithClientOptions(opts...),
+		),
 		requestSSHKeyCreation: connect.NewClient[v1.RequestSSHKeyCreationRequest, v1.OperationResponse](
 			httpClient,
 			baseURL+ConsoleServiceRequestSSHKeyCreationProcedure,
@@ -1330,6 +1350,8 @@ func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // consoleServiceClient implements ConsoleServiceClient.
 type consoleServiceClient struct {
+	getResourcePolicy                 *connect.Client[v1.GetResourcePolicyRequest, v1.ResourcePolicy]
+	saveResourcePolicy                *connect.Client[v1.SaveResourcePolicyRequest, v1.ResourcePolicy]
 	requestSSHKeyCreation             *connect.Client[v1.RequestSSHKeyCreationRequest, v1.OperationResponse]
 	listProjectOwnership              *connect.Client[v1.ListProjectOwnershipRequest, v1.ListProjectOwnershipResponse]
 	getAutomationProject              *connect.Client[v1.GetAutomationProjectRequest, v1.AutomationProject]
@@ -1458,6 +1480,16 @@ type consoleServiceClient struct {
 	listAuditExportBatches            *connect.Client[v1.ListAuditExportBatchesRequest, v1.ListAuditExportBatchesResponse]
 	listInstallationAudit             *connect.Client[v1.ListAuditRequest, v1.ListAuditResponse]
 	listAudit                         *connect.Client[v1.ListAuditRequest, v1.ListAuditResponse]
+}
+
+// GetResourcePolicy calls providah.v1.ConsoleService.GetResourcePolicy.
+func (c *consoleServiceClient) GetResourcePolicy(ctx context.Context, req *connect.Request[v1.GetResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error) {
+	return c.getResourcePolicy.CallUnary(ctx, req)
+}
+
+// SaveResourcePolicy calls providah.v1.ConsoleService.SaveResourcePolicy.
+func (c *consoleServiceClient) SaveResourcePolicy(ctx context.Context, req *connect.Request[v1.SaveResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error) {
+	return c.saveResourcePolicy.CallUnary(ctx, req)
 }
 
 // RequestSSHKeyCreation calls providah.v1.ConsoleService.RequestSSHKeyCreation.
@@ -2103,6 +2135,8 @@ func (c *consoleServiceClient) ListAudit(ctx context.Context, req *connect.Reque
 
 // ConsoleServiceHandler is an implementation of the providah.v1.ConsoleService service.
 type ConsoleServiceHandler interface {
+	GetResourcePolicy(context.Context, *connect.Request[v1.GetResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error)
+	SaveResourcePolicy(context.Context, *connect.Request[v1.SaveResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error)
 	RequestSSHKeyCreation(context.Context, *connect.Request[v1.RequestSSHKeyCreationRequest]) (*connect.Response[v1.OperationResponse], error)
 	ListProjectOwnership(context.Context, *connect.Request[v1.ListProjectOwnershipRequest]) (*connect.Response[v1.ListProjectOwnershipResponse], error)
 	GetAutomationProject(context.Context, *connect.Request[v1.GetAutomationProjectRequest]) (*connect.Response[v1.AutomationProject], error)
@@ -2240,6 +2274,18 @@ type ConsoleServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	consoleServiceMethods := v1.File_providah_v1_console_proto.Services().ByName("ConsoleService").Methods()
+	consoleServiceGetResourcePolicyHandler := connect.NewUnaryHandler(
+		ConsoleServiceGetResourcePolicyProcedure,
+		svc.GetResourcePolicy,
+		connect.WithSchema(consoleServiceMethods.ByName("GetResourcePolicy")),
+		connect.WithHandlerOptions(opts...),
+	)
+	consoleServiceSaveResourcePolicyHandler := connect.NewUnaryHandler(
+		ConsoleServiceSaveResourcePolicyProcedure,
+		svc.SaveResourcePolicy,
+		connect.WithSchema(consoleServiceMethods.ByName("SaveResourcePolicy")),
+		connect.WithHandlerOptions(opts...),
+	)
 	consoleServiceRequestSSHKeyCreationHandler := connect.NewUnaryHandler(
 		ConsoleServiceRequestSSHKeyCreationProcedure,
 		svc.RequestSSHKeyCreation,
@@ -3010,6 +3056,10 @@ func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.Handler
 	)
 	return "/providah.v1.ConsoleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case ConsoleServiceGetResourcePolicyProcedure:
+			consoleServiceGetResourcePolicyHandler.ServeHTTP(w, r)
+		case ConsoleServiceSaveResourcePolicyProcedure:
+			consoleServiceSaveResourcePolicyHandler.ServeHTTP(w, r)
 		case ConsoleServiceRequestSSHKeyCreationProcedure:
 			consoleServiceRequestSSHKeyCreationHandler.ServeHTTP(w, r)
 		case ConsoleServiceListProjectOwnershipProcedure:
@@ -3274,6 +3324,14 @@ func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.Handler
 
 // UnimplementedConsoleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedConsoleServiceHandler struct{}
+
+func (UnimplementedConsoleServiceHandler) GetResourcePolicy(context.Context, *connect.Request[v1.GetResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("providah.v1.ConsoleService.GetResourcePolicy is not implemented"))
+}
+
+func (UnimplementedConsoleServiceHandler) SaveResourcePolicy(context.Context, *connect.Request[v1.SaveResourcePolicyRequest]) (*connect.Response[v1.ResourcePolicy], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("providah.v1.ConsoleService.SaveResourcePolicy is not implemented"))
+}
 
 func (UnimplementedConsoleServiceHandler) RequestSSHKeyCreation(context.Context, *connect.Request[v1.RequestSSHKeyCreationRequest]) (*connect.Response[v1.OperationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("providah.v1.ConsoleService.RequestSSHKeyCreation is not implemented"))

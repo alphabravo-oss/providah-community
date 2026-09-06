@@ -61,6 +61,9 @@ func (s *Service) requestCreation(ctx context.Context, r *pb.RequestServerCreati
 		if err != nil {
 			return denied()
 		}
+		if !creationPermitted(ctx, q, r.OrganizationId, "create") {
+			return conflict("This organization only manages existing resources.")
+		}
 		if !powerPermission(ctx, q, r.OrganizationId, actor(ctx).UserID, "operations.request") || !powerPermission(ctx, q, r.OrganizationId, actor(ctx).UserID, "operations.create") {
 			return denied()
 		}

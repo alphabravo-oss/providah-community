@@ -42,6 +42,34 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 		return provider.Response{Version: provider.Protocol, Power: result}, nil
 	}
 	request := &pb.RequestServerCreationRequest{OrganizationId: org, ConnectionId: connection, Region: "fsn1", Creation: &pb.ServerCreate{Name: "created-server", Image: "11", Size: "cx23", SshKey: "12", Network: "44"}, Reason: "Create a reviewed server", IdempotencyKey: randomID()}
+	setCreation := func(enabled bool) {
+		policy, e := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
+		check(e)
+		_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: enabled, ExpectedRevision: policy.Msg.Revision, Reason: "Exercise organization resource policy"}))
+		check(e)
+	}
+	setCreation(false)
+	if _, e := owner.RequestServerCreation(ctx, connect.NewRequest(request)); connect.CodeOf(e) != connect.CodeFailedPrecondition {
+		t.Fatal("manage-existing policy allowed server creation", e)
+	}
+	if creationPermitted(ctx, s.q, org, "snapshot") || !creationPermitted(ctx, s.q, org, "delete") {
+		t.Fatal("resource policy action boundary")
+	}
+	session, e := owner.GetSession(ctx, connect.NewRequest(&pb.GetSessionRequest{}))
+	check(e)
+	for _, o := range session.Msg.Organizations {
+		if o.Id == org {
+			for _, permission := range o.Permissions {
+				if permission == "operations.create" {
+					t.Fatal("creation controls still advertised")
+				}
+			}
+		}
+	}
+	if _, e := approver.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: true, ExpectedRevision: 2, Reason: "Unauthorized policy change"})); connect.CodeOf(e) != connect.CodePermissionDenied {
+		t.Fatal("non-admin changed resource policy", e)
+	}
+	setCreation(true)
 	created, err := owner.RequestServerCreation(ctx, connect.NewRequest(request))
 	check(err)
 	if created.Msg.Operation.Status != pb.OperationStatus_OPERATION_STATUS_AWAITING_APPROVAL || created.Msg.Operation.ResourceId != "" || created.Msg.Operation.Creation == nil {
@@ -91,6 +119,7 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 	if row.Status != "observing" || row.NativeID != native || !row.ResourceID.Valid || submissions != 1 {
 		t.Fatalf("submission/binding failed: %+v", row)
 	}
+	setCreation(false) // Submitted work must still be observed after creation is disabled.
 	_, err = s.pool.Exec(ctx, "UPDATE resources SET public_ip='203.0.113.10' WHERE id=$1", row.ResourceID.String)
 	check(err)
 	_, err = s.pool.Exec(ctx, "UPDATE operations SET next_attempt_at=now() WHERE id=$1", row.ID)
@@ -101,6 +130,7 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 	if row.Status != "succeeded" || submissions != 1 {
 		t.Fatal("creation was resubmitted or not observed")
 	}
+	setCreation(true)
 	resource, err := s.q.GetResource(ctx, database.GetResourceParams{OrgID: org, ID: row.ResourceID.String})
 	check(err)
 	if resource.NativeID != native || resource.Status != "running" || resource.PublicIp != "203.0.113.10" {
@@ -249,6 +279,27 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 	}
 	_, err = owner.SetServerTemplateStatus(ctx, connect.NewRequest(&pb.SetServerTemplateStatusRequest{OrganizationId: org, Id: second.Msg.Id, Status: "revoked"}))
 	check(err)
+	request.TemplateId = ""
+	request.Creation.Name = "policy-revoked"
+	request.IdempotencyKey = randomID()
+	created, err = owner.RequestServerCreation(ctx, connect.NewRequest(request))
+	check(err)
+	review.Id = created.Msg.Operation.Id
+	setCreation(false)
+	if _, e := approver.ReviewOperation(ctx, connect.NewRequest(review)); connect.CodeOf(e) != connect.CodeFailedPrecondition {
+		t.Fatal("disabled creation was approved", e)
+	}
+	setCreation(true)
+	_, err = approver.ReviewOperation(ctx, connect.NewRequest(review))
+	check(err)
+	setCreation(false)
+	run()
+	row, err = s.q.GetOperation(ctx, database.GetOperationParams{OrgID: org, ID: review.Id})
+	check(err)
+	if row.Status != "canceled" || templateCalls != 1 {
+		t.Fatal("disabled queued creation reached provider")
+	}
+	setCreation(true)
 	setRole("approver")
 
 }

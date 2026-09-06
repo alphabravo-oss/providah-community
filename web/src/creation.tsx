@@ -6,16 +6,17 @@ import { api, queries } from "./api";
 import { ActionForm, ErrorNote, Modal, type FormField } from "./ui";
 import type { Connection, Organization } from "./gen/providah/v1/console_pb";
 
-export function useCatalog(org: string, connection: string, kind: string, enabled = true) {
+export function useCatalog(org: string, connection: string, kind: string, enabled = true, search = "") {
   return useInfiniteQuery({
     enabled,
-    queryKey: ["resources", org, "creation", connection, kind], initialPageParam: "",
-    queryFn: ({ pageParam }) => api.listResources({ includeCatalog: true, organizationId: org, connectionId: connection, kind, pageSize: 200, pageToken: pageParam }),
+    queryKey: ["resources", org, "creation", connection, kind, search], initialPageParam: "",
+    queryFn: ({ pageParam }) => api.listResources({ includeCatalog: true, search, sortBy: "name", organizationId: org, connectionId: connection, kind, pageSize: 200, pageToken: pageParam }),
     getNextPageParam: (last) => last.nextPageToken || undefined,
   });
 }
 export function CreationFields({ org, connection, submit, template = false }: { org: Organization; connection: Connection; template?: boolean; submit: (values: Record<string,string>) => void }) {
-  const images = useCatalog(org.id, connection.id, "compute.image"), sizes = useCatalog(org.id, connection.id, "compute.type"), keys = useCatalog(org.id, connection.id, "access.ssh_key");
+  const [imageSearch,setImageSearch]=useState(""), [sizeSearch,setSizeSearch]=useState("");
+  const images = useCatalog(org.id, connection.id, "compute.image", true, imageSearch), sizes = useCatalog(org.id, connection.id, "compute.type", true, sizeSearch), keys = useCatalog(org.id, connection.id, "access.ssh_key");
   const networks=useCatalog(org.id,connection.id,"network.network",connection.provider!=="aws");
   const catalogs = [["images", images], ["sizes", sizes], ["SSH keys", keys]] as const;
   const options = (query: typeof images) => [...new Map(query.data?.pages.flatMap(p => p.resources).filter(r => r.status !== "unavailable" && (!connection.region || r.region === "global" || r.region === connection.region)).map(r => [r.nativeId, { value:r.kind==="compute.type" && connection.provider==="hetzner" ? r.name : r.nativeId, label:`${r.name} · ${r.nativeId}${r.size ? ` · ${r.size}` : ""}` }]) ?? []).values()];
@@ -31,22 +32,31 @@ export function CreationFields({ org, connection, submit, template = false }: { 
   return <>
     {connection.provider!=="aws"&&<><ErrorNote error={networks.error}/>{networks.hasNextPage&&<button disabled={networks.isFetchingNextPage} onClick={()=>void networks.fetchNextPage()}>Load more networks</button>}</>}
     <p className="notice">Catalogs reflect the last refresh. The worker checks current eligibility before creation; provider capacity is not guaranteed.</p>
+    <div className="field"><label htmlFor="creation-image-search">Find an image</label><input id="creation-image-search" value={imageSearch} onChange={e=>setImageSearch(e.target.value)} placeholder="Search operating systems, apps or owned images"/></div>
+    <div className="field"><label htmlFor="creation-size-search">Find a server size</label><input id="creation-size-search" value={sizeSearch} onChange={e=>setSizeSearch(e.target.value)} placeholder="Search by machine size name"/></div>
     {catalogs.map(([label,q]) => <div key={label}><ErrorNote error={q.error}/>{q.hasNextPage && <button className="secondary" disabled={q.isFetchingNextPage} onClick={()=>void q.fetchNextPage()}>Load more {label}</button>}</div>)}
     {catalogs.some(([,q])=>q.isPending) ? <p>Loading provisioning choices…</p> : <ActionForm fields={fields} onSubmit={submit} submitLabel="Review configuration"/>}
     {!catalogs.some(([,q])=>q.isPending) && catalogs.some(([,q])=>!options(q).length) && <p className="notice">Refresh this connection to discover images, server sizes, and SSH keys before continuing.</p>}
   </>;
 }
-export function CreateResourceButton({ org, sshKey = false }: { org: Organization; sshKey?: boolean }) {
-  const title = sshKey ? "Import SSH key" : "Create server";
+export function CreateResourceButton({ org }: { org: Organization }) {
+  const [selection,setSelection]=useState<{provider:string;kind:string}>();
+  const sshKey=selection?.kind==="access.ssh_key";
+  const title = !selection ? "Add resource" : sshKey ? "Import SSH key" : "Create server";
   const [open,setOpen]=useState(false), [connection,setConnection]=useState<Connection>(), [draft,setDraft]=useState<Record<string,string>>(), [requestKey,setRequestKey]=useState("");
   const navigate=useNavigate();
   const connections=useQuery({queryKey:["connections",org.id],queryFn:()=>api.listConnections({organizationId:org.id}),enabled:open});
   const create=useMutation({retry:false, mutationFn:(v:Record<string,string>)=>sshKey ? api.requestSSHKeyCreation({organizationId:org.id,connectionId:connection!.id,region:draft!.region,creation:{name:draft!.name,publicKey:draft!.publicKey},reason:v.reason,idempotencyKey:requestKey}) : api.requestServerCreation({organizationId:org.id,connectionId:connection!.id,region:draft!.region,creation:{name:draft!.name,image:draft!.image,size:draft!.size,sshKey:draft!.sshKey,subnet:draft!.subnet??"",securityGroup:draft!.securityGroup??"",network:draft!.network??""},reason:v.reason,idempotencyKey:requestKey}),onSuccess:()=>{void queries.invalidateQueries({queryKey:["operations",org.id]});setOpen(false);navigate("/app/operations?org="+org.id);}});
   if (!org.permissions.includes("operations.create") || !org.permissions.includes("operations.request") || !org.permissions.includes("connections.read")) return null;
-  return <><button className="primary" onClick={()=>{setConnection(undefined);setDraft(undefined);create.reset();setOpen(true);}}>{title}</button>
+  return <><button className="primary" onClick={()=>{setSelection(undefined);setConnection(undefined);setDraft(undefined);create.reset();setOpen(true);}}>Add resource</button>
     <Modal open={open} onOpenChange={setOpen} title={title} description="Review the exact configuration before requesting independent approval.">
       <ErrorNote error={connections.error}/>
-      {!connection ? <ActionForm key="connection" fields={[{name:"connection",label:"Cloud connection",type:"select",options:connections.data?.connections.filter(c=>c.enabled).map(c=>({value:c.id,label:`${c.name} · ${c.provider}`}))??[],schema:z.string().min(1)}]} onSubmit={v=>setConnection(connections.data?.connections.find(c=>c.id===v.connection))} submitLabel="Choose configuration"/> : !draft ? sshKey ? <ActionForm key="key" fields={[
+      {connections.data && !connections.data.connections.some(c=>c.enabled) && <p className="notice">Enable a cloud connection in Administration → Connections before adding resources.</p>}
+      {selection && !draft && <button className="secondary" onClick={()=>{setSelection(undefined);setConnection(undefined);}}>Change provider or resource type</button>}
+      {!selection ? <ActionForm key="resource-type" fields={[
+        {name:"provider",label:"Cloud provider",type:"select",options:[...new Set(connections.data?.connections.filter(c=>c.enabled).map(c=>c.provider))].map(value=>({value,label:({aws:"Amazon Web Services",digitalocean:"DigitalOcean",hetzner:"Hetzner Cloud"} as Record<string,string>)[value]??value})),schema:z.string().min(1)},
+        {name:"kind",label:"Resource type",type:"select",options:[{value:"compute.server",label:"Compute — Server"},{value:"access.ssh_key",label:"Access — Import public SSH key"}],schema:z.enum(["compute.server","access.ssh_key"])},
+      ]} onSubmit={v=>setSelection({provider:v.provider,kind:v.kind})} submitLabel="Choose connection"/> : !connection ? <ActionForm key="connection" fields={[{name:"connection",label:"Cloud connection",type:"select",options:connections.data?.connections.filter(c=>c.enabled&&c.provider===selection.provider).map(c=>({value:c.id,label:`${c.name} · ${c.provider}`}))??[],schema:z.string().min(1)}]} onSubmit={v=>setConnection(connections.data?.connections.find(c=>c.id===v.connection))} submitLabel="Choose configuration"/> : !draft ? sshKey ? <ActionForm key="key" fields={[
         {name:"name",label:"Key name",schema:z.string().regex(/^[a-z][a-z0-9-]{0,61}[a-z0-9]$/, "Use 2–63 lowercase letters, digits, and hyphens.")},
         ...(connection.provider==="aws" ? [{name:"region",label:"AWS region",defaultValue:connection.region,schema:z.string().regex(/^[a-z0-9-]{1,64}$/).refine(v=>v!=="global","Choose an EC2 region.")}] : []),
         {name:"publicKey",label:"OpenSSH public key",type:"textarea",schema:z.string().max(16384).refine(v=>/^(ssh-ed25519|ssh-rsa) [A-Za-z0-9+/]+={0,2}(?:[ \t][^\r\n]*)?$/.test(v.trim()),"Paste one Ed25519 or RSA public key line."),description:"Public key only. RSA requires at least 2048 bits. Private keys and authorized_keys options are rejected."},

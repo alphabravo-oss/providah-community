@@ -31,7 +31,7 @@ Versions come from go.mod. S3 supports internal artifact/state storage and AWS b
 
 ## Shared module integration
 
-All existing AWS, DigitalOcean and Hetzner discovery calls `inventory.Collect` from the public Apache-2.0 module [`ab-provider-modules`](https://github.com/alphabravo-oss/ab-provider-modules), pinned at `v0.2.1`. No sibling checkout or private credentials are needed to build.
+All existing AWS, DigitalOcean and Hetzner discovery calls `inventory.Collect` from the public Apache-2.0 module [`ab-provider-modules`](https://github.com/alphabravo-oss/ab-provider-modules), pinned at `v0.2.2`. No sibling checkout or private credentials are needed to build.
 
 The shared module owns cloud inventory API calls, paging, region filtering and display metadata extraction. This includes existing RDS/EKS/load-balancer/S3/Route 53 collection and DO/Hetzner infrastructure. Providah's thin `internal/providers/discover.go` adapter retains request validation, AWS broker-output restrictions, wire mapping, error redaction and response validation. The application controls worker isolation and inventory retirement.
 

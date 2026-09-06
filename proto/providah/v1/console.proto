@@ -2,6 +2,8 @@ syntax = "proto3";
 package providah.v1;
 option go_package = "github.com/alphabravo-oss/providah-community/internal/gen/providah/v1;providahv1";
 service ConsoleService {
+ rpc GetResourcePolicy(GetResourcePolicyRequest) returns (ResourcePolicy);
+ rpc SaveResourcePolicy(SaveResourcePolicyRequest) returns (ResourcePolicy);
  rpc RequestSSHKeyCreation(RequestSSHKeyCreationRequest) returns (OperationResponse);
  rpc ListProjectOwnership(ListProjectOwnershipRequest) returns (ListProjectOwnershipResponse);
  rpc GetAutomationProject(GetAutomationProjectRequest) returns (AutomationProject);
@@ -420,3 +422,7 @@ message SetOrganizationSmtpRequest { string organization_id = 1; SmtpSettings sm
 
 message SSHKeyCreate { string name = 1; string public_key = 2; }
 message RequestSSHKeyCreationRequest { string organization_id = 1; string connection_id = 2; string region = 3; SSHKeyCreate creation = 4; string reason = 5; string idempotency_key = 6; }
+
+message GetResourcePolicyRequest { string organization_id = 1; }
+message ResourcePolicy { bool creation_enabled = 1; int64 revision = 2; }
+message SaveResourcePolicyRequest { string organization_id = 1; bool creation_enabled = 2; int64 expected_revision = 3; string reason = 4; }

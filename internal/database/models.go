@@ -423,6 +423,8 @@ type Organization struct {
 	AdminRevision             int64
 	NotificationGroupSeconds  int32
 	NotificationGroupRevision int64
+	CreationEnabled           bool
+	ResourcePolicyRevision    int64
 }
 
 type ProviderModule struct {
