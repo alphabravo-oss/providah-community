@@ -33,10 +33,13 @@ def settings(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--env", type=Path, default=ROOT / ".env.cloud")
+    parser.add_argument("--url", help="local console origin")
+    parser.add_argument("--login-file", type=Path, help="local console login file")
+    parser.add_argument("--output", type=Path, default=ROOT / ".local/cloud-smoke.json")
     parser.add_argument("--check", action="store_true", help="validate configuration without contacting any service")
     args = parser.parse_args()
     cfg = settings(args.env)
-    origin = cfg.get("PROVIDAH_URL", "http://localhost:8760").rstrip("/")
+    origin = (args.url or cfg.get("PROVIDAH_URL", "http://localhost:8760")).rstrip("/")
     url = urllib.parse.urlsplit(origin)
     if url.scheme != "http" or url.hostname not in {"localhost", "127.0.0.1", "::1"} or url.username or url.password or url.path or url.query or url.fragment:
         raise RuntimeError("Smoke testing requires a local HTTP console origin.")
@@ -58,7 +61,7 @@ def main():
     if args.check:
         print("Configuration valid for: " + ", ".join(p[0] for p in providers) + ". No API calls made.")
         return
-    login_path = Path(cfg.get("PROVIDAH_LOGIN_FILE", str(ROOT / ".local/seed-admin.json")))
+    login_path = args.login_file or Path(cfg.get("PROVIDAH_LOGIN_FILE", str(ROOT / ".local/seed-admin.json")))
     if login_path.is_symlink() or login_path.stat().st_mode & 0o077:
         raise RuntimeError("Login file must have private permissions.")
     login = json.loads(login_path.read_text())
@@ -119,7 +122,7 @@ def main():
                 rpc("SetConnectionEnabled", dict(scope, enabled=False))
     finally:
         rpc("Logout", {})
-    output = ROOT / ".local/cloud-smoke.json"
+    output = args.output
     output.parent.mkdir(mode=0o700, exist_ok=True)
     fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600)
     with os.fdopen(fd, "w") as handle:

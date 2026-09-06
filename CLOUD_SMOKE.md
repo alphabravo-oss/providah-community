@@ -15,6 +15,8 @@ python3 scripts/cloud_smoke.py --check
 make test-cloud
 ```
 
+For credentials stored outside the checkout, pass `--env /path/to/.env.cloud`. Use `--url`, `--login-file` and `--output` to target another local installation and keep its login and report separate.
+
 The first command validates configuration without network calls. The second logs in through the normal API, creates a uniquely named connection per configured provider, waits for discovery through the credential broker and isolated worker, and verifies inventory is readable. Empty accounts can pass with zero resources. Provider permissions must cover the runtime's advertised inventory; partial or failed discovery is a failure, not a successful empty result.
 
 No cloud create, power, resize, snapshot, tag or delete operation is requested. Each smoke connection is disabled in a cleanup step to stop recurring discovery. Its inventory and encrypted credential remain in the local database for inspection; revoke the temporary cloud keys when finished. If interrupted or cleanup fails, disable the `cloud-smoke-*` connections in the console before leaving the installation running.
