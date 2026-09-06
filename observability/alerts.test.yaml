@@ -1,0 +1,76 @@
+rule_files:
+  - alerts.yaml
+evaluation_interval: 1m
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'providah_database_storage_bytes{kind="used",job="providah",instance="console"}'
+        values: '85+0x10'
+      - series: 'providah_database_storage_bytes{kind="budget",job="providah",instance="console"}'
+        values: '100+0x10'
+      - series: 'providah_database_storage_snapshot_timestamp_seconds{job="providah",instance="console"}'
+        values: '0+60x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetWarning
+        exp_alerts:
+          - exp_labels: {job: providah, instance: console, severity: warning}
+            exp_annotations:
+              summary: Database allocation exceeds 80% of its configured budget
+              description: Review database capacity and audit export backlog. This budget does not measure host free space.
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetCritical
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'providah_database_storage_bytes{kind="used",job="providah",instance="console"}'
+        values: '95+0x10'
+      - series: 'providah_database_storage_bytes{kind="budget",job="providah",instance="console"}'
+        values: '100+0x10'
+      - series: 'providah_database_storage_snapshot_timestamp_seconds{job="providah",instance="console"}'
+        values: '0+60x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetCritical
+        exp_alerts:
+          - exp_labels: {job: providah, instance: console, severity: critical}
+            exp_annotations:
+              summary: Database allocation exceeds 90% of its configured budget
+              description: Expand capacity or follow reviewed retention procedures. Do not delete unexported audit history to clear this warning.
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetWarning
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'providah_database_storage_bytes{kind="used",job="providah",instance="console"}'
+        values: '95+0x10'
+      - series: 'providah_database_storage_bytes{kind="budget",job="providah",instance="console"}'
+        values: '0+0x10'
+      - series: 'providah_database_storage_snapshot_timestamp_seconds{job="providah",instance="console"}'
+        values: '0+60x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetCritical
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetWarning
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'providah_database_storage_bytes{kind="used",job="providah",instance="console"}'
+        values: '95+0x10'
+      - series: 'providah_database_storage_bytes{kind="budget",job="providah",instance="console"}'
+        values: '100+0x10'
+      - series: 'providah_database_storage_snapshot_timestamp_seconds{job="providah",instance="console"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ProvidahDatabaseBudgetCritical
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: ProvidahDatabaseStorageSnapshotStale
+        exp_alerts:
+          - exp_labels: {job: providah, instance: console, severity: warning}
+            exp_annotations:
+              summary: Database storage measurement is stale or unavailable
+              description: Check database connectivity and measurement permissions. Retained size values are not current capacity evidence.

@@ -1,0 +1,422 @@
+syntax = "proto3";
+package providah.v1;
+option go_package = "github.com/alphabravo-oss/providah-community/internal/gen/providah/v1;providahv1";
+service ConsoleService {
+ rpc RequestSSHKeyCreation(RequestSSHKeyCreationRequest) returns (OperationResponse);
+ rpc ListProjectOwnership(ListProjectOwnershipRequest) returns (ListProjectOwnershipResponse);
+ rpc GetAutomationProject(GetAutomationProjectRequest) returns (AutomationProject);
+ rpc ListAutomationProjects(ListAutomationProjectsRequest) returns (ListAutomationProjectsResponse);
+ rpc CreateAutomationProject(CreateAutomationProjectRequest) returns (AutomationProject);
+ rpc ListAutomationStates(ListAutomationStatesRequest) returns (ListAutomationStatesResponse);
+ rpc GetAutomationValidation(GetAutomationValidationRequest) returns (AutomationValidation);
+ rpc ListAutomationValidations(ListAutomationValidationsRequest) returns (ListAutomationValidationsResponse);
+ rpc CancelAutomationValidation(CancelAutomationValidationRequest) returns (AutomationValidation);
+ rpc RequestAutomationValidation(RequestAutomationValidationRequest) returns (AutomationValidation);
+ rpc GetAutomationVersion(GetAutomationVersionRequest) returns (AutomationVersion);
+ rpc ListAutomationVersions(ListAutomationVersionsRequest) returns (ListAutomationVersionsResponse);
+ rpc PublishAutomationVersion(PublishAutomationVersionRequest) returns (AutomationVersion);
+ rpc SetAutomationVersionStatus(SetAutomationVersionStatusRequest) returns (AutomationVersion);
+ rpc GetAutomationSource(GetAutomationSourceRequest) returns (AutomationSource);
+ rpc ListAutomationSources(ListAutomationSourcesRequest) returns (ListAutomationSourcesResponse);
+ rpc ImportAutomationSource(ImportAutomationSourceRequest) returns (AutomationSource);
+ rpc BeginMFAEnrollment(BeginMFAEnrollmentRequest) returns (BeginSetupResponse);
+ rpc GetMFAPolicy(GetMFAPolicyRequest) returns (MFAPolicy);
+ rpc SaveMFAPolicy(SaveMFAPolicyRequest) returns (MFAPolicy);
+ rpc GetServerTemplate(GetServerTemplateRequest) returns (ServerTemplate);
+ rpc ListServerTemplates(ListServerTemplatesRequest) returns (ListServerTemplatesResponse);
+ rpc PublishServerTemplate(PublishServerTemplateRequest) returns (ServerTemplate);
+ rpc SetServerTemplateStatus(SetServerTemplateStatusRequest) returns (ServerTemplate);
+ rpc CreateOrganization(CreateOrganizationRequest) returns (Organization);
+ rpc SetAccountMFA(SetAccountMFARequest) returns (AccessMutationResponse);
+  rpc SetupStatus(SetupStatusRequest) returns (SetupStatusResponse);
+  rpc BeginSetup(BeginSetupRequest) returns (BeginSetupResponse);
+  rpc FinishSetup(FinishSetupRequest) returns (SessionResponse);
+  rpc GetIdentityPolicy(GetIdentityPolicyRequest) returns (IdentityPolicyResponse);
+  rpc SaveIdentityPolicy(SaveIdentityPolicyRequest) returns (IdentityPolicyResponse);
+  rpc GetOIDCStatus(GetOIDCStatusRequest) returns (GetOIDCStatusResponse);
+  rpc BeginOIDCLogin(BeginOIDCLoginRequest) returns (OIDCRedirectResponse);
+  rpc CompleteOIDCLogin(CompleteOIDCLoginRequest) returns (SessionResponse);
+  rpc BeginOIDCLink(OIDCAccountRequest) returns (OIDCRedirectResponse);
+  rpc UnlinkOIDC(OIDCAccountRequest) returns (AccessMutationResponse);
+  rpc Login(LoginRequest) returns (SessionResponse);
+  rpc Refresh(RefreshRequest) returns (SessionResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc GetInstallationHealth(GetInstallationHealthRequest) returns (InstallationHealth);
+  rpc SetInstallationOrganization(SetInstallationOrganizationRequest) returns (AccessMutationResponse);
+  rpc SetInstallationUser(SetInstallationUserRequest) returns (AccessMutationResponse);
+  rpc ListInstallationDirectory(ListInstallationDirectoryRequest) returns (ListInstallationDirectoryResponse);
+  rpc GetSession(GetSessionRequest) returns (SessionResponse);
+  rpc ListProviderModules(ListProviderModulesRequest) returns (ListProviderModulesResponse);
+  rpc SetProviderRuntime(SetProviderRuntimeRequest) returns (AccessMutationResponse);
+  rpc SetProviderModule(SetProviderModuleRequest) returns (AccessMutationResponse);
+  rpc GetConnection(GetConnectionRequest) returns (ConnectionResponse);
+  rpc ListConnections(ListConnectionsRequest) returns (ListConnectionsResponse);
+  rpc CreateConnection(CreateConnectionRequest) returns (ConnectionResponse);
+  rpc SetConnectionEnabled(SetConnectionEnabledRequest) returns (ConnectionResponse);
+  rpc RotateCredential(RotateCredentialRequest) returns (ConnectionResponse);
+  rpc ListDashboardTeams(ListDashboardsRequest) returns (ListDashboardTeamsResponse);
+  rpc ListDashboards(ListDashboardsRequest) returns (ListDashboardsResponse);
+  rpc SaveDashboard(SaveDashboardRequest) returns (Dashboard);
+  rpc DeleteDashboard(DeleteDashboardRequest) returns (AccessMutationResponse);
+  rpc ListInventoryViews(ListInventoryViewsRequest) returns (ListInventoryViewsResponse);
+  rpc SaveInventoryView(SaveInventoryViewRequest) returns (InventoryView);
+  rpc DeleteInventoryView(DeleteInventoryViewRequest) returns (AccessMutationResponse);
+  rpc ListResourceScopes(ListResourceScopesRequest) returns (ListResourceScopesResponse);
+  rpc GetResourceSummary(GetResourceSummaryRequest) returns (GetResourceSummaryResponse);
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+  rpc RefreshConnection(RefreshConnectionRequest) returns (RefreshConnectionResponse);
+  rpc GetResourceMetrics(GetResourceMetricsRequest) returns (GetResourceMetricsResponse);
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse);
+  rpc ListMaintenancePolicies(ListMaintenancePoliciesRequest) returns (ListMaintenancePoliciesResponse);
+  rpc SaveMaintenancePolicy(SaveMaintenancePolicyRequest) returns (AccessMutationResponse);
+  rpc DeleteMaintenancePolicy(DeleteMaintenancePolicyRequest) returns (AccessMutationResponse);
+  rpc DeleteNotificationDestination(DeleteNotificationDestinationRequest) returns (AccessMutationResponse);
+  rpc GetNotificationDestination(GetNotificationRecordRequest) returns (NotificationDestination);
+  rpc GetNotificationDelivery(GetNotificationRecordRequest) returns (NotificationDelivery);
+  rpc ListNotificationDestinations(ListNotificationDestinationsRequest) returns (ListNotificationDestinationsResponse);
+  rpc GetOrganizationSmtp(ListNotificationDestinationsRequest) returns (OrganizationSmtp);
+  rpc SetOrganizationSmtp(SetOrganizationSmtpRequest) returns (OrganizationSmtp);
+  rpc GetNotificationGrouping(ListNotificationDestinationsRequest) returns (NotificationGrouping);
+  rpc SetNotificationGrouping(SetNotificationGroupingRequest) returns (NotificationGrouping);
+  rpc SetNotificationSubscriptions(SetNotificationSubscriptionsRequest) returns (AccessMutationResponse);
+  rpc SaveNotificationDestination(SaveNotificationDestinationRequest) returns (AccessMutationResponse);
+  rpc SetNotificationDestinationEnabled(SetNotificationDestinationEnabledRequest) returns (AccessMutationResponse);
+  rpc SendNotificationTest(SendNotificationTestRequest) returns (AccessMutationResponse);
+  rpc VerifyNotificationDestination(VerifyNotificationDestinationRequest) returns (AccessMutationResponse);
+  rpc ListNotificationDeliveries(ListNotificationDeliveriesRequest) returns (ListNotificationDeliveriesResponse);
+  rpc ListNotificationAttempts(ListNotificationAttemptsRequest) returns (ListNotificationAttemptsResponse);
+  rpc RedeliverNotification(RedeliverNotificationRequest) returns (AccessMutationResponse);
+  rpc GetSchedule(GetScheduleRequest) returns (ScheduleResponse);
+  rpc ListSchedules(ListSchedulesRequest) returns (ListSchedulesResponse);
+  rpc SaveSchedule(SaveScheduleRequest) returns (ScheduleResponse);
+  rpc PreviewSchedule(PreviewScheduleRequest) returns (PreviewScheduleResponse);
+  rpc ApproveSchedule(ApproveScheduleRequest) returns (ScheduleResponse);
+  rpc SetScheduleEnabled(SetScheduleEnabledRequest) returns (ScheduleResponse);
+  rpc DeleteSchedule(DeleteScheduleRequest) returns (AccessMutationResponse);
+  rpc ListScheduleOccurrences(ListScheduleOccurrencesRequest) returns (ListScheduleOccurrencesResponse);
+  rpc RequestServerCreation(RequestServerCreationRequest) returns (OperationResponse);
+  rpc PreviewDeletion(PreviewDeletionRequest) returns (PreviewDeletionResponse);
+  rpc PreviewBulkPower(PreviewBulkPowerRequest) returns (PreviewBulkPowerResponse);
+  rpc RequestBulkPower(RequestBulkPowerRequest) returns (RequestBulkPowerResponse);
+  rpc RequestOperation(RequestOperationRequest) returns (OperationResponse);
+  rpc GetOperation(GetOperationRequest) returns (OperationResponse);
+  rpc GetOperationsOverview(GetOperationsOverviewRequest) returns (OperationsOverview);
+  rpc ListOperations(ListOperationsRequest) returns (ListOperationsResponse);
+  rpc ReviewOperation(ReviewOperationRequest) returns (OperationResponse);
+  rpc CancelOperation(CancelOperationRequest) returns (OperationResponse);
+  rpc ReconcileOperation(ReconcileOperationRequest) returns (OperationResponse);
+  rpc ResolveOperation(ResolveOperationRequest) returns (OperationResponse);
+  rpc ListTeams(ListTeamsRequest) returns (ListTeamsResponse);
+  rpc DeleteTeam(DeleteTeamRequest) returns (AccessMutationResponse);
+  rpc SaveTeam(SaveTeamRequest) returns (AccessMutationResponse);
+  rpc ListAccess(ListAccessRequest) returns (ListAccessResponse);
+  rpc SaveRole(SaveRoleRequest) returns (AccessMutationResponse);
+  rpc UpdateMember(UpdateMemberRequest) returns (AccessMutationResponse);
+  rpc CreateInvitation(CreateInvitationRequest) returns (CreateInvitationResponse);
+  rpc RevokeInvitation(RevokeInvitationRequest) returns (AccessMutationResponse);
+  rpc BeginInvitation(BeginInvitationRequest) returns (BeginInvitationResponse);
+  rpc AcceptInvitation(AcceptInvitationRequest) returns (SessionResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc ListAccountSessions(ListAccountSessionsRequest) returns (ListAccountSessionsResponse);
+  rpc RevokeAccountSession(RevokeAccountSessionRequest) returns (RevokeAccountSessionResponse);
+  rpc GetAccountSecurity(GetAccountSecurityRequest) returns (GetAccountSecurityResponse);
+  rpc GenerateRecoveryCodes(GenerateRecoveryCodesRequest) returns (GenerateRecoveryCodesResponse);
+  rpc VerifyMfa(VerifyMfaRequest) returns (AccessMutationResponse);
+  rpc GetAuditExport(GetAuditExportRequest) returns (GetAuditExportResponse);
+  rpc SaveAuditExport(SaveAuditExportRequest) returns (AccessMutationResponse);
+  rpc TestAuditExport(TestAuditExportRequest) returns (AccessMutationResponse);
+  rpc SetAuditExportEnabled(SetAuditExportEnabledRequest) returns (AccessMutationResponse);
+  rpc RetryAuditExport(RetryAuditExportRequest) returns (AccessMutationResponse);
+  rpc ListAuditExportBatches(ListAuditExportBatchesRequest) returns (ListAuditExportBatchesResponse);
+  rpc ListInstallationAudit(ListAuditRequest) returns (ListAuditResponse);
+  rpc ListAudit(ListAuditRequest) returns (ListAuditResponse);
+}
+message SetupStatusRequest {}
+message SetupStatusResponse { bool required = 1; }
+message BeginSetupRequest { string token = 1; }
+message BeginSetupResponse { string secret = 1; string uri = 2; }
+message FinishSetupRequest { string token = 1; string email = 2; string password = 3; string code = 4; string organization_name = 5; }
+message LoginRequest { string email = 1; string password = 2; string code = 3; string recovery_code = 4; }
+message RefreshRequest {}
+message LogoutRequest {}
+message LogoutResponse {}
+message GetSessionRequest {}
+message Organization { bool mfa_required = 5; bool sso_required = 4; string id = 1; string name = 2; repeated string permissions = 3; }
+message SessionResponse { string email = 1; repeated Organization organizations = 2; bool global_admin = 3; bool mfa_enabled = 4; bool mfa_required = 5; string return_to = 6; }
+message ListConnectionsRequest { string organization_id = 1; }
+message ListConnectionsResponse { repeated Connection connections = 1; bool external_secrets_enabled = 2; }
+message Connection { string id = 1; string organization_id = 2; string name = 3; string provider = 4; string region = 5; bool enabled = 6; string created_at = 7; ScanStatus scan_status = 8; string scan_error = 9; string last_scan_at = 10; string credential_source = 11; }
+message CreateConnectionRequest { string organization_id = 1; string name = 2; string provider = 3; string region = 4; string credential = 5; }
+message ConnectionResponse { Connection connection = 1; }
+message SetConnectionEnabledRequest { string organization_id = 1; string id = 2; bool enabled = 3; }
+message RotateCredentialRequest { string organization_id = 1; string id = 2; string credential = 3; }
+message ListResourcesRequest { string organization_id = 1; string search = 2; string provider = 3; string page_token = 4; int32 page_size = 5; string kind = 6; string connection_id = 7; string sort_by = 8; bool descending = 9; string tag_key = 10; string tag_value = 11; bool tag_exists = 12; string tag_name = 13; repeated TagCondition tag_conditions = 14; bool tag_match_any = 15; string region = 16; string status = 17; }
+message ResourceTags { map<string,string> labels = 1; repeated string names = 2; }
+message Resource { string id = 1; string connection_id = 2; string native_id = 3; string name = 4; string provider = 5; string kind = 6; string region = 7; string status = 8; string observed_at = 9; string public_ip = 10; string private_ip = 11; string size = 12; ResourceTags tags = 13; }
+message ListResourcesResponse { repeated Resource resources = 1; string next_page_token = 2; }
+message ListAuditRequest { string organization_id = 1; string page_token = 2; string actor = 3; string action = 4; string target = 5; string occurred_from = 6; string occurred_before = 7; string source = 8; }
+message AuditEvent { string id = 1; string actor = 2; string action = 3; string target = 4; string occurred_at = 5; string details = 6; string organization_id = 7; string organization_name = 8; }
+message ListAuditResponse { repeated AuditEvent events = 1; string next_page_token = 2; }
+
+enum ScanStatus { SCAN_STATUS_UNSPECIFIED = 0; SCAN_STATUS_NEVER = 1; SCAN_STATUS_QUEUED = 2; SCAN_STATUS_RUNNING = 3; SCAN_STATUS_SUCCEEDED = 4; SCAN_STATUS_FAILED = 5; }
+message RefreshConnectionRequest { string organization_id = 1; string id = 2; }
+message RefreshConnectionResponse { string job_id = 1; }
+message GetResourceRequest { string organization_id = 1; string id = 2; }
+message GetResourceResponse { Resource resource = 1; string connection_name = 2; bool connection_enabled = 3; bool provider_enabled = 4; repeated string available_actions = 5; bool metrics_supported = 6; repeated string ownership_project_ids = 7; }
+
+message ListAccessRequest { string organization_id = 1; }
+message Role { string id = 1; string name = 2; repeated string permissions = 3; bool builtin = 4; int64 revision = 5; }
+message Member { string user_id = 1; string email = 2; string role_id = 3; string role_name = 4; bool active = 5; repeated string permissions = 6; int64 revision = 7; }
+message Invitation { string id = 1; string email = 2; string role_id = 3; string role_name = 4; string expires_at = 5; }
+message ListAccessResponse { repeated Role roles = 1; repeated Member members = 2; repeated Invitation invitations = 3; repeated string permission_catalog = 4; }
+message AccessMutationResponse {}
+message SaveRoleRequest { string organization_id = 1; string id = 2; string name = 3; repeated string permissions = 4; int64 expected_revision = 5; }
+message UpdateMemberRequest { string organization_id = 1; string user_id = 2; string role_id = 3; bool active = 4; int64 expected_revision = 5; }
+message CreateInvitationRequest { string organization_id = 1; string email = 2; string role_id = 3; }
+message CreateInvitationResponse { string link = 1; }
+message RevokeInvitationRequest { string organization_id = 1; string id = 2; }
+message BeginInvitationRequest { string token = 1; }
+message BeginInvitationResponse { string email = 1; string secret = 2; string uri = 3; bool requires_sign_in = 4; }
+message AcceptInvitationRequest { string token = 1; string password = 2; string code = 3; }
+message VerifyMfaRequest { string code = 1; }
+
+enum OperationStatus { OPERATION_STATUS_UNSPECIFIED = 0; OPERATION_STATUS_AWAITING_APPROVAL = 1; OPERATION_STATUS_QUEUED = 2; OPERATION_STATUS_DISPATCHING = 3; OPERATION_STATUS_OBSERVING = 4; OPERATION_STATUS_SUCCEEDED = 5; OPERATION_STATUS_FAILED = 6; OPERATION_STATUS_UNCERTAIN = 7; OPERATION_STATUS_REJECTED = 8; OPERATION_STATUS_CANCELED = 9; OPERATION_STATUS_EXPIRED = 10; OPERATION_STATUS_RESOLVED = 11; }
+message Operation { string id = 1; string resource_id = 2; string resource_name = 3; string native_id = 4; string provider = 5; string region = 6; string action = 7; OperationStatus status = 8; string requester = 9; string reason = 10; string created_at = 11; string updated_at = 12; string approval_expires_at = 13; string provider_action_id = 14; string observed_status = 15; string detail = 16; bool can_review = 17; string maintenance_exception_reason = 18; string maintenance_window_ends_at = 19;  string deletion_impact = 22; ServerCreate creation = 23; string expected_size = 24; string target_size = 25; string resource_kind = 26; string template_id = 27; ResourceTags expected_tags = 28; ResourceTags target_tags = 29; SSHKeyCreate key_creation = 30; }
+message OperationResponse { Operation operation = 1; }
+message RequestOperationRequest { string organization_id = 1; string resource_id = 2; string action = 3; string expected_status = 4; string reason = 5; string idempotency_key = 6; string maintenance_exception_reason = 7; string confirmation = 8; string deletion_digest = 9; string expected_size = 10; string target_size = 11; ResourceTags expected_tags = 12; ResourceTags target_tags = 13; }
+message GetOperationRequest { string organization_id = 1; string id = 2; }
+message ListOperationsRequest { string organization_id = 1; string page_token = 2; InventoryViewSpec resource_filters = 3; }
+message ListOperationsResponse { repeated Operation operations = 1; string next_page_token = 2; }
+message ReviewOperationRequest { string organization_id = 1; string id = 2; bool approve = 3; string reason = 4; }
+message ReconcileOperationRequest { string organization_id = 1; string id = 2; }
+message ResolveOperationRequest { string organization_id = 1; string id = 2; string reason = 3; }
+
+message CancelOperationRequest { string organization_id = 1; string id = 2; }
+
+message ScheduleSpec { string timezone = 1; string action = 2; string cron = 3; string stop_cron = 4; string run_at = 5; repeated string exceptions = 6; }
+message Schedule { string id = 1; string name = 2; ScheduleSpec spec = 3; repeated string resource_ids = 4; string identity_id = 5; bool identity_enabled = 6; bool enabled = 7; bool approved = 8; string next_due = 9; string next_action = 10; string next_local = 11; string next_skip = 12; string last_outcome = 13; string last_detail = 14; string editor = 15; bool can_approve = 16; int64 revision = 17; }
+message GetScheduleRequest { string organization_id = 1; string id = 2; }
+message ListSchedulesRequest { string organization_id = 1; }
+message ListSchedulesResponse { repeated Schedule schedules = 1; }
+message SaveScheduleRequest { string organization_id = 1; string id = 2; string name = 3; ScheduleSpec spec = 4; repeated string resource_ids = 5; int64 expected_revision = 6; }
+message ScheduleResponse { Schedule schedule = 1; }
+message PreviewScheduleRequest { string organization_id = 1; ScheduleSpec spec = 2; repeated string resource_ids = 3; }
+message SchedulePreview { string due = 1; string local = 2; string action = 3; string skipped_reason = 4; string maintenance_restrictions = 5; }
+message PreviewScheduleResponse { repeated SchedulePreview occurrences = 1; }
+message ApproveScheduleRequest { string organization_id = 1; string id = 2; int64 expected_revision = 3; }
+message SetScheduleEnabledRequest { string organization_id = 1; string id = 2; bool enabled = 3; bool identity_enabled = 4; int64 expected_revision = 5; }
+message ListScheduleOccurrencesRequest { string organization_id = 1; string page_token = 2; string schedule_id = 3; string outcome = 4; }
+message ScheduleOccurrence { string id = 1; string schedule_id = 2; string resource_name = 3; string scheduled_for = 4; string action = 5; string outcome = 6; string detail = 7; string operation_id = 8; string operation_status = 9; string local_time = 10; }
+message ListScheduleOccurrencesResponse { repeated ScheduleOccurrence occurrences = 1; string next_page_token = 2; }
+
+message DeleteScheduleRequest { string organization_id = 1; string id = 2; string confirmation = 3; int64 expected_revision = 4; }
+
+message ListNotificationDestinationsRequest { string organization_id = 1; }
+message NotificationDestination { string id = 1; string name = 2; string kind = 3; string endpoint = 4; bool enabled = 5; bool verified = 6; bool include_success = 7; repeated string event_types = 8; int64 revision = 9; }
+message ListNotificationDestinationsResponse { repeated NotificationDestination destinations = 1; bool platform_smtp_available = 2; bool development_capture = 3; repeated string available_event_types = 4; OrganizationSmtp organization_smtp = 5; }
+message SmtpSettings { string host = 1; int32 port = 2; string username = 3; string password = 4; string sender = 5; }
+message SaveNotificationDestinationRequest { string organization_id = 1; string id = 2; string name = 3; string kind = 4; string endpoint = 5; string signing_secret = 6; SmtpSettings smtp = 7; bool include_success = 8; bool use_platform_smtp = 9; bool use_organization_smtp = 10; int64 organization_smtp_revision = 11; int64 expected_revision = 12; }
+message SetNotificationDestinationEnabledRequest { string organization_id = 1; string id = 2; bool enabled = 3; int64 expected_revision = 4; }
+message SendNotificationTestRequest { string organization_id = 1; string id = 2; bool verification = 3; }
+message VerifyNotificationDestinationRequest { string organization_id = 1; string id = 2; string code = 3; string sender_code = 4; }
+message ListNotificationDeliveriesRequest { string organization_id = 1; string page_token = 2; }
+message NotificationDelivery { string id = 1; string event_id = 2; string destination_name = 3; string event_type = 4; string status = 5; int32 attempts = 6; string detail = 7; string updated_at = 8; }
+message ListNotificationDeliveriesResponse { repeated NotificationDelivery deliveries = 1; string next_page_token = 2; }
+message ListNotificationAttemptsRequest { string organization_id = 1; string id = 2; }
+message NotificationAttempt { string id = 1; int32 number = 2; string status = 3; int32 response_code = 4; string detail = 5; string created_at = 6; }
+message ListNotificationAttemptsResponse { repeated NotificationAttempt attempts = 1; }
+message RedeliverNotificationRequest { string organization_id = 1; string id = 2; }
+
+message ListMaintenancePoliciesRequest { string organization_id = 1; }
+message MaintenancePolicy { string id = 1; string name = 2; ScheduleSpec spec = 3; int32 duration_minutes = 4; repeated string connection_ids = 5; bool open_now = 6; string next_start = 7; string next_end = 8; string next_skip = 9; }
+message ListMaintenancePoliciesResponse { repeated MaintenancePolicy policies = 1; }
+message SaveMaintenancePolicyRequest { string organization_id = 1; string id = 2; string name = 3; string timezone = 4; string cron = 5; int32 duration_minutes = 6; repeated string exceptions = 7; repeated string connection_ids = 8; }
+message DeleteMaintenancePolicyRequest { string organization_id = 1; string id = 2; string confirmation = 3; }
+
+message GetAuditExportRequest { string organization_id = 1; }
+message GetAuditExportResponse { bool configured = 1; string endpoint = 2; string region = 3; string bucket = 4; bool enabled = 5; bool verified = 6; string cursor = 7; int64 pending_events = 8; string oldest_pending_at = 9; string detail = 10; }
+message SaveAuditExportRequest { string organization_id = 1; string endpoint = 2; string region = 3; string bucket = 4; string access_key = 5; string secret_key = 6; string session_token = 7; }
+message TestAuditExportRequest { string organization_id = 1; }
+message SetAuditExportEnabledRequest { string organization_id = 1; bool enabled = 2; }
+message RetryAuditExportRequest { string organization_id = 1; }
+message ListAuditExportBatchesRequest { string organization_id = 1; string page_token = 2; }
+message AuditExportBatch { string id = 1; string kind = 2; string first_id = 3; string last_id = 4; int32 event_count = 5; string checksum = 6; string object_key = 7; string status = 8; int32 attempts = 9; string detail = 10; string updated_at = 11; }
+message ListAuditExportBatchesResponse { repeated AuditExportBatch batches = 1; string next_page_token = 2; }
+
+message GetAccountSecurityRequest {}
+message GetAccountSecurityResponse { int64 remaining_codes = 1; repeated AccountEvent events = 2; }
+message AccountEvent { string id = 1; string action = 2; string occurred_at = 3; }
+message GenerateRecoveryCodesRequest { string password = 1; string code = 2; }
+message GenerateRecoveryCodesResponse { repeated string codes = 1; }
+
+message ListProviderModulesRequest { string organization_id = 1; }
+message ListProviderModulesResponse { repeated ProviderModule modules = 1; }
+message ProviderModule { string provider = 1; bool enabled = 2; int64 revision = 3; int64 connections = 4; int64 active_operations = 5; int32 contract_version = 6; repeated string capabilities = 7; string runtime_id = 8; repeated ProviderRuntime runtimes = 9; string publisher_key_id = 10; string approval_expires_at = 11; }
+message SetProviderModuleRequest { string organization_id = 1; string provider = 2; bool enabled = 3; string confirmation = 4; }
+
+message ProviderRuntime { string image = 1; string version = 2; string sdk_version = 3; string publisher_key_id = 4; string approval_expires_at = 5; }
+message SetProviderRuntimeRequest { string organization_id = 1; string provider = 2; string runtime_id = 3; int64 expected_revision = 4; string confirmation = 5; }
+
+message ChangePasswordRequest { string password = 1; string code = 2; string new_password = 3; }
+message ChangePasswordResponse {}
+
+message PreviewDeletionRequest { string organization_id = 1; string resource_id = 2; }
+message PreviewDeletionResponse { string impact = 1; string digest = 2; }
+
+message ServerCreate { string name = 1; string image = 2; string size = 3; string ssh_key = 4; string subnet = 5; string security_group = 6; string network = 7; }
+message RequestServerCreationRequest { string organization_id = 1; string connection_id = 2; string region = 3; ServerCreate creation = 4; string reason = 5; string idempotency_key = 6; string template_id = 7; }
+
+message GetOIDCStatusRequest {}
+message GetOIDCStatusResponse { bool enabled = 1; string issuer = 2; bool linked = 3; bool login_verified = 4; bool login_mfa_enabled = 5; string login_return_to = 6; }
+message BeginOIDCLoginRequest { string return_to = 1; }
+message CompleteOIDCLoginRequest { string code = 1; }
+message OIDCAccountRequest { string password = 1; string code = 2; }
+message OIDCRedirectResponse { string url = 1; }
+
+message GetIdentityPolicyRequest { string organization_id = 1; }
+message IdentityPolicyResponse { bool enabled = 1; string issuer = 2; repeated string recovery_users = 3; int64 revision = 4; string configured_issuer = 5; }
+message SaveIdentityPolicyRequest { string organization_id = 1; bool enabled = 2; repeated string recovery_users = 3; int64 expected_revision = 4; string reason = 5; }
+
+message PreviewBulkPowerRequest { string organization_id = 1; repeated string resource_ids = 2; string action = 3; }
+message BulkPowerTarget { string resource_id = 1; string name = 2; string native_id = 3; string provider = 4; string region = 5; string status = 6; string eligibility = 7; string detail = 8; string review_token = 9; string action = 10; }
+message PreviewBulkPowerResponse { repeated BulkPowerTarget targets = 1; }
+message RequestBulkPowerRequest { string organization_id = 1; repeated string review_tokens = 2; string reason = 3; }
+message BulkPowerResult { string resource_id = 1; Operation operation = 2; string error = 3; }
+message RequestBulkPowerResponse { repeated BulkPowerResult results = 1; }
+
+message GetResourceMetricsRequest { string organization_id = 1; string resource_id = 2; int32 hours = 3; }
+message MetricPoint { string timestamp = 1; double value = 2; }
+message MetricSeries { string id = 1; string name = 2; string unit = 3; string aggregation = 4; int32 period_seconds = 5; repeated MetricPoint points = 6; }
+message GetResourceMetricsResponse { string start = 1; string end = 2; string fetched_at = 3; repeated MetricSeries series = 4; }
+
+
+message InventoryViewSpec { string search = 1; string provider = 2; string kind = 3; string sort_by = 4; bool descending = 5; repeated string hidden_columns = 6; string tag_key = 7; string tag_value = 8; bool tag_exists = 9; string tag_name = 10; repeated TagCondition tag_conditions = 11; bool tag_match_any = 12; string connection_id = 13; string region = 14; string status = 15; }
+message InventoryView { string id = 1; string name = 2; InventoryViewSpec spec = 3; int64 revision = 4; }
+message ListInventoryViewsRequest { string organization_id = 1; }
+message ListInventoryViewsResponse { repeated InventoryView views = 1; }
+message SaveInventoryViewRequest { string organization_id = 1; string id = 2; string name = 3; InventoryViewSpec spec = 4; int64 expected_revision = 5; }
+message DeleteInventoryViewRequest { string organization_id = 1; string id = 2; int64 expected_revision = 3; }
+
+message ListAccountSessionsRequest { string page_token = 1; }
+message AccountSession { string id = 1; string expires_at = 2; string mfa_at = 3; bool current = 4; bool oidc = 5; }
+message ListAccountSessionsResponse { repeated AccountSession sessions = 1; string next_page_token = 2; }
+message RevokeAccountSessionRequest { string id = 1; string password = 2; string code = 3; }
+message RevokeAccountSessionResponse { bool signed_out = 1; }
+
+message SetAccountMFARequest { bool enabled=1; string password=2; string code=3; }
+
+message CreateOrganizationRequest { string name = 1; string password = 2; string code = 3; }
+
+message ServerTemplate { string id = 1; string name = 2; int32 version = 3; string connection_id = 4; string region = 5; ServerCreate creation = 6; string status = 7; }
+message ListServerTemplatesRequest { string organization_id = 1; }
+message ListServerTemplatesResponse { repeated ServerTemplate templates = 1; }
+message PublishServerTemplateRequest { string organization_id = 1; string connection_id = 2; string name = 3; string region = 4; ServerCreate creation = 5; }
+message SetServerTemplateStatusRequest { string organization_id = 1; string id = 2; string status = 3; }
+
+message GetMFAPolicyRequest { string organization_id = 1; }
+message MFAPolicy { bool required = 1; bool global_required = 2; int64 revision = 3; }
+message SaveMFAPolicyRequest { string organization_id = 1; bool required = 2; int64 expected_revision = 3; string password = 4; string code = 5; }
+
+message BeginMFAEnrollmentRequest { string password = 1; }
+
+message ListAutomationSourcesRequest { string organization_id = 1; }
+message ListAutomationSourcesResponse { repeated AutomationSource sources = 1; }
+message ImportAutomationSourceRequest { string organization_id = 1; string name = 2; string runtime = 3; string entrypoint = 4; bytes archive = 5; }
+message AutomationSource { string id = 1; string name = 2; string runtime = 3; string entrypoint = 4; string sha256 = 5; repeated string files = 6; int32 archive_bytes = 7; int64 expanded_bytes = 8; repeated AutomationInput inputs = 9; }
+
+message AutomationRuntime { string runtime = 1; string image = 2; string version = 3; repeated string dependency_hosts = 4; }
+message AutomationVersion { string id = 1; string name = 2; int32 version = 3; string source_id = 4; string runtime_image = 5; string runtime_version = 6; string connection_id = 7; int64 connection_revision = 8; string region = 9; string review_note = 10; string status = 11; bool runtime_available = 12; string runtime = 13; string runtime_policy = 14; repeated string dependency_hosts = 15; }
+message GetAutomationVersionRequest { string organization_id = 1; string id = 2; }
+message ListAutomationVersionsRequest { string organization_id = 1; }
+message ListAutomationVersionsResponse { repeated AutomationVersion versions = 1; repeated AutomationRuntime runtimes = 2; }
+message PublishAutomationVersionRequest { string organization_id = 1; string name = 2; int32 expected_version = 3; string source_id = 4; string runtime_image = 5; string connection_id = 6; string region = 7; string review_note = 8; }
+message SetAutomationVersionStatusRequest { string organization_id = 1; string id = 2; string status = 3; }
+
+message AutomationValidation { string id = 1; string version_id = 2; string status = 3; string detail = 4; string created_at = 5; string project_id = 6; }
+message GetAutomationValidationRequest { string organization_id = 1; string id = 2; }
+message ListAutomationValidationsRequest { string organization_id = 1; string page_token = 2; string status = 3; }
+message ListAutomationValidationsResponse { repeated AutomationValidation validations = 1; bool runner_configured = 2; string next_page_token = 3; }
+message RequestAutomationValidationRequest { string organization_id = 1; string version_id = 2; string project_id = 3; }
+
+message AutomationProject { string id = 1; string name = 2; string version_id = 3; string lineage = 4; int64 serial = 5; string sha256 = 6; int32 state_bytes = 7; bool locked = 8; string created_at = 9; string inputs_hash = 10; ProjectOwnershipSummary ownership = 11; }
+message GetAutomationProjectRequest { string organization_id = 1; string id = 2; }
+message ListAutomationProjectsRequest { string organization_id = 1; }
+message ListAutomationProjectsResponse { repeated AutomationProject projects = 1; }
+message CreateAutomationProjectRequest { string organization_id = 1; string name = 2; string version_id = 3; string inputs_json = 4; }
+message AutomationState { string id = 1; string lineage = 2; int64 serial = 3; string sha256 = 4; int32 state_bytes = 5; string created_at = 6; }
+message ListAutomationStatesRequest { string organization_id = 1; string project_id = 2; string before_serial = 3; }
+message ListAutomationStatesResponse { repeated AutomationState states = 1; string next_before_serial = 2; }
+
+message AutomationInput { string name = 1; string label = 2; string type = 3; repeated string choices = 4; int64 min = 5; int64 max = 6; }
+
+message DashboardWidget { string title = 1; InventoryViewSpec filters = 2; string summary_by = 3; bool activity = 4; }
+message DashboardSpec { repeated DashboardWidget widgets = 1; }
+message Dashboard { string id = 1; string name = 2; DashboardSpec spec = 3; int64 revision = 4; bool shared = 5; bool owned = 6; repeated string team_ids = 7; }
+message ListDashboardsRequest { string organization_id = 1; }
+message ListDashboardsResponse { repeated Dashboard dashboards = 1; }
+message SaveDashboardRequest { string organization_id = 1; string id = 2; string name = 3; DashboardSpec spec = 4; int64 expected_revision = 5; bool shared = 6; repeated string team_ids = 7; }
+message DeleteDashboardRequest { string organization_id = 1; string id = 2; int64 expected_revision = 3; }
+
+message GetResourceSummaryRequest { string organization_id = 1; InventoryViewSpec filters = 2; string group_by = 3; }
+message ResourceCount { string label = 1; int64 total = 2; string oldest_observation = 3; }
+message GetResourceSummaryResponse { repeated ResourceCount groups = 1; int64 total = 2; }
+
+message TagCondition { string key = 1; string value = 2; string name = 3; bool exists = 4; }
+
+message ListResourceScopesRequest { string organization_id = 1; }
+message ResourceScope { string kind = 1; string value = 2; string label = 3; }
+message ListResourceScopesResponse { repeated ResourceScope scopes = 1; }
+
+message ListInstallationDirectoryRequest { string kind = 1; string search = 2; string state = 3; string page_token = 4; }
+message InstallationUser { string id = 1; string email = 2; bool active = 3; bool global_admin = 4; bool mfa_enabled = 5; int64 revision = 6; }
+message InstallationOrganization { string id = 1; string name = 2; bool active = 3; int64 revision = 4; }
+message ListInstallationDirectoryResponse { repeated InstallationUser users = 1; repeated InstallationOrganization organizations = 2; string next_page_token = 3; }
+
+message SetInstallationUserRequest { string id = 1; bool active = 2; bool global_admin = 3; int64 expected_revision = 4; string password = 5; string code = 6; }
+
+message SetInstallationOrganizationRequest { string id = 1; bool active = 2; int64 expected_revision = 3; string password = 4; string code = 5; }
+
+message GetInstallationHealthRequest {}
+message InstallationWorkState { string kind = 1; string status = 2; int64 count = 3; double oldest_seconds = 4; }
+message InstallationHealth { repeated InstallationWorkState work = 1; string observed_at = 2; int32 database_connections = 3; int32 database_capacity = 4; bool provider_execution_configured = 5; DatabaseStorage storage = 6; }
+message DatabaseStorage { int64 used_bytes = 1; int64 audit_bytes = 2; int64 budget_bytes = 3; string status = 4; }
+
+message ListTeamsRequest { string organization_id = 1; }
+message Team { string id = 1; string name = 2; string role_id = 3; bool active = 4; int64 revision = 5; repeated string user_ids = 6; }
+message ListTeamsResponse { repeated Team teams = 1; }
+message SaveTeamRequest { string organization_id = 1; string id = 2; string name = 3; string role_id = 4; bool active = 5; int64 expected_revision = 6; repeated string user_ids = 7; }
+
+message DeleteTeamRequest { string organization_id = 1; string id = 2; int64 expected_revision = 3; }
+
+message DashboardTeam { string id = 1; string name = 2; bool active = 3; }
+message ListDashboardTeamsResponse { repeated DashboardTeam teams = 1; }
+
+message GetAutomationSourceRequest { string organization_id = 1; string id = 2; }
+message GetServerTemplateRequest { string organization_id = 1; string id = 2; }
+
+message GetOperationsOverviewRequest { string organization_id = 1; }
+message OperationsOverview { int64 pending = 1; int64 active = 2; int64 failed = 3; int64 uncertain = 4; repeated Operation approvals = 5; repeated Operation problems = 6; }
+
+message SetNotificationSubscriptionsRequest { string organization_id = 1; string id = 2; repeated string event_types = 3; int64 expected_revision = 4; }
+
+message GetNotificationRecordRequest { string organization_id = 1; string id = 2; }
+
+message DeleteNotificationDestinationRequest { string organization_id = 1; string id = 2; string confirmation = 3; int64 expected_revision = 4; }
+
+message GetConnectionRequest { string organization_id = 1; string id = 2; }
+
+message CancelAutomationValidationRequest { string organization_id = 1; string id = 2; }
+
+message NotificationGrouping { int32 seconds = 1; int64 revision = 2; }
+message SetNotificationGroupingRequest { string organization_id = 1; int32 seconds = 2; int64 expected_revision = 3; }
+
+message ProjectOwnershipSummary { string status = 1; int32 unsupported = 2; int32 scanner_version = 3; string scanned_at = 4; int64 protected_references = 5; int64 incomplete_versions = 6; }
+message ListProjectOwnershipRequest { string organization_id = 1; string project_id = 2; string page_token = 3; }
+message ProjectOwnershipReference { string kind = 1; string native_id = 2; string region = 3; string first_state_id = 4; string resource_id = 5; bool conflicting = 6; }
+message ListProjectOwnershipResponse { repeated ProjectOwnershipReference references = 1; string next_page_token = 2; }
+
+message OrganizationSmtp { bool configured = 1; int64 revision = 2; }
+message SetOrganizationSmtpRequest { string organization_id = 1; SmtpSettings smtp = 2; bool remove = 3; int64 expected_revision = 4; }
+
+message SSHKeyCreate { string name = 1; string public_key = 2; }
+message RequestSSHKeyCreationRequest { string organization_id = 1; string connection_id = 2; string region = 3; SSHKeyCreate creation = 4; string reason = 5; string idempotency_key = 6; }

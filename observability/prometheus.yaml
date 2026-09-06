@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+rule_files:
+  - /otel-lgtm/providah-alerts.yaml
+scrape_configs:
+  - job_name: providah
+    static_configs:
+      - targets: ['127.0.0.1:9091']

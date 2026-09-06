@@ -1,0 +1,6 @@
+# Build with .bin/automation-image as context; keep source and credentials out of the image.
+ARG RUNTIME_IMAGE
+FROM ${RUNTIME_IMAGE}
+COPY automation-runner /providah-automation
+USER 65532:65532
+ENTRYPOINT ["/providah-automation"]

@@ -1,0 +1,34 @@
+groups:
+  - name: providah-storage
+    rules:
+      - alert: ProvidahDatabaseBudgetWarning
+        expr: |
+          (providah_database_storage_bytes{kind="used"} / ignoring(kind) providah_database_storage_bytes{kind="budget"} >= 0.8)
+          and (providah_database_storage_bytes{kind="used"} / ignoring(kind) providah_database_storage_bytes{kind="budget"} < 0.9)
+          and on(job, instance) (providah_database_storage_bytes{kind="budget"} > 0)
+          and on(job, instance) (time() - providah_database_storage_snapshot_timestamp_seconds < 120)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Database allocation exceeds 80% of its configured budget
+          description: Review database capacity and audit export backlog. This budget does not measure host free space.
+      - alert: ProvidahDatabaseBudgetCritical
+        expr: |
+          (providah_database_storage_bytes{kind="used"} / ignoring(kind) providah_database_storage_bytes{kind="budget"} >= 0.9)
+          and on(job, instance) (providah_database_storage_bytes{kind="budget"} > 0)
+          and on(job, instance) (time() - providah_database_storage_snapshot_timestamp_seconds < 120)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Database allocation exceeds 90% of its configured budget
+          description: Expand capacity or follow reviewed retention procedures. Do not delete unexported audit history to clear this warning.
+      - alert: ProvidahDatabaseStorageSnapshotStale
+        expr: time() - providah_database_storage_snapshot_timestamp_seconds >= 120
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Database storage measurement is stale or unavailable
+          description: Check database connectivity and measurement permissions. Retained size values are not current capacity evidence.

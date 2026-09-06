@@ -1,0 +1,81 @@
+name: providah
+services:
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_USER: providah
+      POSTGRES_PASSWORD: providah
+      POSTGRES_DB: providah
+    ports: ["127.0.0.1:55432:5432"]
+    volumes: ["postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U providah"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+  app:
+    profiles: [app]
+    build:
+      context: .
+      args:
+        GO_VERSION: ${GO_VERSION:-1.26.7}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://providah:providah@db:5432/providah?sslmode=disable
+      LISTEN_ADDR: :8080
+      STATIC_DIR: /web
+      ORIGIN: http://localhost:8760
+      LAUNCHER_SOCKET: /run/providah/launcher.sock
+    volumes: ["launcher-socket:/run/providah:ro"]
+    ports: ["127.0.0.1:8760:8080"]
+    depends_on:
+      db:
+        condition: service_healthy
+      launcher:
+        condition: service_healthy
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  provider:
+    profiles: [build]
+    image: providah-provider:dev
+    build:
+      context: .
+      target: provider
+      args:
+        GO_VERSION: ${GO_VERSION:-1.26.7}
+  egress:
+    profiles: [build]
+    image: providah-egress:dev
+    build:
+      context: .
+      target: egress
+      args:
+        GO_VERSION: ${GO_VERSION:-1.26.7}
+
+  launcher:
+    profiles: [app]
+    image: providah-launcher:dev
+    build:
+      context: .
+      target: launcher
+      args:
+        GO_VERSION: ${GO_VERSION:-1.26.7}
+    environment:
+      PROVIDER_IMAGE: providah-provider:dev
+      PROVIDER_RUNTIMES: ${PROVIDER_RUNTIMES:-}
+      PROVIDER_TRUST_KEYS_FILE: ${PROVIDER_TRUST_KEYS_FILE:-}
+      PROVIDER_RELEASES_FILE: ${PROVIDER_RELEASES_FILE:-}
+      AUTOMATION_RUNTIMES: ${AUTOMATION_RUNTIMES:-}
+      AUTOMATION_PROXY_IMAGE: ${AUTOMATION_PROXY_IMAGE:-providah-egress:dev}
+      LAUNCHER_SOCKET: /run/providah/launcher.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - launcher-socket:/run/providah
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, FOWNER]
+volumes:
+  postgres:
+  launcher-socket:

@@ -1,0 +1,17 @@
+# Example offline validators. Build with .bin/automation-image as the context.
+# Review and add locked provider mirrors / collections before validating real projects.
+FROM ghcr.io/opentofu/opentofu@sha256:3e11ca509319257e46ea6fb1b98cf77d185a1e370cc8dd1bf187f6b8515a73d9 AS tofu-binary
+FROM hashicorp/terraform@sha256:96d2bc440714bf2b2f2998ac730fd4612f30746df43fca6f0892b2e2035b11bc AS terraform-binary
+FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab AS opentofu
+COPY --from=tofu-binary /usr/local/bin/tofu /usr/local/bin/tofu
+COPY automation-runner /providah-automation
+ENTRYPOINT ["/providah-automation"]
+FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab AS terraform
+COPY --from=terraform-binary /bin/terraform /usr/local/bin/terraform
+COPY automation-runner /providah-automation
+ENTRYPOINT ["/providah-automation"]
+FROM python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS ansible
+RUN pip install --no-cache-dir ansible-core==2.19.7
+COPY automation-runner /providah-automation
+USER 65532:65532
+ENTRYPOINT ["/providah-automation"]

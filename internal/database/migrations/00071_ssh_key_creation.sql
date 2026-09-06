@@ -1,0 +1,16 @@
+-- +goose Up
+ALTER TABLE operations DROP CONSTRAINT operation_kind_action;
+ALTER TABLE operations ADD CONSTRAINT operation_kind_action CHECK((resource_kind='access.ssh_key' AND action='create') OR (resource_kind='compute.placement_group' AND provider IN ('aws','hetzner') AND action='delete') OR (resource_kind='organization.project' AND provider='digitalocean' AND action='delete') OR (resource_kind='compute.image' AND provider='aws' AND action='delete') OR resource_kind='compute.server' OR (resource_kind IN ('storage.snapshot','storage.volume','access.ssh_key') AND action='delete') OR (resource_kind IN ('network.network','network.firewall') AND action='delete' AND provider IN ('digitalocean','hetzner')) OR (resource_kind IN ('database.instance','database.cluster') AND provider='aws' AND action IN ('start','shutdown') AND provider_identity<>'') OR (resource_kind='network.firewall' AND provider='aws' AND action='delete') OR (resource_kind IN ('database.snapshot','database.cluster_snapshot') AND provider='aws' AND action='delete') OR (resource_kind='network.load_balancer' AND provider IN ('aws','digitalocean','hetzner') AND action='delete'));
+ALTER TABLE operations DROP CONSTRAINT operations_creation_check;
+ALTER TABLE operations ADD CONSTRAINT operations_creation_check CHECK(octet_length(creation::text)<=CASE WHEN resource_kind='access.ssh_key' THEN 20480 ELSE 4096 END);
+-- +goose StatementBegin
+CREATE FUNCTION protect_key_creation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD.resource_kind='access.ssh_key' AND OLD.action='create' AND OLD.creation<>'{}'::jsonb AND NEW.creation IS DISTINCT FROM OLD.creation THEN RAISE EXCEPTION 'public key creation input is immutable'; END IF; RETURN NEW; END $$;
+-- +goose StatementEnd
+CREATE TRIGGER immutable_key_creation BEFORE UPDATE ON operations FOR EACH ROW EXECUTE FUNCTION protect_key_creation();
+-- +goose Down
+ALTER TABLE operations DROP CONSTRAINT operation_kind_action;
+ALTER TABLE operations ADD CONSTRAINT operation_kind_action CHECK((resource_kind='compute.placement_group' AND provider IN ('aws','hetzner') AND action='delete') OR (resource_kind='organization.project' AND provider='digitalocean' AND action='delete') OR (resource_kind='compute.image' AND provider='aws' AND action='delete') OR resource_kind='compute.server' OR (resource_kind IN ('storage.snapshot','storage.volume','access.ssh_key') AND action='delete') OR (resource_kind IN ('network.network','network.firewall') AND action='delete' AND provider IN ('digitalocean','hetzner')) OR (resource_kind IN ('database.instance','database.cluster') AND provider='aws' AND action IN ('start','shutdown') AND provider_identity<>'') OR (resource_kind='network.firewall' AND provider='aws' AND action='delete') OR (resource_kind IN ('database.snapshot','database.cluster_snapshot') AND provider='aws' AND action='delete') OR (resource_kind='network.load_balancer' AND provider IN ('aws','digitalocean','hetzner') AND action='delete'));
+DROP TRIGGER immutable_key_creation ON operations;
+DROP FUNCTION protect_key_creation();
+ALTER TABLE operations DROP CONSTRAINT operations_creation_check;
+ALTER TABLE operations ADD CONSTRAINT operations_creation_check CHECK(octet_length(creation::text)<=4096);

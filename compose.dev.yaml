@@ -1,0 +1,78 @@
+# Local test services; ports bind only to the host loopback interface.
+services:
+  app:
+    environment:
+      DEV_CAPTURE: "true"
+      SMTP_CONFIG: '{"Host":"mailpit","Port":1025,"Sender":"providah@localhost.test"}'
+    env_file: .local/artifact-store.env
+    depends_on:
+      rustfs:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+      webhookie:
+        condition: service_healthy
+  rustfs:
+    image: rustfs/rustfs@sha256:41fe89380f4120a337790c02af192c3fe7bb55c3edc2e6e9357b487b47c6ab21
+    env_file: .local/dev-stack.env
+    environment:
+      RUSTFS_ADDRESS: :9000
+      RUSTFS_CONSOLE_ADDRESS: :9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOGGER_LEVEL: warn
+      RUSTFS_OBS_LOG_DIRECTORY: /logs
+    command: ["/data"]
+    ports: ["127.0.0.1:19000:9000", "127.0.0.1:19001:9001"]
+    volumes: ["rustfs-data:/data", "rustfs-logs:/logs"]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:9000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  mailpit:
+    image: axllent/mailpit@sha256:df6c2541907e1be6fac21f509927cf6ed771617a1f4b361ef66d97bd05593d2d
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: "5000"
+    ports: ["127.0.0.1:18025:8025", "127.0.0.1:11025:1025"]
+    volumes: ["mailpit-data:/data"]
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  webhookie-permissions:
+    image: ghcr.io/alphabravo-oss/webhookie@sha256:8ac814e65382ad6063af59bba412c5c9db68a6d4af21e0edf1892846576242b0
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c", "chown 65532:65532 /data"]
+    volumes: ["webhookie-data:/data"]
+    cap_drop: [ALL]
+    cap_add: [CHOWN]
+    security_opt: ["no-new-privileges:true"]
+  webhookie:
+    depends_on:
+      webhookie-permissions:
+        condition: service_completed_successfully
+    image: ghcr.io/alphabravo-oss/webhookie@sha256:8ac814e65382ad6063af59bba412c5c9db68a6d4af21e0edf1892846576242b0
+    environment:
+      WEBHOOKIE_PUBLIC_BASE_URL: http://localhost:18080
+      WEBHOOKIE_DATA_DIR: /data
+    ports: ["127.0.0.1:18080:8080"]
+    volumes: ["webhookie-data:/data"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/readyz"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+volumes:
+  rustfs-data:
+  rustfs-logs:
+  mailpit-data:
+  webhookie-data:
+

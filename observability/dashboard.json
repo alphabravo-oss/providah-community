@@ -1,0 +1,189 @@
+{
+  "uid": "providah",
+  "title": "Providah operations",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request rate",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(providah_http_request_seconds_count[5m]))",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "HTTP 5xx rate",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(providah_http_request_seconds_count{status=~\"5..\"}[5m]))",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "HTTP p95 latency (excluding SSE)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(providah_http_request_seconds_bucket{route!=\"/api/events\"}[5m])))",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Active requests including SSE",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "providah_http_active_requests",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Work backlog",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "providah_work_items",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Oldest work creation age",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "providah_work_oldest_seconds",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Database pool",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "providah_database_connections",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Snapshot age",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time() - providah_work_snapshot_timestamp_seconds",
+          "legendFormat": "{{kind}} {{status}} {{state}}"
+        }
+      ]
+    }
+  ]
+}

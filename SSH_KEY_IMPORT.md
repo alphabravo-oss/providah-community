@@ -1,0 +1,15 @@
+# Public SSH-key import
+
+AWS EC2 ImportKeyPair, DigitalOcean Keys.Create and Hetzner SSHKey.Create adapters use the installed Go SDKs. The typed contract accepts one OpenSSH public key: Ed25519 or RSA of at least 2048 bits. Private keys, authorized_keys options, multiple keys and unsupported algorithms are rejected. Comments do not change public-key identity.
+
+The provider-side name is the reviewed base name followed by the complete operation ID. This binds read-only reconciliation to a specific request after a lost create response. AWS reads the exact generated name with public-key material included. Hetzner reads that name. DigitalOcean uses its fingerprint lookup API, then verifies the full public key and operation-specific name; the fingerprint alone is not trusted as identity. A known returned native ID must match too.
+
+Successful import responses are accepted, not immediately completed. Observation must match name, public material and identity. Mutation failures remain uncertain and are never automatically retried. Existing provider restrictions on duplicate names/fingerprints still apply; the adapters do not rename or adopt unrelated existing keys. Imports add account key records only and do not update existing servers' authorized_keys files.
+
+Open **Inventory → Import SSH key** or use `providahctl request-ssh-key --org ORG --input key.json`. Select an enabled connection, enter a 2–63 character lowercase name, paste one public-key line, review the exact public material and confirm the base name with an import reason. AWS requires an EC2 region matching any connection region restriction; DigitalOcean and Hetzner imports use `global`, including on region-filtered connections.
+
+Requests require `operations.request` and `operations.create`; another user with `operations.approve` and `operations.create` approves the persisted public key. Enabled MFA, organization identity, module, connection revision and maintenance checks use the shared operation pipeline. Approvers see the full public key and final provider-side name in Operations. The CLI's operation detail output also includes the persisted public key. Schema 71 makes saved key input immutable. Identical request-key replay returns the same operation; changed input is rejected. Pending or uncertain creation reserves the connection/region/base name until resolved.
+
+The worker must explicitly advertise `ssh_key_create` with capability version 1, `access.ssh_key` inventory and `create`; older workers do not gain this action. Provider modules expose `access.ssh_key.create`. Accepted imports retain the returned native ID for later reads; they do not publish a created inventory record until observation confirms completion. Lost responses remain uncertain and the existing **Check provider state** command performs reads only. Importing a key does not modify existing server access or generate private keys.
+
+Contract and SDK fixtures, PostgreSQL approval/idempotency/immutability/recovery checks, CLI checks and browser review tests exercise this workflow. No live provider key was imported during verification.

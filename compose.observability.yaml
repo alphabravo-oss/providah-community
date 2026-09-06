@@ -1,0 +1,34 @@
+# Optional local development stack. Start using `make observe`.
+services:
+  app:
+    environment:
+      METRICS_ADDR: 127.0.0.1:9091
+      TRACE_ENDPOINT: http://127.0.0.1:4318/v1/traces
+      TRACE_SAMPLE_RATIO: '1'
+      DEV_LOG_FILE: /tmp/providah.log
+    ports:
+      - '127.0.0.1:8761:3000'
+    volumes:
+      - development-logs:/tmp
+  observability:
+    profiles: [observability]
+    image: grafana/otel-lgtm:0.32.1@sha256:7fd8eaad6bb64897ad5f644c8e15ee67c3204c97168f4bdba122adbf8f60e3c4
+    network_mode: service:app
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      ENABLE_OBI: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+      PROMETHEUS_EXTRA_ARGS: '--storage.tsdb.retention.time=24h'
+    volumes:
+      - development-logs:/providah-logs:ro
+      - ./observability/alerts.yaml:/otel-lgtm/providah-alerts.yaml:ro
+      - ./observability/prometheus.yaml:/otel-lgtm/prometheus.yaml:ro
+      - ./observability/collector.yaml:/otel-lgtm/otelcol-config.yaml:ro
+      - ./observability/datasources.yaml:/otel-lgtm/grafana/conf/provisioning/datasources/grafana-datasources.yaml:ro
+      - ./observability/dashboards.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/providah.yaml:ro
+      - ./observability/dashboard.json:/otel-lgtm/grafana/conf/provisioning/dashboards/providah/dashboard.json:ro
+volumes:
+  development-logs:

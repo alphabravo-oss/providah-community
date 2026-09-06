@@ -1,0 +1,11 @@
+version: "2"
+run:
+  timeout: 5m
+  build-tags: [integration]
+linters:
+  default: standard
+  exclusions:
+    rules:
+      - path: internal/(auditstore/store|inputspec/inputs|core/(audit_export|security|service)|notification/send|sourcebundle/bundle)\.go
+        linters: [staticcheck]
+        text: ST1005
