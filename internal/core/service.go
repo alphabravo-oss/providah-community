@@ -556,6 +556,9 @@ func (s *Service) ListResources(ctx context.Context, req *connect.Request[pb.Lis
 		return nil, invalid("Unsupported inventory sort.")
 	}
 	filter := base64Filter(m.Provider, m.Search) + ":" + strconv.Quote(m.Kind) + ":" + strconv.Quote(m.ConnectionId)
+	if m.IncludeCatalog {
+		filter += ":catalog"
+	}
 	if m.SortBy != "" || m.Descending {
 		filter += ":" + m.SortBy + ":" + strconv.FormatBool(m.Descending)
 	}
@@ -588,7 +591,7 @@ func (s *Service) ListResources(ctx context.Context, req *connect.Request[pb.Lis
 	if size > 200 {
 		size = 200
 	}
-	rows, err := s.q.ListResources(ctx, database.ListResourcesParams{FilterRegion: m.Region, FilterStatus: m.Status, TagConditions: tagConditionsJSON(m.TagConditions), TagMatchAny: m.TagMatchAny, TagKey: m.TagKey, TagValue: m.TagValue, TagName: m.TagName, TagExists: m.TagExists, ConnectionID: m.ConnectionId, Kind: m.Kind, OrgID: m.OrganizationId, Provider: m.Provider, Search: m.Search, AfterID: after, AfterValue: afterValue, SortBy: m.SortBy, Descending: m.Descending, PageSize: size + 1})
+	rows, err := s.q.ListResources(ctx, database.ListResourcesParams{IncludeCatalog: m.IncludeCatalog, FilterRegion: m.Region, FilterStatus: m.Status, TagConditions: tagConditionsJSON(m.TagConditions), TagMatchAny: m.TagMatchAny, TagKey: m.TagKey, TagValue: m.TagValue, TagName: m.TagName, TagExists: m.TagExists, ConnectionID: m.ConnectionId, Kind: m.Kind, OrgID: m.OrganizationId, Provider: m.Provider, Search: m.Search, AfterID: after, AfterValue: afterValue, SortBy: m.SortBy, Descending: m.Descending, PageSize: size + 1})
 	if err != nil {
 		return nil, err
 	}

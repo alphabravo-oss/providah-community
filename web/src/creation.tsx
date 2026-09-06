@@ -10,7 +10,7 @@ export function useCatalog(org: string, connection: string, kind: string, enable
   return useInfiniteQuery({
     enabled,
     queryKey: ["resources", org, "creation", connection, kind], initialPageParam: "",
-    queryFn: ({ pageParam }) => api.listResources({ organizationId: org, connectionId: connection, kind, pageSize: 200, pageToken: pageParam }),
+    queryFn: ({ pageParam }) => api.listResources({ includeCatalog: true, organizationId: org, connectionId: connection, kind, pageSize: 200, pageToken: pageParam }),
     getNextPageParam: (last) => last.nextPageToken || undefined,
   });
 }

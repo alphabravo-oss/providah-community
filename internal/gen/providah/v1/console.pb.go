@@ -1241,6 +1241,7 @@ func (x *RotateCredentialRequest) GetCredential() string {
 
 type ListResourcesRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
+	IncludeCatalog bool                   `protobuf:"varint,18,opt,name=include_catalog,json=includeCatalog,proto3" json:"include_catalog,omitempty"`
 	OrganizationId string                 `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
 	Search         string                 `protobuf:"bytes,2,opt,name=search,proto3" json:"search,omitempty"`
 	Provider       string                 `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
@@ -1290,6 +1291,13 @@ func (x *ListResourcesRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListResourcesRequest.ProtoReflect.Descriptor instead.
 func (*ListResourcesRequest) Descriptor() ([]byte, []int) {
 	return file_providah_v1_console_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ListResourcesRequest) GetIncludeCatalog() bool {
+	if x != nil {
+		return x.IncludeCatalog
+	}
+	return false
 }
 
 func (x *ListResourcesRequest) GetOrganizationId() string {
@@ -15629,8 +15637,9 @@ const file_providah_v1_console_proto_rawDesc = "" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x1e\n" +
 	"\n" +
 	"credential\x18\x03 \x01(\tR\n" +
-	"credential\"\xa7\x04\n" +
+	"credential\"\xd0\x04\n" +
 	"\x14ListResourcesRequest\x12'\n" +
+	"\x0finclude_catalog\x18\x12 \x01(\bR\x0eincludeCatalog\x12'\n" +
 	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\x12\x16\n" +
 	"\x06search\x18\x02 \x01(\tR\x06search\x12\x1a\n" +
 	"\bprovider\x18\x03 \x01(\tR\bprovider\x12\x1d\n" +

@@ -150,7 +150,7 @@ message CreateConnectionRequest { string organization_id = 1; string name = 2; s
 message ConnectionResponse { Connection connection = 1; }
 message SetConnectionEnabledRequest { string organization_id = 1; string id = 2; bool enabled = 3; }
 message RotateCredentialRequest { string organization_id = 1; string id = 2; string credential = 3; }
-message ListResourcesRequest { string organization_id = 1; string search = 2; string provider = 3; string page_token = 4; int32 page_size = 5; string kind = 6; string connection_id = 7; string sort_by = 8; bool descending = 9; string tag_key = 10; string tag_value = 11; bool tag_exists = 12; string tag_name = 13; repeated TagCondition tag_conditions = 14; bool tag_match_any = 15; string region = 16; string status = 17; }
+message ListResourcesRequest { bool include_catalog = 18; string organization_id = 1; string search = 2; string provider = 3; string page_token = 4; int32 page_size = 5; string kind = 6; string connection_id = 7; string sort_by = 8; bool descending = 9; string tag_key = 10; string tag_value = 11; bool tag_exists = 12; string tag_name = 13; repeated TagCondition tag_conditions = 14; bool tag_match_any = 15; string region = 16; string status = 17; }
 message ResourceTags { map<string,string> labels = 1; repeated string names = 2; }
 message Resource { string id = 1; string connection_id = 2; string native_id = 3; string name = 4; string provider = 5; string kind = 6; string region = 7; string status = 8; string observed_at = 9; string public_ip = 10; string private_ip = 11; string size = 12; ResourceTags tags = 13; }
 message ListResourcesResponse { repeated Resource resources = 1; string next_page_token = 2; }

@@ -256,7 +256,7 @@ func (s *Service) finishScan(ctx context.Context, job database.ScanJob, result p
 					return err
 				}
 			}
-			if err = q.UpsertResource(ctx, database.UpsertResourceParams{TagMetadata: tags, ProviderIdentity: r.ProviderIdentity, ID: id, OrgID: job.OrgID, ConnectionID: job.ConnectionID, Kind: r.ResourceKind(), NativeID: r.NativeID, Name: r.Name, Provider: c.Provider, Region: r.Region, Status: r.Status, PublicIp: r.PublicIP, PrivateIp: r.PrivateIP, Size: r.Size}); err != nil {
+			if err = q.UpsertResource(ctx, database.UpsertResourceParams{Catalog: r.Catalog || r.ResourceKind() == "compute.type", TagMetadata: tags, ProviderIdentity: r.ProviderIdentity, ID: id, OrgID: job.OrgID, ConnectionID: job.ConnectionID, Kind: r.ResourceKind(), NativeID: r.NativeID, Name: r.Name, Provider: c.Provider, Region: r.Region, Status: r.Status, PublicIp: r.PublicIP, PrivateIp: r.PrivateIP, Size: r.Size}); err != nil {
 				return err
 			}
 		}

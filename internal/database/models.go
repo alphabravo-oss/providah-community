@@ -456,6 +456,7 @@ type Resource struct {
 	Size             string
 	ProviderIdentity string
 	TagMetadata      []byte
+	Catalog          bool
 }
 
 type ResourceOwnershipClaim struct {

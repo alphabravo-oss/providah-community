@@ -38,7 +38,7 @@ func Discover(ctx context.Context, r provider.Request, client *http.Client) prov
 		return out
 	}
 	for _, row := range rows {
-		resource := provider.Resource{ProviderIdentity: row.ProviderIdentity, Kind: row.Kind, NativeID: row.NativeID, Name: row.Name, Region: row.Region, Status: row.Status, PublicIP: row.PublicIP, PrivateIP: row.PrivateIP, Size: row.Size}
+		resource := provider.Resource{Catalog: row.Catalog, ProviderIdentity: row.ProviderIdentity, Kind: row.Kind, NativeID: row.NativeID, Name: row.Name, Region: row.Region, Status: row.Status, PublicIP: row.PublicIP, PrivateIP: row.PrivateIP, Size: row.Size}
 		if row.Tags != nil {
 			resource.Tags = &provider.Tags{Labels: row.Tags.Labels, Names: row.Tags.Names}
 		}

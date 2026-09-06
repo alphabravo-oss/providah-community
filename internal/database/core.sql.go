@@ -373,7 +373,7 @@ const listResources = `-- name: ListResources :many
 WITH filtered AS (
 SELECT id,connection_id,native_id,name,provider,kind,region,status,observed_at,public_ip,private_ip,size,tag_metadata,
 (CASE $5::text WHEN 'name' THEN name WHEN 'provider' THEN provider WHEN 'kind' THEN kind WHEN 'region' THEN region WHEN 'status' THEN status ELSE id END COLLATE "C")::text AS sort_value
-FROM filtered_inventory($6::text,$7::text,$8::text,$9::text,$10::text,$11::text,$12::text,$13::boolean,$14::text,$15::jsonb,$16::boolean,$17::text,$18::text)
+FROM filtered_inventory($6::text,$7::text,$8::text,$9::text,$10::text,$11::text,$12::text,$13::boolean,$14::text,$15::jsonb,$16::boolean,$17::text,$18::text,$19::boolean)
 )
 SELECT id, connection_id, native_id, name, provider, kind, region, status, observed_at, public_ip, private_ip, size, tag_metadata, sort_value FROM filtered
 WHERE $1::text='' OR
@@ -386,24 +386,25 @@ CASE WHEN $2::boolean THEN id END DESC LIMIT $4::integer
 `
 
 type ListResourcesParams struct {
-	AfterID       string
-	Descending    bool
-	AfterValue    string
-	PageSize      int32
-	SortBy        string
-	OrgID         string
-	Search        string
-	Provider      string
-	Kind          string
-	ConnectionID  string
-	TagKey        string
-	TagValue      string
-	TagExists     bool
-	TagName       string
-	TagConditions []byte
-	TagMatchAny   bool
-	FilterRegion  string
-	FilterStatus  string
+	AfterID        string
+	Descending     bool
+	AfterValue     string
+	PageSize       int32
+	SortBy         string
+	OrgID          string
+	Search         string
+	Provider       string
+	Kind           string
+	ConnectionID   string
+	TagKey         string
+	TagValue       string
+	TagExists      bool
+	TagName        string
+	TagConditions  []byte
+	TagMatchAny    bool
+	FilterRegion   string
+	FilterStatus   string
+	IncludeCatalog bool
 }
 
 type ListResourcesRow struct {
@@ -444,6 +445,7 @@ func (q *Queries) ListResources(ctx context.Context, arg ListResourcesParams) ([
 		arg.TagMatchAny,
 		arg.FilterRegion,
 		arg.FilterStatus,
+		arg.IncludeCatalog,
 	)
 	if err != nil {
 		return nil, err

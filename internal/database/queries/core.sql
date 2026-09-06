@@ -47,7 +47,7 @@ UPDATE connections SET ciphertext=$3,key_id=$4,credential_source=coalesce(nullif
 WITH filtered AS (
 SELECT id,connection_id,native_id,name,provider,kind,region,status,observed_at,public_ip,private_ip,size,tag_metadata,
 (CASE sqlc.arg(sort_by)::text WHEN 'name' THEN name WHEN 'provider' THEN provider WHEN 'kind' THEN kind WHEN 'region' THEN region WHEN 'status' THEN status ELSE id END COLLATE "C")::text AS sort_value
-FROM filtered_inventory(sqlc.arg(org_id)::text,sqlc.arg(search)::text,sqlc.arg(provider)::text,sqlc.arg(kind)::text,sqlc.arg(connection_id)::text,sqlc.arg(tag_key)::text,sqlc.arg(tag_value)::text,sqlc.arg(tag_exists)::boolean,sqlc.arg(tag_name)::text,sqlc.arg(tag_conditions)::jsonb,sqlc.arg(tag_match_any)::boolean,sqlc.arg(filter_region)::text,sqlc.arg(filter_status)::text)
+FROM filtered_inventory(sqlc.arg(org_id)::text,sqlc.arg(search)::text,sqlc.arg(provider)::text,sqlc.arg(kind)::text,sqlc.arg(connection_id)::text,sqlc.arg(tag_key)::text,sqlc.arg(tag_value)::text,sqlc.arg(tag_exists)::boolean,sqlc.arg(tag_name)::text,sqlc.arg(tag_conditions)::jsonb,sqlc.arg(tag_match_any)::boolean,sqlc.arg(filter_region)::text,sqlc.arg(filter_status)::text,sqlc.arg(include_catalog)::boolean)
 )
 SELECT * FROM filtered
 WHERE sqlc.arg(after_id)::text='' OR

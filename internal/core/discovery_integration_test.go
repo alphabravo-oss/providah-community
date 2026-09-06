@@ -56,6 +56,29 @@ func exerciseDiscovery(t *testing.T, s *Service, client providahv1connect.Consol
 	resources, err := client.ListResources(ctx, connect.NewRequest(&pb.ListResourcesRequest{OrganizationId: org}))
 	check(err)
 	resourceID := resources.Msg.Resources[0].Id
+	// Catalog rows must not affect resources or summaries, including explicit image filters.
+	_, err = s.pool.Exec(ctx, `INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,catalog)
+	SELECT repeat(md5(v.native),2),$1,$2,v.native,v.native,'hetzner',v.kind,'global','available',v.catalog
+	FROM (VALUES ('catalog-image','compute.image',true),('catalog-size','compute.type',true),('owned-image','compute.image',false)) v(native,kind,catalog)`, org, id)
+	check(err)
+	for _, tc := range []struct {
+		kind    string
+		catalog bool
+		want    int
+	}{{"", false, 2}, {"compute.image", false, 1}, {"compute.type", false, 0}, {"compute.image", true, 2}, {"compute.type", true, 1}} {
+		listed, e := client.ListResources(ctx, connect.NewRequest(&pb.ListResourcesRequest{OrganizationId: org, Kind: tc.kind, IncludeCatalog: tc.catalog}))
+		check(e)
+		if len(listed.Msg.Resources) != tc.want {
+			t.Fatalf("catalog visibility %+v: got %d", tc, len(listed.Msg.Resources))
+		}
+	}
+	summary, e := client.GetResourceSummary(ctx, connect.NewRequest(&pb.GetResourceSummaryRequest{OrganizationId: org, GroupBy: "kind", Filters: &pb.InventoryViewSpec{}}))
+	check(e)
+	if summary.Msg.Total != 2 {
+		t.Fatal("catalog inflated resource summary")
+	}
+	_, err = s.pool.Exec(ctx, `DELETE FROM resources WHERE org_id=$1 AND native_id IN ('catalog-image','catalog-size','owned-image')`, org)
+	check(err)
 	if resources.Msg.Resources[0].Tags == nil || resources.Msg.Resources[0].Tags.Labels["env"] != "production" {
 		t.Fatal("tags not persisted")
 	}

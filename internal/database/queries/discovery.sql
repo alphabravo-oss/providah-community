@@ -27,9 +27,9 @@ SELECT id,org_id,connection_id,revision FROM scan_jobs WHERE status='running' AN
 -- name: ExpireScan :execrows
 UPDATE scan_jobs SET status='failed',error='worker_interrupted',finished_at=now() WHERE id=$1 AND status='running' AND lease_until<=now();
 -- name: UpsertResource :exec
-INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,private_ip,size,observed_at,provider_identity,tag_metadata)
-VALUES($1,$2,$3,$4,$5,$6,sqlc.arg(kind),$7,$8,$9,$10,$11,now(),sqlc.arg(provider_identity),sqlc.arg(tag_metadata))
-ON CONFLICT(org_id,connection_id,kind,region,native_id) DO UPDATE SET tag_metadata=excluded.tag_metadata,name=excluded.name,status=excluded.status,public_ip=excluded.public_ip,private_ip=excluded.private_ip,size=excluded.size,provider_identity=excluded.provider_identity,observed_at=now(),deleted_at=NULL;
+INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,private_ip,size,observed_at,provider_identity,tag_metadata,catalog)
+VALUES($1,$2,$3,$4,$5,$6,sqlc.arg(kind),$7,$8,$9,$10,$11,now(),sqlc.arg(provider_identity),sqlc.arg(tag_metadata),sqlc.arg(catalog))
+ON CONFLICT(org_id,connection_id,kind,region,native_id) DO UPDATE SET catalog=excluded.catalog,tag_metadata=excluded.tag_metadata,name=excluded.name,status=excluded.status,public_ip=excluded.public_ip,private_ip=excluded.private_ip,size=excluded.size,provider_identity=excluded.provider_identity,observed_at=now(),deleted_at=NULL;
 -- name: RetireMissingResources :exec
 UPDATE resources SET deleted_at=now() WHERE org_id=$1 AND connection_id=$2 AND kind=ANY(sqlc.arg(covered_kinds)::text[]) AND deleted_at IS NULL AND NOT(id=ANY(sqlc.arg(present_ids)::text[]));
 -- name: GetResource :one

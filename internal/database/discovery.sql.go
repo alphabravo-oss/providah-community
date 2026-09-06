@@ -408,9 +408,9 @@ func (q *Queries) ScanOvertakenByOperation(ctx context.Context, arg ScanOvertake
 }
 
 const upsertResource = `-- name: UpsertResource :exec
-INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,private_ip,size,observed_at,provider_identity,tag_metadata)
-VALUES($1,$2,$3,$4,$5,$6,$12,$7,$8,$9,$10,$11,now(),$13,$14)
-ON CONFLICT(org_id,connection_id,kind,region,native_id) DO UPDATE SET tag_metadata=excluded.tag_metadata,name=excluded.name,status=excluded.status,public_ip=excluded.public_ip,private_ip=excluded.private_ip,size=excluded.size,provider_identity=excluded.provider_identity,observed_at=now(),deleted_at=NULL
+INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,private_ip,size,observed_at,provider_identity,tag_metadata,catalog)
+VALUES($1,$2,$3,$4,$5,$6,$12,$7,$8,$9,$10,$11,now(),$13,$14,$15)
+ON CONFLICT(org_id,connection_id,kind,region,native_id) DO UPDATE SET catalog=excluded.catalog,tag_metadata=excluded.tag_metadata,name=excluded.name,status=excluded.status,public_ip=excluded.public_ip,private_ip=excluded.private_ip,size=excluded.size,provider_identity=excluded.provider_identity,observed_at=now(),deleted_at=NULL
 `
 
 type UpsertResourceParams struct {
@@ -428,6 +428,7 @@ type UpsertResourceParams struct {
 	Kind             string
 	ProviderIdentity string
 	TagMetadata      []byte
+	Catalog          bool
 }
 
 func (q *Queries) UpsertResource(ctx context.Context, arg UpsertResourceParams) error {
@@ -446,6 +447,7 @@ func (q *Queries) UpsertResource(ctx context.Context, arg UpsertResourceParams) 
 		arg.Kind,
 		arg.ProviderIdentity,
 		arg.TagMetadata,
+		arg.Catalog,
 	)
 	return err
 }

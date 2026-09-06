@@ -31,6 +31,7 @@ type Request struct {
 	Power          *PowerRequest   `json:"power,omitempty"`
 }
 type Resource struct {
+	Catalog          bool   `json:"catalog,omitempty"`
 	Tags             *Tags  `json:"tags,omitempty"`
 	ProviderIdentity string `json:"provider_identity,omitempty"`
 	Kind             string `json:"kind,omitempty"`
