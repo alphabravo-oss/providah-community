@@ -10,7 +10,7 @@ FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c
 COPY --from=terraform-binary /bin/terraform /usr/local/bin/terraform
 COPY automation-runner /providah-automation
 ENTRYPOINT ["/providah-automation"]
-FROM python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31 AS ansible
+FROM python@sha256:8edbf9e42c7fb168b9c523718ed907117e6d2e60f5889c0c499bbda3a787da53 AS ansible
 RUN pip install --no-cache-dir ansible-core==2.19.7
 COPY automation-runner /providah-automation
 USER 65532:65532
