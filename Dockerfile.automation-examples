@@ -1,6 +1,6 @@
 # Example offline validators. Build with .bin/automation-image as the context.
 # Review and add locked provider mirrors / collections before validating real projects.
-FROM ghcr.io/opentofu/opentofu@sha256:3e11ca509319257e46ea6fb1b98cf77d185a1e370cc8dd1bf187f6b8515a73d9 AS tofu-binary
+FROM ghcr.io/opentofu/opentofu@sha256:22cb52f6c5bf5c72a48a8f56d993d8df3e9462b1cdfb5db7e77143c87e8d159f AS tofu-binary
 FROM hashicorp/terraform@sha256:96d2bc440714bf2b2f2998ac730fd4612f30746df43fca6f0892b2e2035b11bc AS terraform-binary
 FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab AS opentofu
 COPY --from=tofu-binary /usr/local/bin/tofu /usr/local/bin/tofu
