@@ -31,13 +31,13 @@ Versions come from go.mod. S3 supports internal artifact/state storage and AWS b
 
 ## Shared module integration
 
-All existing AWS, DigitalOcean and Hetzner discovery now calls `inventory.Collect` from the public Apache-2.0 module [`ab-provider-modules`](https://github.com/alphabravo-oss/ab-provider-modules), pinned at `v0.2.0`. No sibling checkout or private credentials are needed to build.
+All existing AWS, DigitalOcean and Hetzner discovery calls `inventory.Collect` from the public Apache-2.0 module [`ab-provider-modules`](https://github.com/alphabravo-oss/ab-provider-modules), pinned at `v0.2.0`. No sibling checkout or private credentials are needed to build.
 
-The shared module owns cloud inventory API calls, paging, region filtering and display metadata extraction. This includes existing RDS/EKS/load-balancer/S3/Route 53 collection and DO/Hetzner infrastructure. Providah's thin `internal/providers/discover.go` adapter retains request validation, AWS broker-output restrictions, wire mapping, error redaction and response validation. Worker isolation and inventory retirement remain unchanged.
+The shared module owns cloud inventory API calls, paging, region filtering and display metadata extraction. This includes existing RDS/EKS/load-balancer/S3/Route 53 collection and DO/Hetzner infrastructure. Providah's thin `internal/providers/discover.go` adapter retains request validation, AWS broker-output restrictions, wire mapping, error redaction and response validation. The application controls worker isolation and inventory retirement.
 
-A failed page or kind returns no inventory. Hetzner server collection retains its full-inventory safety bound before region filtering. The worker resource bounds are operational safety limits, not edition entitlements.
+A failed page or kind returns no inventory. Hetzner server collection retains its full-inventory safety bound before region filtering. Worker resource bounds are operational safety limits.
 
-Shared-module tests and Providah provider/SDK/launcher checks pass offline. This extraction preserves existing resource coverage; it does not establish live cloud verification. Azure/GCP/OCI/Linode remain unintegrated in Providah. Sierra remains unchanged.
+Shared-module and provider checks run offline. Live cloud verification requires account credentials. Azure/GCP/OCI/Linode are not integrated.
 
 Update with `go get github.com/alphabravo-oss/ab-provider-modules@<version>`, then `go mod tidy` and `go test ./internal/providers ./sdk/provider ./internal/launcher`. Shared-repository Dependabot updates upstream SDK families weekly; product dependency pins move explicitly after checks.
 
