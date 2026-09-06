@@ -49,7 +49,7 @@ require (
 
 require (
 	filippo.io/hpke v0.4.0 // indirect
-	github.com/alphabravo-oss/ab-provider-modules v0.2.2
+	github.com/alphabravo-oss/ab-provider-modules v0.2.3
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.2 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.2 // indirect

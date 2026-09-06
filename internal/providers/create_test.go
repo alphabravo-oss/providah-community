@@ -84,6 +84,9 @@ func TestServerCreationSDKs(t *testing.T) {
 						t.Fatal(e)
 					}
 					path = r.Form.Get("Action")
+					if path == "DescribeImages" && (r.Form.Get("Owner.1") != "self" || r.Form.Get("Owner.2") != "amazon" || r.Form.Get("ImageId.1") != input.Image) {
+						t.Fatal("image publisher boundary or reviewed AMI lost")
+					}
 					content = "text/xml"
 				}
 				mutate := path == mutationPath && r.Method == "POST"

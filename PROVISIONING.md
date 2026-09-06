@@ -14,7 +14,7 @@ The operation stores the exact non-secret inputs, connection revision, provider 
 
 | Provider | Live checks | Submission |
 |---|---|---|
-| AWS SDK v2 EC2 | Owned available EBS-root AMI; instance architecture; existing key pair; available subnet with addresses; security group in the same VPC; instance-type offering in the subnet availability zone | RunInstances with count exactly one, original operation ID as client token, Name/request tags, no public IPv4, required IMDSv2, encrypted root disk and root/primary-interface delete-on-termination |
+| AWS SDK v2 EC2 | Account-owned or Amazon-published available EBS-root AMI; instance architecture; existing key pair; available subnet with addresses; security group in the same VPC; instance-type offering in the subnet availability zone | RunInstances with count exactly one, original operation ID as client token, Name/request tags, no public IPv4, required IMDSv2, encrypted root disk and root/primary-interface delete-on-termination |
 | DigitalOcean godo | Available image in the location; existing SSH key; available size in the location with sufficient root disk | Droplets.Create with one image/size/location, SSH key, request tag, and IPv6; provider default VPC/public networking; backups are not enabled |
 | Hetzner hcloud-go/v2 | Available non-deleted image; compatible size architecture and disk; available size/location combination; existing SSH key | Server.Create with location, image, size, SSH key, startup enabled, and two request labels; provider default public networking |
 
@@ -45,3 +45,5 @@ DigitalOcean and Hetzner creation forms can select an existing network from disc
 DigitalOcean's official Go SDK re-reads the VPC and checks its region before passing VPCUUID to droplet creation. Hetzner's SDK re-reads the network and checks that a cloud subnet exists in the selected location's network zone before passing Networks to server creation. Observation waits for the requested attachment before reporting successful creation. Capacity and network configuration may still change between preflight and provider acceptance; failed/lost submissions follow the existing uncertain-outcome contract and are not retried automatically.
 
 A missing selection preserves provider-default VPC behavior on DigitalOcean and no explicit private network on Hetzner. Public networking remains enabled. AWS still uses its explicit subnet/security-group configuration. The selected runtime must advertise private_network_create; older images cannot accept new network-bound requests. This does not create networks or edit attachments on existing servers.
+
+AWS creation catalogs include the newest Amazon Linux 2023 default-kernel images for x86_64 and arm64, selected from Amazon-owned EC2 images. Public images remain catalog-only. Creation rechecks the reviewed AMI ID with EC2 owner filters (`self`, `amazon`); arbitrary third-party publishers are excluded.

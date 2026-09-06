@@ -73,7 +73,7 @@ func awsCreate(ctx context.Context, r provider.Request, client *http.Client) pro
 		}
 		return createObserved(p, aws.ToString(found[0].InstanceId), string(found[0].State.Name))
 	}
-	image, e := svc.DescribeImages(ctx, &ec2.DescribeImagesInput{ImageIds: []string{c.Image}, Owners: []string{"self"}})
+	image, e := svc.DescribeImages(ctx, &ec2.DescribeImagesInput{ImageIds: []string{c.Image}, Owners: []string{"self", "amazon"}})
 	if e != nil || len(image.Images) != 1 || aws.ToString(image.Images[0].ImageId) != c.Image || image.Images[0].State != types.ImageStateAvailable || image.Images[0].RootDeviceType != types.DeviceTypeEbs || aws.ToString(image.Images[0].RootDeviceName) == "" {
 		return PowerReadFailure(p.Phase)
 	}
