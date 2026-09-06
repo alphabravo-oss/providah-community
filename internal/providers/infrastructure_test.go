@@ -73,6 +73,12 @@ func TestInfrastructureSDKs(t *testing.T) {
 				ct := "application/json"
 				if tc.cloud == "aws" {
 					b, _ := io.ReadAll(r.Body)
+					if tc.kind == "compute.image" && strings.Contains(string(b), "Owner.1=amazon") {
+						if !strings.Contains(string(b), "public-ssm-parameter-name") {
+							t.Fatal("unbounded public image catalog")
+						}
+						return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": {"text/xml"}}, Body: io.NopCloser(strings.NewReader(`<DescribeImagesResponse><imagesSet/></DescribeImagesResponse>`)), Request: r}, nil
+					}
 					if (tc.kind == "compute.image" || tc.kind == "storage.snapshot") && !strings.Contains(string(b), "Owner.1=self") {
 						t.Fatal("AWS image discovery was not restricted to owned images")
 					}
@@ -99,7 +105,11 @@ func TestInfrastructureSDKs(t *testing.T) {
 			}
 			req := provider.Request{Version: provider.Protocol, OrganizationID: strings.Repeat("a", 64), ConnectionID: strings.Repeat("b", 64), Provider: tc.cloud, Credential: credential, Region: region, InventoryKinds: []string{tc.kind}}
 			out := Discover(context.Background(), req, client)
-			if out.Validate() != nil || len(out.Resources) != 1 || calls != 1 {
+			expectedCalls := 1
+			if tc.cloud == "aws" && tc.kind == "compute.image" {
+				expectedCalls = 2
+			}
+			if out.Validate() != nil || len(out.Resources) != 1 || calls != expectedCalls {
 				t.Fatalf("invalid discovery: %+v", out)
 			}
 			if out.Resources[0].Kind != tc.kind || out.Resources[0].Region != tc.region {
