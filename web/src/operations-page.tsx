@@ -65,7 +65,8 @@ export function OperationsPage() {
         eyebrow="REVIEW, EXECUTE, VERIFY"
         title="Operations"
         description="Track resource actions from request to observed outcome."
-      />
+      >{org.permissions.includes("roles.manage")&&<Link className="button secondary" to={`/admin/resource-policy?org=${org.id}`}>Approval settings</Link>}</PageHeader>
+      <p>Open an operation to review it. When approval is required, a different user with approval permission must select Approve and submit a review.</p>
       <ErrorNote error={q.error} />
       <section className="panel">
         {q.isPending ? (
@@ -164,6 +165,7 @@ export function OperationsPage() {
                 </div>
               ))}
             </dl>
+            {current.status===OperationStatus.AWAITING_APPROVAL&&<p className="notice">{current.requester===email?"You requested this operation, so you cannot approve it. Ask another authorized user to review it. To use a newly changed confirmation-only policy, cancel this request and submit it again.":"This operation is waiting for an authorized reviewer. Use the decision form below if your role allows approval."}</p>}
             {current.detail && <p className="notice">{current.detail}</p>}
             <ErrorNote
               error={
@@ -171,7 +173,7 @@ export function OperationsPage() {
               }
             />
             {current.action==="snapshot" && <p className="notice">Creates a billed server disk image named providah-{current.id}. Requires a stopped server. AWS creates an EBS-backed AMI; instance-store disks are excluded. DigitalOcean/Hetzner exclude attached volumes and scratch disks. No automatic restart or retry after an ambiguous submission.</p>}
-            {current.action==="tags" && <section className="notice"><h3>Reviewed tags before change</h3><TagReview tags={current.expectedTags}/><h3>Complete requested tag set</h3><TagReview tags={current.targetTags}/><p>Independent approval required. Concurrent edits or partial writes may require reconciliation; no automatic rollback.</p></section>}
+            {current.action==="tags" && <section className="notice"><h3>Reviewed tags before change</h3><TagReview tags={current.expectedTags}/><h3>Complete requested tag set</h3><TagReview tags={current.targetTags}/><p>Concurrent edits or partial writes may require reconciliation; no automatic rollback.</p></section>}
             {current.action==="resize" && <p className="notice">Server type: <strong>{current.expectedSize} → {current.targetSize}</strong>. Disk size is preserved. Provider compatibility/capacity rules apply and the provider may restart the server.</p>}
             {current.keyCreation && <section><h3>Reviewed public key</h3><dl className="resource-details"><div><dt>Imported name</dt><dd>{current.keyCreation.name}-{current.id}</dd></div></dl><pre className="notice multiline">{current.keyCreation.publicKey}</pre><p className="notice">Adds an account public key. Existing servers are unchanged; completion requires read-only confirmation.</p></section>}
             {current.creation && <dl className="resource-details">{Object.entries({"Template version ID":current.templateId,Name:current.creation.name,Image:current.creation.image,Size:current.creation.size,"SSH key":current.creation.sshKey,Subnet:current.creation.subnet,"Private network":current.creation.network,"Security group":current.creation.securityGroup}).filter(([,v])=>v).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}

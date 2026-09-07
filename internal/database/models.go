@@ -425,6 +425,7 @@ type Organization struct {
 	NotificationGroupRevision int64
 	CreationEnabled           bool
 	ResourcePolicyRevision    int64
+	ApprovalActions           []string
 }
 
 type ProviderModule struct {

@@ -141,8 +141,12 @@ func (s *Service) requestCreation(ctx context.Context, r *pb.RequestServerCreati
 		if restriction != "" {
 			return conflict(restriction)
 		}
+		status := "queued"
+		if approvalRequired(ctx, q, c.OrgID, "create", false) {
+			status = "awaiting_approval"
+		}
 		id = newOperationID()
-		_, err = q.CreateOperation(ctx, database.CreateOperationParams{TraceParent: traceParent(ctx), ResourceKind: kind, ID: id, OrgID: c.OrgID, ConnectionID: c.ID, ConnectionRevision: c.Revision, Provider: c.Provider, Region: r.Region, ResourceName: input.Name, Action: "create", Reason: reason, RequesterID: actor(ctx).UserID, RequesterEmail: actor(ctx).Email, Status: "awaiting_approval", IdempotencyKey: r.IdempotencyKey, MaintenanceRevision: maintenance, MaintenanceExpiresAt: dbTime(end), ModuleRevision: revision, RuntimeID: runtime})
+		_, err = q.CreateOperation(ctx, database.CreateOperationParams{TraceParent: traceParent(ctx), ResourceKind: kind, ID: id, OrgID: c.OrgID, ConnectionID: c.ID, ConnectionRevision: c.Revision, Provider: c.Provider, Region: r.Region, ResourceName: input.Name, Action: "create", Reason: reason, RequesterID: actor(ctx).UserID, RequesterEmail: actor(ctx).Email, Status: status, IdempotencyKey: r.IdempotencyKey, MaintenanceRevision: maintenance, MaintenanceExpiresAt: dbTime(end), ModuleRevision: revision, RuntimeID: runtime})
 		if err != nil {
 			return err
 		}
@@ -158,7 +162,7 @@ func (s *Service) requestCreation(ctx context.Context, r *pb.RequestServerCreati
 		if err = q.StampOperationIdentity(ctx, database.StampOperationIdentityParams{OrgID: c.OrgID, ID: id, RequesterOidcID: actor(ctx).OIDC}); err != nil {
 			return err
 		}
-		return audit(ctx, q, c.OrgID, actor(ctx).Email, "operation.requested", id, map[string]any{"action": "create", "creation": config, "resource_kind": kind, "region": r.Region, "reason": reason, "status": "awaiting_approval"})
+		return audit(ctx, q, c.OrgID, actor(ctx).Email, "operation.requested", id, map[string]any{"action": "create", "creation": config, "resource_kind": kind, "region": r.Region, "reason": reason, "status": status})
 	})
 	if err != nil {
 		var pe *pgconn.PgError

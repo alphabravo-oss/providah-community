@@ -921,7 +921,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByLabel("Creation reason",{exact:true}).fill("Provision an approved test server");
   await page.getByLabel("Confirm the reviewed server name",{exact:true}).fill("browser-created-server");
   await page.screenshot({path:"test-results/create-review.png",fullPage:true});
-  await page.getByRole("button", {name:"Request independent approval",exact:true}).click();
+  await page.getByRole("button", {name:"Confirm creation",exact:true}).click();
   await expect(page.getByRole("heading", {name:"Operations",exact:true})).toBeVisible();
   expect(creationRequested).toBe(true);
   await page.unroute("**/providah.v1.ConsoleService/RequestServerCreation");
@@ -1791,7 +1791,7 @@ test("server creation reviews and submits a private network",async({page})=>{
  await page.getByLabel("Creation reason",{exact:true}).fill("Use the reviewed private network");
  await page.getByLabel("Confirm the reviewed server name",{exact:true}).fill("private-server");
  await page.screenshot({path:"test-results/private-network-create.png",fullPage:true});
- await page.getByRole("button",{name:"Request independent approval",exact:true}).click();
+ await page.getByRole("button",{name:"Confirm creation",exact:true}).click();
  await expect(page.getByRole("dialog")).toHaveCount(0);expect(submitted).toBe(true);
 });
 
@@ -1852,7 +1852,7 @@ test("server images require stopped targets and show storage review",async({page
  await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await expect(page.getByRole("button",{name:"Create server image",exact:true})).toBeDisabled();
  resource.status="off";await page.reload();await page.getByRole("button",{name:"Create server image",exact:true}).click();
- await expect(page.getByRole("dialog").last()).toContainText("Independent approval is required");
+ await expect(page.getByRole("dialog").last()).toContainText("Confirmation is the final gate");
  await expect(page.getByRole("dialog").last()).toContainText("excluding attached volumes and scratch disks");
  await page.getByLabel("Reason for this action",{exact:true}).fill("Reviewed recovery image and storage costs");
  await page.screenshot({path:"test-results/server-image-review.png",fullPage:true});
@@ -2308,10 +2308,10 @@ for (const cloud of ["aws", "digitalocean", "hetzner"]) {
   await expect(page.getByRole("dialog")).toContainText(operation.region);
   await page.getByLabel("Import reason",{exact:true}).fill("Import reviewed operator key");
   await page.getByLabel("Confirm the reviewed key name",{exact:true}).fill("operator-key");
-  await page.getByRole("button",{name:"Request independent approval",exact:true}).click();
+  await page.getByRole("button",{name:"Confirm creation",exact:true}).click();
   await expect(page.getByRole("dialog")).toContainText("Import response unavailable");
   expect(calls).toBe(1);fail=false;
-  await page.getByRole("button",{name:"Request independent approval",exact:true}).click();
+  await page.getByRole("button",{name:"Confirm creation",exact:true}).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);expect(calls).toBe(2);
   await page.getByRole("button",{name:/operator-key/}).click();
   await expect(page.getByRole("dialog")).toContainText("Import SSH key");

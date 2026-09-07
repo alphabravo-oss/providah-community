@@ -43,7 +43,7 @@ Actual SDK transport fixtures exercise read-only preview, dependency changes, ex
 
 Snapshot deletion now shares the existing review/approval/dispatch/observation workflow for AWS EBS snapshots, DigitalOcean Droplet and volume snapshots, and Hetzner snapshot images. Automatic backup deletion and restores remain unimplemented.
 
-The request pins `storage.snapshot` as an operation resource kind in schema 20 and sends it explicitly to a runtime advertising `snapshot_delete`. Server requests continue omitting the new worker field. Older runtimes cannot receive snapshot deletes; new runtimes still use the existing `delete` action permission and independent approval requirements. Runtime, credentials, maintenance, SSO and authority are rechecked before dispatch.
+The request pins `storage.snapshot` as an operation resource kind in schema 20 and sends it explicitly to a runtime advertising `snapshot_delete`. Server requests continue omitting the new worker field. Older runtimes cannot receive snapshot deletes; new runtimes still use the existing `delete` action permission and approval when required by organization policy requirements. Runtime, credentials, maintenance, SSO and authority are rechecked before dispatch.
 
 Provider preflight and execution:
 
@@ -61,7 +61,7 @@ Validation uses actual SDK request fixtures for preview, changed/protected/incom
 
 ## Detached volume deletion
 
-Reviewed deletion now supports detached AWS EBS, DigitalOcean and Hetzner Cloud volumes. Schema 21 admits `storage.volume` operations; runtimes must explicitly advertise `volume_delete`. Older runtimes do not receive these requests. Existing delete/request permissions, typed confirmation, independent approval, MFA, current SSO/maintenance rules and credential/runtime revision checks apply.
+Reviewed deletion now supports detached AWS EBS, DigitalOcean and Hetzner Cloud volumes. Schema 21 admits `storage.volume` operations; runtimes must explicitly advertise `volume_delete`. Older runtimes do not receive these requests. Existing delete/request permissions, typed confirmation, approval when required by organization policy, MFA, current SSO/maintenance rules and credential/runtime revision checks apply.
 
 Preflight reads the exact volume and region. AWS requires an available volume with no attachments; DigitalOcean requires an empty Droplet attachment list; Hetzner requires no server attachment and deletion protection disabled. Hetzner inventory now marks attached volumes as attached so the UI does not advertise them as eligible. No automatic detach, protection change, snapshot, or cascading deletion occurs.
 
@@ -85,7 +85,7 @@ Provider APIs do not expose atomic compare-and-delete across these dependency re
 
 ## SSH-key records
 
-AWS, DigitalOcean and Hetzner advertise `ssh_key_delete` for `access.ssh_key`. Deletion uses the shared impact review, typed native-ID confirmation, independent approval and durable observation flow. The worker reads the exact immutable ID and compares the name, fingerprint and scope again before submission. Public/private key material is not included in the review. SDK mutation retries are disabled; only a subsequent successful absence observation retires inventory. Permission errors do not prove absence.
+AWS, DigitalOcean and Hetzner advertise `ssh_key_delete` for `access.ssh_key`. Deletion uses the shared impact review, typed native-ID confirmation, approval when required by organization policy and durable observation flow. The worker reads the exact immutable ID and compares the name, fingerprint and scope again before submission. Public/private key material is not included in the review. SDK mutation retries are disabled; only a subsequent successful absence observation retires inventory. Permission errors do not prove absence.
 
 AWS uses EC2 DescribeKeyPairs filtered by key-pair-id, followed by DeleteKeyPair with KeyPairId. DigitalOcean uses Keys.GetByID/DeleteByID; Hetzner uses SSHKey.GetByID/Delete. Credentials need those read/delete operations. AWS identities and retirement are region-scoped; DigitalOcean and Hetzner keys are global, with aliases fenced across regions.
 
@@ -93,7 +93,7 @@ Deleting the provider record does **not** remove authorized keys from existing s
 
 ## AWS security groups
 
-AWS runtimes advertise `security_group_delete` for `network.firewall`; older runtimes and AWS VPC deletion stay unavailable. The existing detail modal, typed confirmation, immutable review, independent approval, current permission checks and durable observation apply. Schema 50 fences AWS network operations and inventory retirement by region while preserving global aliases for DigitalOcean/Hetzner.
+AWS runtimes advertise `security_group_delete` for `network.firewall`; older runtimes and AWS VPC deletion stay unavailable. The resource detail page, typed confirmation, immutable review, approval when required by organization policy, current permission checks and durable observation apply. Schema 50 fences AWS network operations and inventory retirement by region while preserving global aliases for DigitalOcean/Hetzner.
 
 Preview and submission read the exact group ID and reject default groups, attached network interfaces, inbound/outbound references from other groups, cross-VPC references and VPC associations. Self-referencing rules are allowed. Dependency queries must succeed and return a complete result; continuation tokens block rather than imply absence. Review includes group name/ID, owner, VPC, region and inbound/outbound rules. Changed review blocks the write. External launch templates and automation are not rewritten or exhaustively discovered.
 
@@ -103,7 +103,7 @@ References: [AWS deletion dependencies](https://docs.aws.amazon.com/AWSEC2/lates
 
 ## DigitalOcean and Hetzner load balancers
 
-Load balancers use the same typed confirmation, separate delete permission and independent approval flow. Explicit load_balancer_delete runtime capability keeps older modules unavailable. The SDK preflight pins creation metadata, addresses, backend IDs/selectors, forwarding services and certificate references. DigitalOcean global routing adds child load balancers and domain references. Hetzner label-selector expansions are bounded and included; transient health values and certificate contents are excluded. Deletion protection blocks Hetzner deletion.
+Load balancers use the same typed confirmation, separate delete permission and approval when required by organization policy flow. Explicit load_balancer_delete runtime capability keeps older modules unavailable. The SDK preflight pins creation metadata, addresses, backend IDs/selectors, forwarding services and certificate references. DigitalOcean global routing adds child load balancers and domain references. Hetzner label-selector expansions are bounded and included; transient health values and certificate contents are excluded. Deletion protection blocks Hetzner deletion.
 
 Deleting routing stops traffic through the load balancer. Backend servers, target load balancers and certificates are not explicitly deleted. Operators must account for DNS, clients and external controllers. Submission re-reads and compares impact, makes one delete attempt and requires a 204 acknowledgement; errors or missing acknowledgements remain uncertain. Only an explicit 404 confirms absence. Provider-side changes after the final read remain a race, as with other delete operations.
 
@@ -139,7 +139,7 @@ Open a managed project under Templates to inspect its latest scan and retained p
 
 ## AWS AMI deregistration
 
-Available AWS `compute.image` resources use the shared deletion preview, typed confirmation, separate deletion permission, independent approval, ownership guard and queued authority recheck. Runtime catalogs must advertise `image_delete`; older runtimes do not gain the action automatically. The regional image operation index prevents duplicate pending deletions, and confirmed completion retires only that connection/region/image identity.
+Available AWS `compute.image` resources use the shared deletion preview, typed confirmation, separate deletion permission, approval when required by organization policy, ownership guard and queued authority recheck. Runtime catalogs must advertise `image_delete`; older runtimes do not gain the action automatically. The regional image operation index prevents duplicate pending deletions, and confirmed completion retires only that connection/region/image identity.
 
 The AWS SDK reads the exact owned image, requires explicitly disabled deregistration protection, and includes its identity, creation date, backing snapshots and launch grants in the immutable review. Submission repeats the read and rejects changed impact. `DeregisterImage` explicitly sets `DeleteAssociatedSnapshots=false`, requires a positive acknowledgement and is never retried after an ambiguous response. Observation waits for deregistration or absence; denied reads do not indicate success.
 
@@ -151,7 +151,7 @@ Scanner version 4 adds `digitalocean_app` and `digitalocean_project` using UUID 
 
 ## DigitalOcean empty projects
 
-`organization.project` deletion uses the shared typed confirmation, deletion permission, independent approval, maintenance and IaC ownership checks. The godo SDK reads the exact project, rejects default projects (including an independent default-project read), and requires an empty resource listing with no remaining page or nonzero total. The reviewed project identity/name/environment/timestamps are compared again before submission. No contained resource is moved, reassigned or deleted. DigitalOcean also requires an empty project for deletion. See [DigitalOcean project deletion](https://docs.digitalocean.com/reference/doctl/reference/projects/delete/).
+`organization.project` deletion uses the shared typed confirmation, deletion permission, approval when required by organization policy, maintenance and IaC ownership checks. The godo SDK reads the exact project, rejects default projects (including an independent default-project read), and requires an empty resource listing with no remaining page or nonzero total. The reviewed project identity/name/environment/timestamps are compared again before submission. No contained resource is moved, reassigned or deleted. DigitalOcean also requires an empty project for deletion. See [DigitalOcean project deletion](https://docs.digitalocean.com/reference/doctl/reference/projects/delete/).
 
 Only a 204 response acknowledges submission; ambiguous writes are not retried. A later exact-project 404 confirms removal, while access errors remain observation failures. Schema 66 fences concurrent project removals within a connection and retires matching project inventory after confirmation. New runtimes must explicitly advertise `project_delete`; older runtimes retain read-only project support. Project creation, editing and membership changes remain unfinished. No live project deletion has been exercised.
 
@@ -201,4 +201,4 @@ AWS and Hetzner SDK adapters now inspect exact placement-group identity and reje
 
 AWS's delete API takes the inspected group name rather than its immutable ID. Concurrent external replacement can race that call, and external launch-template/automation references are not exhaustively discovered. The review states these limits. No servers are detached/deleted, no backup is created, and no automatic undo is offered.
 
-Compatible AWS/Hetzner runtimes explicitly advertise this action. Schema 70 persists reviewed placement-group operations and prevents overlapping work; shared independent approval, RBAC, maintenance and managed-IaC checks apply. The resource modal provides preview and exact-identity confirmation. Observed completion marks matching inventory deleted. Older runtimes do not gain the action implicitly. No live placement group has been modified.
+Compatible AWS/Hetzner runtimes explicitly advertise this action. Schema 70 persists reviewed placement-group operations and prevents overlapping work; shared approval when required by organization policy, RBAC, maintenance and managed-IaC checks apply. The resource modal provides preview and exact-identity confirmation. Observed completion marks matching inventory deleted. Older runtimes do not gain the action implicitly. No live placement group has been modified.

@@ -10,10 +10,11 @@ import (
 )
 
 const getResourcePolicy = `-- name: GetResourcePolicy :one
-SELECT creation_enabled,resource_policy_revision AS revision FROM organizations WHERE id=$1
+SELECT approval_actions,creation_enabled,resource_policy_revision AS revision FROM organizations WHERE id=$1
 `
 
 type GetResourcePolicyRow struct {
+	ApprovalActions []string
 	CreationEnabled bool
 	Revision        int64
 }
@@ -21,22 +22,28 @@ type GetResourcePolicyRow struct {
 func (q *Queries) GetResourcePolicy(ctx context.Context, id string) (GetResourcePolicyRow, error) {
 	row := q.db.QueryRow(ctx, getResourcePolicy, id)
 	var i GetResourcePolicyRow
-	err := row.Scan(&i.CreationEnabled, &i.Revision)
+	err := row.Scan(&i.ApprovalActions, &i.CreationEnabled, &i.Revision)
 	return i, err
 }
 
 const saveResourcePolicy = `-- name: SaveResourcePolicy :execrows
-UPDATE organizations SET creation_enabled=$2,resource_policy_revision=resource_policy_revision+1 WHERE id=$1 AND resource_policy_revision=$3
+UPDATE organizations SET creation_enabled=$2,approval_actions=$4::text[],resource_policy_revision=resource_policy_revision+1 WHERE id=$1 AND resource_policy_revision=$3
 `
 
 type SaveResourcePolicyParams struct {
 	ID                     string
 	CreationEnabled        bool
 	ResourcePolicyRevision int64
+	ApprovalActions        []string
 }
 
 func (q *Queries) SaveResourcePolicy(ctx context.Context, arg SaveResourcePolicyParams) (int64, error) {
-	result, err := q.db.Exec(ctx, saveResourcePolicy, arg.ID, arg.CreationEnabled, arg.ResourcePolicyRevision)
+	result, err := q.db.Exec(ctx, saveResourcePolicy,
+		arg.ID,
+		arg.CreationEnabled,
+		arg.ResourcePolicyRevision,
+		arg.ApprovalActions,
+	)
 	if err != nil {
 		return 0, err
 	}

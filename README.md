@@ -71,7 +71,9 @@ Configure and verify S3-compatible storage in **Audit export**, then enable cont
 
 Open a discovered server in Inventory to request **Start**, **Graceful shutdown**, or **Restart**. The target and observed before-state are fixed when the review modal opens. Starting may incur provider charges. Shutdown uses the provider's graceful shutdown API and never falls back to force power-off.
 
-The current `power-v1` policy queues start directly and requires another authorized person to approve shutdown/restart. Approval lasts one hour; unreviewed requests expire after 24 hours. Use the Operator and Approver roles, or equivalent custom permissions. Recent MFA is required for requests and approvals; a single administrator cannot approve their own disruptive action.
+In **Admin console → Resource management**, choose **Confirmation only** for solo development, **Approval for selected actions**, or **Approval for every action**. Confirmation only queues a permitted operation after confirmation; no second user is needed. Existing organizations retain the default of approving all actions except startup. When approval is required, another user with approval permission opens the operation, selects Approve, enters a reason, and submits the review. Approval lasts one hour; unreviewed requests expire after 24 hours. Requests and reviews still require recent MFA where MFA is enabled.
+
+Policy changes require organization administration permission and an audited reason. Existing pending requests remain pending: cancel and submit again to use a new confirmation-only policy. Dispatch rechecks current approval requirements, so stricter policy can cancel queued work without approval. Permissions, typed deletion confirmation, dependency checks, maintenance rules and IaC protection remain enforced. Scheduled automation retains its separate schedule approval.
 
 Operations are durable and visible in the Operations table. The system saves dispatch intent before calling a provider, allows one active/uncertain action per resource, rechecks authority and credential revisions, and disables SDK mutation retries. Acceptance becomes **Observing**, not success. Provider completion or the requested power state must be observed. Failed reads retry for up to fifteen minutes without resubmitting the mutation.
 
@@ -122,9 +124,9 @@ Occurrences enter the normal operation pipeline. Missed runs and overlapping act
 
 Use **Maintenance** to define allowed action windows for the organization or selected connections. Every applicable policy must be open; closed dates override overnight windows. Policy edits require fresh approval of existing work, and queued work cannot wait for a later window.
 
-Out-of-window manual actions require an explicit exception reason and independent approval. Both people need maintenance.override authority. Scheduled work never inherits a manual exception. Current policies cover server power actions; workspace and automation-runner enforcement will follow their respective modules.
+Out-of-window manual actions require an explicit exception reason and maintenance.override authority. Unless the organization uses confirmation only, another user with approval and maintenance.override permissions must approve. Scheduled work never inherits a manual exception. Current policies cover server power actions; workspace and automation-runner enforcement will follow their respective modules.
 
-Server deletion is available through a provider impact preview, exact-ID confirmation, explicit delete permission, and independent approval. It rechecks the reviewed impact before submission and confirms termination/absence afterward. See [DELETION.md](DELETION.md) for cascades, permissions, and remaining verification limits.
+Server deletion is available through a provider impact preview, exact-ID confirmation, explicit delete permission, and approval when required by organization policy. It rechecks the reviewed impact before submission and confirms termination/absence afterward. See [DELETION.md](DELETION.md) for cascades, permissions, and remaining verification limits.
 
 Encryption keys support mounted files, previous-key reads, and offline transactional re-encryption through `check-encryption` and `rotate-encryption`. Follow [KEY_ROTATION.md](KEY_ROTATION.md); retain old keys for historical backups and stop all core replicas during maintenance.
 

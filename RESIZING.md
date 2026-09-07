@@ -1,6 +1,6 @@
 # Reviewed server resizing
 
-Select a stopped server in Inventory, choose Resize server, select an alternative discovered type, and provide a reason. The common form shows the current type and disk-preservation behavior. The Operations review shows the immutable source → target type for independent approval. Available types come from the connection's existing paginated compute catalog; availability in inventory is not a guarantee of compatibility, current capacity or price.
+Select a stopped server in Inventory, choose Resize server, select an alternative discovered type, and provide a reason. The common form shows the current type and disk-preservation behavior. The Operations review shows the immutable source → target type for approval when required by organization policy. Available types come from the connection's existing paginated compute catalog; availability in inventory is not a guarantee of compatibility, current capacity or price.
 
 The versioned RequestOperation API accepts `action=resize`, `expected_size` and `target_size`. Both are bounded provider type names/slugs and must differ. Other actions reject these fields. Schema 23 persists them on the operation, binds them to its idempotency key and enforces the shape with a database constraint. Changing the input requires a new request and approval.
 
@@ -28,6 +28,6 @@ The core independently rejects a worker success that omits or mismatches the tar
 
 ## Verification and limits
 
-Local SDK tests check actual mutation fields, disk-preserving flags, stopped/source-type preflight, lost-response no-retry behavior, read-only reconciliation, observed target size and failed actions across all three providers. PostgreSQL integration checks independent approval, immutable input/idempotency, stale source cancellation and rejection of unsupported success claims. Browser coverage uses the real shared catalog/form with a mocked final mutation; it changes no cloud resources.
+Local SDK tests check actual mutation fields, disk-preserving flags, stopped/source-type preflight, lost-response no-retry behavior, read-only reconciliation, observed target size and failed actions across all three providers. PostgreSQL integration checks approval when required by organization policy, immutable input/idempotency, stale source cancellation and rejection of unsupported success claims. Browser coverage uses the real shared catalog/form with a mocked final mutation; it changes no cloud resources.
 
 Live provider lifecycle/compatibility tests, automated cost estimates, disk-expanding resize, automatic stop/resize/start orchestration and scheduled/bulk resize remain open. Rollback of schema 23 refuses to discard existing resize history; preserve history and restore a compatible core/runtime instead.

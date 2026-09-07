@@ -45,7 +45,7 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 	setCreation := func(enabled bool) {
 		policy, e := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
 		check(e)
-		_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: enabled, ExpectedRevision: policy.Msg.Revision, Reason: "Exercise organization resource policy"}))
+		_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: enabled, ApprovalActions: policy.Msg.ApprovalActions, ExpectedRevision: policy.Msg.Revision, Reason: "Exercise organization resource policy"}))
 		check(e)
 	}
 	setCreation(false)
@@ -301,5 +301,26 @@ func exerciseCreation(t *testing.T, s *Service, owner, approver providahv1connec
 	}
 	setCreation(true)
 	setRole("approver")
+
+	// Confirmation-only creation must reach the provider without an approver identity.
+	policy, e := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
+	check(e)
+	_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: true, ExpectedRevision: policy.Msg.Revision, Reason: "Test solo creation"}))
+	check(e)
+	request.Creation.Name = "solo-creation"
+	request.IdempotencyKey = randomID()
+	created, err = owner.RequestServerCreation(ctx, connect.NewRequest(request))
+	check(err)
+	if created.Msg.Operation.Status != pb.OperationStatus_OPERATION_STATUS_QUEUED {
+		t.Fatal("solo creation required approval")
+	}
+	run()
+	if templateCalls != 2 {
+		t.Fatal("solo creation did not reach provider")
+	}
+	current, e := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
+	check(e)
+	_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: true, ApprovalActions: policy.Msg.ApprovalActions, ExpectedRevision: current.Msg.Revision, Reason: "Restore creation approvals"}))
+	check(e)
 
 }

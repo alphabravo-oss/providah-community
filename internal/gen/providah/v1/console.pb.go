@@ -15599,6 +15599,7 @@ type ResourcePolicy struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	CreationEnabled bool                   `protobuf:"varint,1,opt,name=creation_enabled,json=creationEnabled,proto3" json:"creation_enabled,omitempty"`
 	Revision        int64                  `protobuf:"varint,2,opt,name=revision,proto3" json:"revision,omitempty"`
+	ApprovalActions []string               `protobuf:"bytes,3,rep,name=approval_actions,json=approvalActions,proto3" json:"approval_actions,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -15647,12 +15648,20 @@ func (x *ResourcePolicy) GetRevision() int64 {
 	return 0
 }
 
+func (x *ResourcePolicy) GetApprovalActions() []string {
+	if x != nil {
+		return x.ApprovalActions
+	}
+	return nil
+}
+
 type SaveResourcePolicyRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	OrganizationId   string                 `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
 	CreationEnabled  bool                   `protobuf:"varint,2,opt,name=creation_enabled,json=creationEnabled,proto3" json:"creation_enabled,omitempty"`
 	ExpectedRevision int64                  `protobuf:"varint,3,opt,name=expected_revision,json=expectedRevision,proto3" json:"expected_revision,omitempty"`
 	Reason           string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	ApprovalActions  []string               `protobuf:"bytes,5,rep,name=approval_actions,json=approvalActions,proto3" json:"approval_actions,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -15713,6 +15722,13 @@ func (x *SaveResourcePolicyRequest) GetReason() string {
 		return x.Reason
 	}
 	return ""
+}
+
+func (x *SaveResourcePolicyRequest) GetApprovalActions() []string {
+	if x != nil {
+		return x.ApprovalActions
+	}
+	return nil
 }
 
 var File_providah_v1_console_proto protoreflect.FileDescriptor
@@ -16969,15 +16985,17 @@ const file_providah_v1_console_proto_rawDesc = "" +
 	"\x06reason\x18\x05 \x01(\tR\x06reason\x12'\n" +
 	"\x0fidempotency_key\x18\x06 \x01(\tR\x0eidempotencyKey\"C\n" +
 	"\x18GetResourcePolicyRequest\x12'\n" +
-	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\"W\n" +
+	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\"\x82\x01\n" +
 	"\x0eResourcePolicy\x12)\n" +
 	"\x10creation_enabled\x18\x01 \x01(\bR\x0fcreationEnabled\x12\x1a\n" +
-	"\brevision\x18\x02 \x01(\x03R\brevision\"\xb4\x01\n" +
+	"\brevision\x18\x02 \x01(\x03R\brevision\x12)\n" +
+	"\x10approval_actions\x18\x03 \x03(\tR\x0fapprovalActions\"\xdf\x01\n" +
 	"\x19SaveResourcePolicyRequest\x12'\n" +
 	"\x0forganization_id\x18\x01 \x01(\tR\x0eorganizationId\x12)\n" +
 	"\x10creation_enabled\x18\x02 \x01(\bR\x0fcreationEnabled\x12+\n" +
 	"\x11expected_revision\x18\x03 \x01(\x03R\x10expectedRevision\x12\x16\n" +
-	"\x06reason\x18\x04 \x01(\tR\x06reason*\xa4\x01\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason\x12)\n" +
+	"\x10approval_actions\x18\x05 \x03(\tR\x0fapprovalActions*\xa4\x01\n" +
 	"\n" +
 	"ScanStatus\x12\x1b\n" +
 	"\x17SCAN_STATUS_UNSPECIFIED\x10\x00\x12\x15\n" +

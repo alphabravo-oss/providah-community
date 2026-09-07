@@ -424,5 +424,5 @@ message SSHKeyCreate { string name = 1; string public_key = 2; }
 message RequestSSHKeyCreationRequest { string organization_id = 1; string connection_id = 2; string region = 3; SSHKeyCreate creation = 4; string reason = 5; string idempotency_key = 6; }
 
 message GetResourcePolicyRequest { string organization_id = 1; }
-message ResourcePolicy { bool creation_enabled = 1; int64 revision = 2; }
-message SaveResourcePolicyRequest { string organization_id = 1; bool creation_enabled = 2; int64 expected_revision = 3; string reason = 4; }
+message ResourcePolicy { bool creation_enabled = 1; int64 revision = 2; repeated string approval_actions = 3; }
+message SaveResourcePolicyRequest { string organization_id = 1; bool creation_enabled = 2; int64 expected_revision = 3; string reason = 4; repeated string approval_actions = 5; }

@@ -269,6 +269,66 @@ func exerciseOperations(t *testing.T, s *Service, owner, approver providahv1conn
 	_, err = owner.UpdateMember(ctx, connect.NewRequest(&pb.UpdateMemberRequest{OrganizationId: org, UserId: approverID, ExpectedRevision: membershipRevision(t, s, ctx, org, approverID), RoleId: "approver", Active: true}))
 	check(err)
 	setState("off")
+
+	// Approval modes keep existing requests pending and recheck queued work at dispatch.
+	policy, err := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
+	check(err)
+	originalActions := policy.Msg.ApprovalActions
+	saveApprovals := func(actions []string) {
+		t.Helper()
+		current, e := owner.GetResourcePolicy(ctx, connect.NewRequest(&pb.GetResourcePolicyRequest{OrganizationId: org}))
+		check(e)
+		_, e = owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: current.Msg.CreationEnabled, ApprovalActions: actions, ExpectedRevision: current.Msg.Revision, Reason: "Exercise action approval policy"}))
+		check(e)
+	}
+	for _, actions := range [][]string{{"unknown"}, {"restart", "restart"}} {
+		_, e := owner.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: true, ApprovalActions: actions, ExpectedRevision: policy.Msg.Revision, Reason: "Invalid approval policy"}))
+		if connect.CodeOf(e) != connect.CodeInvalidArgument {
+			t.Fatal("invalid approval actions accepted", e)
+		}
+	}
+	_, err = approver.SaveResourcePolicy(ctx, connect.NewRequest(&pb.SaveResourcePolicyRequest{OrganizationId: org, CreationEnabled: true, ExpectedRevision: policy.Msg.Revision, Reason: "Unauthorized bypass"}))
+	if connect.CodeOf(err) != connect.CodePermissionDenied {
+		t.Fatal("non-admin changed approvals", err)
+	}
+	setState("running")
+	pending := request("restart", "running", randomID())
+	saveApprovals(nil)
+	status(pending.Id, "awaiting_approval")
+	_, err = owner.CancelOperation(ctx, connect.NewRequest(&pb.CancelOperationRequest{OrganizationId: org, Id: pending.Id}))
+	check(err)
+	direct := request("shutdown", "running", randomID())
+	status(direct.Id, "queued")
+	run()
+	status(direct.Id, "observing")
+	_, err = s.pool.Exec(ctx, "UPDATE operations SET next_attempt_at=now() WHERE id=$1", direct.Id)
+	check(err)
+	run()
+	status(direct.Id, "succeeded")
+	setState("running")
+	direct = request("restart", "running", randomID())
+	saveApprovals([]string{"restart"})
+	before = calls
+	run()
+	status(direct.Id, "canceled")
+	if calls != before {
+		t.Fatal("tightened approval policy reached provider")
+	}
+	pending = request("restart", "running", randomID())
+	status(pending.Id, "awaiting_approval")
+	_, err = owner.CancelOperation(ctx, connect.NewRequest(&pb.CancelOperationRequest{OrganizationId: org, Id: pending.Id}))
+	check(err)
+	direct = request("shutdown", "running", randomID())
+	status(direct.Id, "queued")
+	_, err = owner.CancelOperation(ctx, connect.NewRequest(&pb.CancelOperationRequest{OrganizationId: org, Id: direct.Id}))
+	check(err)
+	saveApprovals([]string{"create", "start", "shutdown", "restart", "resize", "delete", "snapshot", "tags"})
+	setState("off")
+	pending = request("start", "off", randomID())
+	status(pending.Id, "awaiting_approval")
+	_, err = owner.CancelOperation(ctx, connect.NewRequest(&pb.CancelOperationRequest{OrganizationId: org, Id: pending.Id}))
+	check(err)
+	saveApprovals(originalActions)
 	exerciseTagOperations(t, s, owner, approver, ctx, org, resourceID)
 	exerciseResize(t, s, owner, approver, ctx, org, resourceID)
 	exerciseDatabasePower(t, s, owner, approver, ctx, org)

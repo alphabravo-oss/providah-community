@@ -60,6 +60,7 @@ export function PowerActions({
     key: string;
   } | null>(null);
   const navigate = useNavigate();
+  const policy=useQuery({queryKey:["resource-policy",org.id],queryFn:()=>api.getResourcePolicy({organizationId:org.id}),enabled:!!request});
   const sizes = useCatalog(org.id, resource.connectionId, "compute.type", request?.action==="resize");
   const sizeOptions = [...new Map(sizes.data?.pages.flatMap(p=>p.resources).filter(r=>r.status!=="unavailable" && (r.region==="global" || r.region===resource.region)).map(r=>{const value=r.provider==="hetzner" ? r.name:r.nativeId;return [value,{value,label:`${r.name} · ${r.size}`}];})??[]).values()].filter(o=>o.value!==resource.size);
   const preview = useMutation({ gcTime: 0, mutationFn: async (target: {resource: Resource; key: string}) => ({ key: target.key, ...await api.previewDeletion({organizationId:org.id,resourceId:target.resource.id}) }) });
@@ -125,8 +126,9 @@ export function PowerActions({
       >
         {request && (
           <>
+            <ErrorNote error={policy.error}/><p className="notice">{!policy.data?"Loading approval policy…":policy.data.approvalActions.includes(request.action)?"Requires approval from a different authorized person after confirmation.":"Confirmation is the final gate: this action queues directly after you submit."}</p>
             {managedByIaC && ["start","shutdown","restart"].includes(request.action) && <p className="notice" role="note">This resource is referenced by managed IaC state. A later Terraform/OpenTofu apply may undo this power change.</p>}
-            {request.action==="snapshot" && <p className="notice">Creates a billed disk image from this stopped server. Independent approval is required. AWS creates an EBS-backed AMI; instance-store disks are excluded. DigitalOcean and Hetzner snapshot the server disk, excluding attached volumes and scratch disks. The image is named automatically from the operation ID. This does not replace application-consistent backup procedures.</p>}
+            {request.action==="snapshot" && <p className="notice">Creates a billed disk image from this stopped server. AWS creates an EBS-backed AMI; instance-store disks are excluded. DigitalOcean and Hetzner snapshot the server disk, excluding attached volumes and scratch disks. The image is named automatically from the operation ID. This does not replace application-consistent backup procedures.</p>}
             <dl className="resource-details">
               <div>
                 <dt>Resource</dt>
@@ -146,9 +148,9 @@ export function PowerActions({
               </div>
             </dl>
             <p className="notice">
-              {request.action === "tags" ? "Replaces the complete tag set and requires independent approval. Current tags must still match the reviewed set. Cloud edits can race this check and writes may partially apply; no automatic rollback is performed. AWS reserved tags must remain unchanged." : database ? (request.action==="start" ? "Starting this database resumes compute charges. It will be queued after you submit. Startup may take minutes to hours." : "Stopping interrupts database connections and requires independent approval. A cluster stop affects its member instances. AWS automatically starts stopped databases after seven days; storage and backup charges continue. No extra snapshot is created. Provider compatibility rules apply.") : request.action === "snapshot" ? "The source server is not started or rebooted by this request. Another person with creation and approval permissions must approve." : request.action === "resize" ? "Resizing changes cloud charges and requires independent approval. The source type must still match at dispatch. Disk size is preserved; provider compatibility and capacity rules apply. The provider may restart the server during the change. No backup or separate restart is performed automatically." : request.action === "delete" ? "Deletion is permanent. Another person with deletion and approval permissions must approve the exact impact below. No backup is created automatically." : request.action === "start"
-                ? "Starting this server may incur cloud charges. It will be queued after you submit."
-                : "This interrupts workloads and requires another authorized person’s approval. Graceful shutdown never falls back to force power-off."}
+              {request.action === "tags" ? "Replaces the complete tag set. Current tags must still match the reviewed set. Cloud edits can race this check and writes may partially apply; no automatic rollback is performed. AWS reserved tags must remain unchanged." : database ? (request.action==="start" ? "Starting this database resumes compute charges.  Startup may take minutes to hours." : "Stopping interrupts database connections. A cluster stop affects its member instances. AWS automatically starts stopped databases after seven days; storage and backup charges continue. No extra snapshot is created. Provider compatibility rules apply.") : request.action === "snapshot" ? "The source server is not started or rebooted by this request. Approval follows organization policy." : request.action === "resize" ? "Resizing changes cloud charges. The source type must still match at dispatch. Disk size is preserved; provider compatibility and capacity rules apply. The provider may restart the server during the change. No backup or separate restart is performed automatically." : request.action === "delete" ? "Deletion is permanent. Review the exact impact below. No backup is created automatically." : request.action === "start"
+                ? "Starting this server may incur cloud charges. "
+                : "This interrupts workloads. Graceful shutdown never falls back to force power-off."}
             </p>
             {request.action==="resize" && <>
               <p>Current server type: <strong>{request.resource.size}</strong></p>
@@ -172,11 +174,11 @@ export function PowerActions({
                   type: "textarea",
                   schema: z.string().min(3).max(500),
                 },
-                ...(org.permissions.includes("maintenance.override") ? [{ name: "maintenanceExceptionReason", label: "Maintenance exception reason (optional)", description: "A documented exception requires another reviewer with exception authority, including for startup. Leave empty to follow normal windows.", schema: z.string().max(500).refine((v) => !v.trim() || v.trim().length >= 10, "Use at least 10 characters.") }] : []),
+                ...(org.permissions.includes("maintenance.override") ? [{ name: "maintenanceExceptionReason", label: "Maintenance exception reason (optional)", description: "An exception requires maintenance override permission and independent approval unless the organization uses confirmation only. Any approver must also have override permission. Leave empty to follow normal windows.", schema: z.string().max(500).refine((v) => !v.trim() || v.trim().length >= 10, "Use at least 10 characters.") }] : []),
               ]}
               onSubmit={(v) => submit.mutateAsync(v)}
               submitLabel={`Request ${actionLabel(request.action,request.resource.kind).toLowerCase()}`}
-              pending={submit.isPending}
+              pending={submit.isPending||policy.isPending||policy.isError}
               error={submit.error}
             />}
           </>

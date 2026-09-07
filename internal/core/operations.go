@@ -201,7 +201,7 @@ func (s *Service) requestOperation(ctx context.Context, r *pb.RequestOperationRe
 			return conflict(restriction)
 		}
 		status := "queued"
-		if r.Action != "start" || r.MaintenanceExceptionReason != "" {
+		if approvalRequired(ctx, q, r.OrganizationId, r.Action, r.MaintenanceExceptionReason != "") {
 			status = "awaiting_approval"
 		}
 		id = newOperationID()
@@ -483,7 +483,7 @@ func (s *Service) runOperation(ctx context.Context, job database.Operation) erro
 		} else if !powerPermission(ctx, q, o.OrgID, o.RequesterID, "operations.request") {
 			failure = "Requester access was revoked."
 		}
-		if (o.Action == "delete" || o.Action == "create" || o.Action == "snapshot") && (!powerPermission(ctx, q, o.OrgID, o.RequesterID, operationAuthority(o.Action)) || !o.ApproverID.Valid || !powerPermission(ctx, q, o.OrgID, o.ApproverID.String, operationAuthority(o.Action))) {
+		if (o.Action == "delete" || o.Action == "create" || o.Action == "snapshot") && (!powerPermission(ctx, q, o.OrgID, o.RequesterID, operationAuthority(o.Action)) || (o.ApproverID.Valid && !powerPermission(ctx, q, o.OrgID, o.ApproverID.String, operationAuthority(o.Action)))) {
 			failure = "Action authority was revoked."
 		}
 		if !c.Enabled || c.DeletedAt.Valid || c.Revision != o.ConnectionRevision {
@@ -524,7 +524,7 @@ func (s *Service) runOperation(ctx context.Context, job database.Operation) erro
 			} else if o.MaintenanceExceptionReason == "" && restriction != "" {
 				failure = restriction
 			}
-			if o.MaintenanceExceptionReason != "" && (!hasPermission(ctx, q, o.OrgID, o.RequesterID, "maintenance.override") || !o.ApproverID.Valid || !hasPermission(ctx, q, o.OrgID, o.ApproverID.String, "maintenance.override")) {
+			if o.MaintenanceExceptionReason != "" && (!hasPermission(ctx, q, o.OrgID, o.RequesterID, "maintenance.override") || (o.ApproverID.Valid && !hasPermission(ctx, q, o.OrgID, o.ApproverID.String, "maintenance.override"))) {
 				failure = "Maintenance exception authority was revoked."
 			}
 			resource, e := q.GetResource(ctx, database.GetResourceParams{OrgID: o.OrgID, ID: o.ResourceID.String})
@@ -534,8 +534,8 @@ func (s *Service) runOperation(ctx context.Context, job database.Operation) erro
 			if o.ExpiresAt.Time.Before(time.Now()) || o.PolicyVersion != "power-v1" {
 				failure = "Request or policy expired."
 			}
-			if (o.Action != "start" || o.ScheduleID.Valid || o.MaintenanceExceptionReason != "") && (!o.ApproverID.Valid || o.ApproverID.String == o.RequesterID || !o.ApprovalExpiresAt.Valid || o.ApprovalExpiresAt.Time.Before(time.Now()) || !powerPermission(ctx, q, o.OrgID, o.ApproverID.String, "operations.approve")) {
-				failure = "Approval expired or approver access was revoked."
+			if (approvalRequired(ctx, q, o.OrgID, o.Action, o.MaintenanceExceptionReason != "") || o.ApproverID.Valid || o.ScheduleID.Valid) && (!o.ApproverID.Valid || o.ApproverID.String == o.RequesterID || !o.ApprovalExpiresAt.Valid || o.ApprovalExpiresAt.Time.Before(time.Now()) || !powerPermission(ctx, q, o.OrgID, o.ApproverID.String, "operations.approve")) {
+				failure = "Approval is required by current policy, expired, or approver access was revoked. Submit a fresh request."
 			}
 		} else if o.ObservationDeadline.Valid && o.ObservationDeadline.Time.Before(time.Now()) {
 			failure = "Provider completion could not be confirmed within fifteen minutes."

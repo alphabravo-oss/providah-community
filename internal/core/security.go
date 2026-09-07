@@ -217,7 +217,7 @@ func (s *Service) Interceptor() connect.Interceptor {
 				permission = "templates.publish"
 				stepUp = true
 			case "GetResourcePolicy":
-				permission = "roles.manage"
+				permission = "resources.read"
 			case "SaveResourcePolicy":
 				permission = "roles.manage"
 				stepUp = true
@@ -303,7 +303,7 @@ func (s *Service) Interceptor() connect.Interceptor {
 			}
 			allowed := false
 			for _, v := range permissions {
-				if v == permission {
+				if v == permission || method == "GetResourcePolicy" && (v == "roles.manage" || v == "operations.request") {
 					allowed = true
 					break
 				}

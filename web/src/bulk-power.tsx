@@ -24,7 +24,7 @@ export function BulkPowerButton({org,resources}:{org:Organization;resources:Reso
           {id:"target",header:"Target",cell:({row:{original:t}})=><>{t.name || "Unavailable target"}<small>{t.nativeId}</small><small>{t.provider} {t.region}</small></>},
           {accessorKey:"action",header:"Action"},{accessorKey:"status",header:"Observed state"},{accessorKey:"eligibility",header:"Eligibility"},{accessorKey:"detail",header:"Review"},
         ]}/>
-        <p className="notice">{eligible} eligible targets will be requested. Starting can incur cloud charges; shutdown and restart require independent approval for each server. This request does not override maintenance windows. Reviews expire after ten minutes. For resources managed by Terraform/OpenTofu, a later apply may undo power changes.</p>
+        <p className="notice">{eligible} eligible targets will be requested. Starting can incur cloud charges; approval requirements follow organization policy for each server. This request does not override maintenance windows. Reviews expire after ten minutes. For resources managed by Terraform/OpenTofu, a later apply may undo power changes.</p>
         {!submit.data && eligible>0 && <ActionForm fields={[{name:"reason",label:"Reason for these operations",schema:z.string().min(3).max(500)}]} onSubmit={v=>{setReason(v.reason);return submit.mutateAsync(v.reason);}} submitLabel={`Request ${eligible} ${eligible===1 ? "operation" : "operations"}`} pending={submit.isPending} error={submit.error}/>}
         {submit.data && <>
           <DataTable label="Bulk request results" data={submit.data.results} rowId={r=>r.resourceId} columns={[

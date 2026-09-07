@@ -6,7 +6,7 @@ Baseline: 2026-09-05. Inventory supports fixed-target start, graceful shutdown, 
 
 Open **Bulk power actions** in Inventory, choose exact targets from the displayed page, and select one action. The modal freezes the displayed selection; a filter change or new discovery cannot add targets. Preview lists names, provider identities, regions, observed state, action, and eligibility. Unavailable or inaccessible IDs reveal no resource metadata. Non-server kinds and unsupported runtimes are distinguished from currently ineligible targets.
 
-Only eligible targets are submitted, with an explicit count and reason. Starting can incur charges; shutdown and restart require separate independent approval for each operation. Bulk deletion is not offered: existing single-server deletion retains its dependency preview and typed confirmation. Bulk maintenance overrides are not offered; use the existing reviewed single-operation exception path where authorized.
+Only eligible targets are submitted, with an explicit count and reason. Starting can incur charges; shutdown and restart require separate approval when required by organization policy for each operation. Bulk deletion is not offered: existing single-server deletion retains its dependency preview and typed confirmation. Bulk maintenance overrides are not offered; use the existing reviewed single-operation exception path where authorized.
 
 Each result contains either its durable operation or a per-target request error. The Operations page retains individual requests, approvals, state transitions, audit history, cancellation, and reconciliation after the bulk dialog closes. Successful targets are not rolled back when another target fails. There is no separate persistent batch dashboard in this implementation.
 
