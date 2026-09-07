@@ -15,13 +15,13 @@ export function ResourcePolicyPage(){
   const save=useMutation({mutationFn:(v:Record<string,string>)=>api.saveResourcePolicy({organizationId:org.id,creationEnabled:v.mode==="create",approvalActions:currentMode==="none"?[]:currentMode==="all"?Object.keys(actionLabels):actions,expectedRevision:policy.data!.revision,reason:v.reason}),onSuccess:async()=>{await queries.invalidateQueries();setMode("");setSelected(undefined);}});
   return <><PageHeader eyebrow="ORGANIZATION SETTINGS" title="Resource management" description="Choose what members can create and which actions need another person's approval."/>
     <ErrorNote error={policy.error}/>
-    {policy.data&&<section className="panel">
+    {policy.data&&<section className="panel resource-policy">
       <h2>Action approvals</h2>
-      <label>Approval mode <select aria-label="Approval mode" value={currentMode} onChange={e=>setMode(e.target.value)}>
+      <label className="field"><span>Approval mode</span><select aria-label="Approval mode" value={currentMode} onChange={e=>setMode(e.target.value)}>
         <option value="none">Confirmation only</option><option value="selected">Approval for selected actions</option><option value="all">Approval for every action</option>
       </select></label>
       <p>Confirmation only queues actions after the requester confirms. Selected actions require a different authorized person to approve; other actions queue after confirmation. Maintenance exceptions require approval unless the mode is confirmation only. Permissions, maintenance windows, deletion impact checks and audit logging always apply.</p>
-      {currentMode==="selected"&&<fieldset><legend>Actions requiring approval</legend>{Object.entries(actionLabels).map(([action,label])=><label className="check" key={action}><input type="checkbox" checked={actions.includes(action)} onChange={e=>setSelected(e.target.checked?[...actions,action]:actions.filter(a=>a!==action))}/>{label}</label>)}</fieldset>}
+      {currentMode==="selected"&&<fieldset className="check-options"><legend>Actions requiring approval</legend>{Object.entries(actionLabels).map(([action,label])=><label className="check" key={action}><input type="checkbox" checked={actions.includes(action)} onChange={e=>setSelected(e.target.checked?[...actions,action]:actions.filter(a=>a!==action))}/>{label}</label>)}</fieldset>}
       <p className="notice">Existing requests awaiting approval stay pending. Cancel and submit a fresh request to use a changed policy. Tightening approval rules can cancel queued actions that lack approval. Scheduled automation retains its separate schedule approval.</p>
       <h2>Resource creation</h2><p>Manage existing only blocks new servers, snapshots and SSH-key imports, including queued creation work. Already-submitted work continues to be tracked.</p>
       <ActionForm key={String(policy.data.revision)} fields={[
