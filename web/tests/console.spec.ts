@@ -29,6 +29,7 @@ async function consolePage(page: import("@playwright/test").Page, name:string) {
  if(admin&&!new URL(page.url()).pathname.startsWith("/admin")) await page.getByRole("link",{name:"Admin console",exact:true}).click();
  if(!admin&&new URL(page.url()).pathname.startsWith("/admin")) await page.getByRole("link",{name:"User console",exact:true}).click();
  await page.getByRole("link",{name,exact:true}).click();
+ if(name==="Inventory")await page.getByRole("link",{name:"View all resources",exact:true}).click();
 }
 test("secure setup, connection lifecycle, audit, and responsive navigation", async ({
   page,
@@ -170,7 +171,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.setViewportSize({ width: 390, height: 844 });
   await consolePage(page,"Inventory");
   await expect(
-    page.getByRole("heading", { name: "Resource inventory" }),
+    page.getByRole("heading", { name: "All resources" }),
   ).toBeVisible();
   const resourceHeader = page.getByRole("table",{name:"Resources",exact:true}).getByRole("columnheader",{name:/Resource/});
   await resourceHeader.getByRole("button").click();
@@ -191,22 +192,22 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByLabel("Label key",{exact:true}).fill("env");
   await page.getByLabel("Label value",{exact:true}).fill("Production");
   await page.getByRole("button",{name:"Apply tag filter",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toHaveCount(0);
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toHaveCount(0);
   await page.getByRole("button",{name:"Edit tag filter",exact:true}).click();
   await page.getByLabel("Label value",{exact:true}).fill("production");
   await page.getByRole("button",{name:"Apply tag filter",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toBeVisible();
   await page.screenshot({path:"test-results/tag-filter.png",fullPage:true});
   await page.getByRole("button",{name:"Combine tags",exact:true}).click();
   await page.getByLabel("Condition type",{exact:true}).selectOption("exists");
   await page.getByLabel("Condition label key",{exact:true}).fill("missing");
   await page.getByRole("button",{name:"Add condition",exact:true}).click();
   await page.getByRole("button",{name:"Apply conditions",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toHaveCount(0);
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toHaveCount(0);
   await page.getByRole("button",{name:"Combine tags",exact:true}).click();
   await page.getByLabel("Match tag conditions",{exact:true}).selectOption("any");
   await page.getByRole("button",{name:"Apply conditions",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toBeVisible();
   await page.screenshot({path:"test-results/combined-tags.png",fullPage:true});
   await page.getByRole("button",{name:"Clear tag conditions",exact:true}).click();
   await page.getByRole("button",{name:"Filter tags",exact:true}).click();
@@ -222,7 +223,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByLabel("Resource region",{exact:true}).selectOption("fsn1");
   await page.getByLabel("Resource status",{exact:true}).selectOption("running");
   await page.getByRole("button",{name:"Apply resource scope",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Saved views",exact:true}).click();
   await page.getByRole("button",{name:"Save current view",exact:true}).click();
   await page.getByLabel("View name",{exact:true}).fill("Production inventory");
@@ -341,32 +342,32 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByRole("button",{name:"Show all columns for Resources",exact:true}).click();
   await expect(page.getByRole("table",{name:"Resources",exact:true}).getByRole("columnheader",{name:"Region",exact:true})).toBeVisible();
   await page
-    .getByRole("button", { name: "Browser test server", exact: true })
+    .getByRole("link", { name: "Browser test server", exact: true })
     .click();
-  await expect(page.getByRole("dialog")).toContainText("192.0.2.1");
-  await expect(page.getByRole("dialog")).toContainText("Connection disabled");
+  await expect(page.locator("main")).toContainText("192.0.2.1");
+  await expect(page.locator("main")).toContainText("Connection disabled");
   await page.screenshot({
     path: "test-results/resource-mobile.png",
     fullPage: true,
   });
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.goBack();
   await page.setViewportSize({ width: 1440, height: 1000 });
   execFileSync("docker", ["compose", "exec", "-T", "db", "psql", "-U", "providah", "-d", "providah_browser", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,size,observed_at) SELECT repeat('2',64),org_id,id,'123/www/A','Browser DNS record','hetzner','dns.record','global','present','A · TTL 300 seconds · 2 values',now() FROM connections WHERE name='Hetzner production'"]);
   await page.reload();
   await page.getByLabel("Filter resource type").selectOption("dns.record");
-  await page.getByRole("button",{name:"Browser DNS record",exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("DNS records / sets");
-  await expect(page.getByRole("dialog")).toContainText("TTL 300 seconds");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
-  await page.getByRole("button",{name:"Close",exact:true}).click();
+  await page.getByRole("link",{name:"Browser DNS record",exact:true}).click();
+  await expect(page.locator("main")).toContainText("DNS records / sets");
+  await expect(page.locator("main")).toContainText("TTL 300 seconds");
+  await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
+  await page.goBack();
   execFileSync("docker", ["compose", "exec", "-T", "db", "psql", "-U", "providah", "-d", "providah_browser", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,size,observed_at) SELECT repeat('3',64),org_id,id,'321','Browser TLS certificate','hetzner','network.certificate','global','completed','managed · 1 domains · expires 2030-01-01T12:00:00Z',now() FROM connections WHERE name='Hetzner production'"]);
   await page.reload();
   await page.getByLabel("Filter resource type").selectOption("network.certificate");
-  await page.getByRole("button",{name:"Browser TLS certificate",exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("Certificates");
-  await expect(page.getByRole("dialog")).toContainText("2030-01-01T12:00:00Z");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
-  await page.getByRole("button",{name:"Close",exact:true}).click();
+  await page.getByRole("link",{name:"Browser TLS certificate",exact:true}).click();
+  await expect(page.locator("main")).toContainText("Certificates");
+  await expect(page.locator("main")).toContainText("2030-01-01T12:00:00Z");
+  await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
+  await page.goBack();
   await page.evaluate(async()=>{
     const rpc=async(name:string,body:unknown)=>{
       const response=await fetch(`/api/providah.v1.ConsoleService/${name}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
@@ -388,32 +389,32 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   });
   for(const [kind,label] of [["database.instance","Database instances"],["database.cluster","Database clusters"],["database.snapshot","Database snapshots"],["database.cluster_snapshot","Database cluster snapshots"]]){
     await page.getByLabel("Filter resource type").selectOption(kind);
-    await page.getByRole("button",{name:`Browser ${kind}`,exact:true}).click();
-    await expect(page.getByRole("dialog")).toContainText(label);
-    await expect(page.getByRole("dialog")).toContainText("postgres 17.4");
-    await expect(page.getByRole("dialog").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
-    await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(kind.includes("snapshot")?1:0);
-    await page.getByRole("button",{name:"Close",exact:true}).click();
+    await page.getByRole("link",{name:`Browser ${kind}`,exact:true}).click();
+    await expect(page.locator("main")).toContainText(label);
+    await expect(page.locator("main")).toContainText("postgres 17.4");
+    await expect(page.locator("main").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
+    await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(kind.includes("snapshot")?1:0);
+    await page.goBack();
   }
 
   execFileSync("docker",["compose","exec","-T","db","psql","-U","providah","-d","providah_browser","-v","ON_ERROR_STOP=1","-c","INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,observed_at) SELECT repeat('d',64),org_id,id,'2001:db8::1','Browser reserved IPv6','digitalocean','network.reserved_ipv6','nyc3','assigned','2001:db8::1',now() FROM connections WHERE name='DO IPv6 fixture'"]);
   await page.reload();
   await page.getByLabel("Filter resource type").selectOption("network.reserved_ipv6");
-  await page.getByRole("button",{name:"Browser reserved IPv6",exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("Reserved IPv6");
-  await expect(page.getByRole("dialog")).toContainText("2001:db8::1");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
-  await page.getByRole("button",{name:"Close",exact:true}).click();
+  await page.getByRole("link",{name:"Browser reserved IPv6",exact:true}).click();
+  await expect(page.locator("main")).toContainText("Reserved IPv6");
+  await expect(page.locator("main")).toContainText("2001:db8::1");
+  await expect(page.locator("main").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
+  await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
+  await page.goBack();
   await page.unrouteAll({behavior:"wait"});
   execFileSync("docker", ["compose", "exec", "-T", "db", "psql", "-U", "providah", "-d", "providah_browser", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,public_ip,observed_at) SELECT repeat('4',64),org_id,id,'789','Browser primary IP','hetzner','network.primary_ip','fsn1','assigned','192.0.2.44',now() FROM connections WHERE name='Hetzner production'"]);
   await page.reload();
   await page.getByLabel("Filter resource type").selectOption("network.primary_ip");
-  await page.getByRole("button", {name:"Browser primary IP",exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("Primary IPs");
-  await expect(page.getByRole("dialog")).toContainText("192.0.2.44");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
-  await page.getByRole("button",{name:"Close",exact:true}).click();
+  await page.getByRole("link", {name:"Browser primary IP",exact:true}).click();
+  await expect(page.locator("main")).toContainText("Primary IPs");
+  await expect(page.locator("main")).toContainText("192.0.2.44");
+  await expect(page.locator("main").getByRole("button",{name:"Start",exact:true})).toHaveCount(0);
+  await page.goBack();
   execFileSync("docker", ["compose", "exec", "-T", "db", "psql", "-U", "providah", "-d", "providah_browser", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO resources(id,org_id,connection_id,native_id,name,provider,kind,region,status,size,observed_at) SELECT repeat('9',64),org_id,id,'456','Browser recovery snapshot','hetzner','storage.snapshot','global','available','snapshot · x86',now() FROM connections WHERE name='Hetzner production'"]);
   await page.reload();
   await page.getByLabel("Filter resource type").selectOption("storage.snapshot");
@@ -421,9 +422,9 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
     const response=await route.fetch();const body=await response.json();
     await route.fulfill({response,json:{...body,connectionEnabled:true}});
   });
-  await page.getByRole("button", { name: "Browser recovery snapshot", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText("Snapshots");
-  await expect(page.getByRole("dialog").getByRole("button", { name: "Start", exact: true })).toHaveCount(0);
+  await page.getByRole("link", { name: "Browser recovery snapshot", exact: true }).click();
+  await expect(page.locator("main")).toContainText("Snapshots");
+  await expect(page.locator("main").getByRole("button", { name: "Start", exact: true })).toHaveCount(0);
   await page.route("**/providah.v1.ConsoleService/PreviewDeletion",route=>route.fulfill({json:{impact:"Delete standalone snapshot 456. Recovery data is lost; the source server is retained.",digest:"b".repeat(64)}}));
   let snapshotRequested=false;
   await page.route("**/providah.v1.ConsoleService/RequestOperation",route=>{
@@ -504,7 +505,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByRole("row").filter({hasText:"Hetzner production"}).getByRole("button", { name: "Enable", exact: true }).click();
   await consolePage(page,"Inventory");
   await page
-    .getByRole("button", { name: "Browser test server", exact: true })
+    .getByRole("link", { name: "Browser test server", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Graceful shutdown", exact: true })
@@ -686,10 +687,10 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await expect(page.getByRole("table", { name: "Provider modules", exact: true })).toContainText("Disabled");
   await page.screenshot({ path: "test-results/provider-modules.png", fullPage: true });
   await consolePage(page,"Inventory");
-  await page.getByRole("button", { name: "Browser test server", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText("provider module is disabled");
+  await page.getByRole("link", { name: "Browser test server", exact: true }).click();
+  await expect(page.locator("main")).toContainText("provider module is disabled");
   await expect(page.getByRole("button", { name: "Graceful shutdown", exact: true })).toBeDisabled();
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.goBack();
   await consolePage(page,"Provider modules");
   await page.getByRole("button", { name: "hetzner", exact: true }).click();
   await page.getByLabel("Type hetzner to confirm", { exact: true }).fill("hetzner");
@@ -807,7 +808,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
     return route.fulfill({json:{}});
   });
   await consolePage(page,"Inventory");
-  await page.getByRole("button", {name:"Browser test server",exact:true}).click();
+  await page.getByRole("link", {name:"Browser test server",exact:true}).click();
   const metricsEnd=new Date(Math.floor(Date.now()/300000)*300000).toISOString();
   const metricsStart=new Date(Date.parse(metricsEnd)-3600000).toISOString();
   await page.route("**/providah.v1.ConsoleService/GetResourceMetrics",route=>{
@@ -842,7 +843,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByLabel("Filter resource type", { exact: true }).selectOption("storage.volume");
   await expect(page.getByRole("table", { name: "Resources", exact: true })).toContainText("Browser data volume");
   await expect(page.getByRole("table", { name: "Resources", exact: true })).not.toContainText("Browser test server");
-  await page.getByRole("button", { name: "Browser data volume", exact: true }).click();
+  await page.getByRole("link", { name: "Browser data volume", exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("10 GiB");
   await expect(page.getByRole("dialog").getByRole("button", { name: "Start", exact: true })).toHaveCount(0);
   await page.route("**/providah.v1.ConsoleService/PreviewDeletion",route=>route.fulfill({json:{impact:"Delete detached volume 123 and all stored data. Existing snapshots are retained.",digest:"c".repeat(64)}}));
@@ -1073,7 +1074,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await consolePage(page,"Inventory");
   await page.reload();
   await page.getByLabel("Filter resource type",{exact:true}).selectOption("compute.server");
-  await page.getByRole("button",{name:"Browser test server",exact:true}).click();
+  await page.getByRole("link",{name:"Browser test server",exact:true}).click();
   await page.getByRole("button",{name:"Resize server",exact:true}).click();
   await expect(page.getByRole("dialog").last()).toContainText("cx13");
   await expect(page.getByRole("dialog").last()).toContainText("Disk size is preserved");
@@ -1236,7 +1237,7 @@ test("secure setup, connection lifecycle, audit, and responsive navigation", asy
   await page.getByLabel("Organization",{exact:true}).selectOption({label:"Zeta sandbox"});
   await expect(page.getByLabel("Search resources",{exact:true})).toHaveValue("");
   await expect(page.getByLabel("Filter resource type",{exact:true})).toHaveValue("");
-  await expect(page.getByRole("button",{name:"Browser test server",exact:true})).toHaveCount(0);
+  await expect(page.getByRole("link",{name:"Browser test server",exact:true})).toHaveCount(0);
   await consolePage(page,"Audit log");
   await page.getByRole("button",{name:"Filter events",exact:true}).click();
   await page.getByLabel("Action",{exact:true}).fill("operation.requested");
@@ -1592,7 +1593,7 @@ test("database snapshots use shared reviewed deletion",async({page})=>{
   }
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Delete resource",exact:true}).click();
  await page.getByRole("button",{name:"Read deletion impact",exact:true}).click();
  await page.getByLabel(`Type ${resource.nativeId} to confirm deletion and the listed data loss`,{exact:true}).fill(resource.nativeId);
@@ -1616,7 +1617,7 @@ test("AWS images use shared reviewed deletion",async({page})=>{
   }
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Delete resource",exact:true}).click();
  await page.getByRole("button",{name:"Read deletion impact",exact:true}).click();
  await page.getByLabel(`Type ${resource.nativeId} to confirm deletion and the listed data loss`,{exact:true}).fill(resource.nativeId);
@@ -1641,7 +1642,7 @@ test("load balancers use shared reviewed deletion / "+cloud,async({page})=>{
   }
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Delete resource",exact:true}).click();
  await page.getByRole("button",{name:"Read deletion impact",exact:true}).click();
  await page.getByLabel(`Type ${resource.nativeId} to confirm deletion and the listed data loss`,{exact:true}).fill(resource.nativeId);
@@ -1776,7 +1777,7 @@ test("server creation reviews and submits a private network",async({page})=>{
   if(method==="RequestServerCreation"){expect(route.request().postDataJSON().creation.network).toBe("44");submitted=true;return route.fulfill({json:{operation:{id:"d".repeat(64)}}});}
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}`);
+ await page.goto(`/app/resources/all?org=${org.id}`);
  await page.getByRole("button",{name:"Create server",exact:true}).click();
  await page.getByLabel("Cloud connection",{exact:true}).selectOption(connection.id);
  await page.getByRole("button",{name:"Choose configuration",exact:true}).click();
@@ -1804,7 +1805,7 @@ test("managed IaC resources show protection and power drift warning",async({page
   if(method==="GetResource")return route.fulfill({json:{resource,connectionEnabled:true,providerEnabled:true,availableActions:["start"],ownershipProjectIds:[project]}});
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await expect(page.getByText("Protected by managed IaC state",{exact:true})).toBeVisible();
  await expect(page.getByRole("link",{name:/View referencing project/})).toHaveAttribute("href",`/app/templates?org=${org.id}&project=${project}`);
  await expect(page.getByRole("button",{name:"Delete",exact:true})).toHaveCount(0);
@@ -1830,7 +1831,7 @@ test("managed projects expose partial coverage and protected references",async({
  await expect(coverage).toContainText("Some identities unrecognized");
  await expect(coverage).toContainText("Also referenced by another project");
  await expect(coverage).toContainText("Not currently in inventory");
- await expect(coverage.getByRole("link",{name:"Open resource",exact:true})).toHaveAttribute("href",`/app/resources?org=${org.id}&resource=${"d".repeat(64)}`);
+ await expect(coverage.getByRole("link",{name:"Open resource",exact:true})).toHaveAttribute("href",`/app/resources/detail/${"d".repeat(64)}?org=${org.id}`);
  await coverage.scrollIntoViewIfNeeded();await page.screenshot({path:"test-results/project-ownership.png",fullPage:true});
  org.permissions=["templates.read"];const before=lists;await page.reload();
  await expect(coverage).toContainText("Some identities unrecognized");
@@ -1848,7 +1849,7 @@ test("server images require stopped targets and show storage review",async({page
   if(method==="RequestOperation"){const body=route.request().postDataJSON();expect(body.action).toBe("snapshot");expect(body.expectedStatus).toBe("off");submitted=true;return route.fulfill({json:{operation:{id:"d".repeat(64)}}});}
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await expect(page.getByRole("button",{name:"Create server image",exact:true})).toBeDisabled();
  resource.status="off";await page.reload();await page.getByRole("button",{name:"Create server image",exact:true}).click();
  await expect(page.getByRole("dialog").last()).toContainText("Independent approval is required");
@@ -1856,7 +1857,7 @@ test("server images require stopped targets and show storage review",async({page
  await page.getByLabel("Reason for this action",{exact:true}).fill("Reviewed recovery image and storage costs");
  await page.screenshot({path:"test-results/server-image-review.png",fullPage:true});
  await page.getByRole("button",{name:"Request create server image",exact:true}).click();expect(submitted).toBe(true);
- org.permissions=org.permissions.filter(p=>p!=="operations.create");await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ org.permissions=org.permissions.filter(p=>p!=="operations.create");await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await expect(page.getByRole("button",{name:"Create server image",exact:true})).toHaveCount(0);
 });
 
@@ -2016,13 +2017,13 @@ for (const kind of ["organization.project","application.app"]) {
    if(method==="GetResource")return route.fulfill({json:{resource,connectionName:"DigitalOcean",connectionEnabled:true,providerEnabled:true,availableActions:[]}});
    return route.fulfill({json:{}});
   });
-  await page.goto(`/app/resources?org=${org.id}`);
+  await page.goto(`/app/resources/all?org=${org.id}`);
   await page.getByLabel("Filter resource type").selectOption(kind);
-  await page.getByRole("button",{name:resource.name,exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("Service metadata");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
+  await page.getByRole("link",{name:resource.name,exact:true}).click();
+  await expect(page.locator("main")).toContainText("Service metadata");
+  await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
   await page.reload();
-  await expect(page.getByRole("dialog")).toContainText("service-id");
+  await expect(page.locator("main")).toContainText("service-id");
  });
 }
 
@@ -2070,7 +2071,7 @@ test("DigitalOcean projects use shared reviewed deletion",async({page})=>{
   }
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Delete resource",exact:true}).click();
  await page.getByRole("button",{name:"Read deletion impact",exact:true}).click();
  await page.getByLabel(`Type ${resource.nativeId} to confirm deletion and the listed data loss`,{exact:true}).fill(resource.nativeId);
@@ -2091,13 +2092,13 @@ for (const kind of ["network.route_table","network.internet_gateway","network.na
    if(method==="GetResource")return route.fulfill({json:{resource,connectionName:"DigitalOcean",connectionEnabled:true,providerEnabled:true,availableActions:[]}});
    return route.fulfill({json:{}});
   });
-  await page.goto(`/app/resources?org=${org.id}`);
+  await page.goto(`/app/resources/all?org=${org.id}`);
   await page.getByLabel("Filter resource type").selectOption(kind);
-  await page.getByRole("button",{name:resource.name,exact:true}).click();
-  await expect(page.getByRole("dialog")).toContainText("Service metadata");
-  await expect(page.getByRole("dialog").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
+  await page.getByRole("link",{name:resource.name,exact:true}).click();
+  await expect(page.locator("main")).toContainText("Service metadata");
+  await expect(page.locator("main").getByRole("button",{name:"Delete resource",exact:true})).toHaveCount(0);
   await page.reload();
-  await expect(page.getByRole("dialog")).toContainText("service-id");
+  await expect(page.locator("main")).toContainText("service-id");
  });
 }
 
@@ -2168,7 +2169,7 @@ for (const cloud of ["aws","hetzner","digitalocean"]) test(`server tag editor an
   if(method==="GetOperation")return route.fulfill({json:{operation:{id:"d".repeat(64),action:"tags",resourceKind:"compute.server",resourceName:resource.name,expectedTags:tags,targetTags:submitted?.targetTags,status:"OPERATION_STATUS_AWAITING_APPROVAL",canReview:true}}});
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Edit tags",exact:true}).click();
  await page.getByRole("button",{name:"Add tag",exact:true}).click();
  await page.getByLabel(cloud==="digitalocean"?"Tag 2 name":"Tag 2 key",{exact:true}).fill("team");
@@ -2183,7 +2184,7 @@ for (const cloud of ["aws","hetzner","digitalocean"]) test(`server tag editor an
  await expect(page.getByRole("heading",{name:"Complete requested tag set"})).toBeVisible();
  await expect(page.getByRole("dialog")).toContainText("dev");
  await expect(page.getByRole("dialog")).toContainText("team");
- owned=true;await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ owned=true;await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await expect(page.getByRole("button",{name:"Edit tags",exact:true})).toBeDisabled();
 });
 
@@ -2251,7 +2252,7 @@ test("placement groups use shared reviewed deletion",async({page})=>{
   }
   return route.fulfill({json:{}});
  });
- await page.goto(`/app/resources?org=${org.id}&resource=${resource.id}`);
+ await page.goto(`/app/resources/detail/${resource.id}?org=${org.id}`);
  await page.getByRole("button",{name:"Delete resource",exact:true}).click();
  await page.getByRole("button",{name:"Read deletion impact",exact:true}).click();
  await page.getByLabel(`Type ${resource.nativeId} to confirm deletion and the listed data loss`,{exact:true}).fill(resource.nativeId);
@@ -2290,7 +2291,7 @@ for (const cloud of ["aws", "digitalocean", "hetzner"]) {
    }
    return route.fulfill({json:{}});
   });
-  await page.goto(`/app/resources?org=${org.id}`);
+  await page.goto(`/app/resources/all?org=${org.id}`);
   await page.getByRole("button",{name:"Import SSH key",exact:true}).click();
   await page.getByLabel("Cloud connection",{exact:true}).selectOption(connection.id);
   await page.getByRole("button",{name:"Choose configuration",exact:true}).click();

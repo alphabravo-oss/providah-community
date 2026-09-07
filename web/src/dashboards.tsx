@@ -15,7 +15,7 @@ function ResourceWidget({org,widget}:{org:string;widget:DashboardWidget}){
  const q=useQuery({queryKey:["resources",org,"dashboard",filters,page],queryFn:()=>api.listResources({organizationId:org,connectionId:filters.connectionId,region:filters.region,status:filters.status,search:filters.search,provider:filters.provider,kind:filters.kind,sortBy:filters.sortBy,descending:filters.descending,tagKey:filters.tagKey,tagValue:filters.tagValue,tagName:filters.tagName,tagExists:filters.tagExists,tagConditions:filters.tagConditions,tagMatchAny:filters.tagMatchAny,pageToken:page,pageSize:20})});
  return <section className="panel"><div className="panel-heading"><h2>{widget.title}</h2><p>Latest observed inventory</p></div><ErrorNote error={q.error}/>
  {q.isPending?<p>Loading resources…</p>:q.isError?null:!q.data?.resources.length?<p>No matching resources.</p>:<DataTable label={widget.title+" resources"} data={q.data.resources} rowId={r=>r.id} columnVisibility={visibility} onColumnVisibilityChange={setVisibility} columns={[
- {accessorKey:"name",header:"Resource",cell:({row:{original:r}})=><Link to={`/app/resources?org=${encodeURIComponent(org)}&resource=${encodeURIComponent(r.id)}`}>{r.name||r.id}</Link>},
+ {accessorKey:"name",header:"Resource",cell:({row:{original:r}})=><Link to={`/app/resources/detail/${encodeURIComponent(r.id)}?org=${encodeURIComponent(org)}`}>{r.name||r.id}</Link>},
  {accessorKey:"provider",header:"Provider"},{accessorKey:"kind",header:"Type"},{accessorKey:"region",header:"Region"},{accessorKey:"status",header:"Status"},
  {id:"observedAt",header:"Observed",cell:({row:{original:r}})=>r.observedAt?new Date(r.observedAt).toLocaleString():"Unknown"}
  ]}/>}

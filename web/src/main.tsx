@@ -1,3 +1,4 @@
+import {ResourceOverview,resourceKinds,resourcePath} from "./resource-pages";
 import {OperationsOverview} from "./overview";
 import {InventoryLink,readInventoryLink} from "./inventory-links";
 import {InstallationHealth} from "./installation-health";
@@ -25,6 +26,7 @@ import {
   useNavigate,
   Navigate,
   useSearchParams,
+  useParams,
 } from "react-router";
 import {
   QueryClientProvider,
@@ -367,7 +369,7 @@ function Shell() {
     ["/app/schedules", "Schedules", Activity, "schedules.read"],
   ] as const;
   const routePath=location.pathname.replace(/\/+$/,"");
-  const routePermission=nav.find(([path])=>path===routePath)?.[3];
+  const routePermission=routePath.startsWith("/app/resources/")?"resources.read":nav.find(([path])=>path===routePath)?.[3];
   const directory=admin&&routePath==="/admin";
   return (
     <div className={`app ${dark ? "dark" : ""} ${collapsed ? "sidebar-collapsed" : ""}`} style={{"--sidebar-width":`${sidebarWidth}px`} as React.CSSProperties}>
@@ -459,7 +461,7 @@ function Shell() {
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <NavLink aria-label={admin?"Admin console home":"Console home"} to={admin?"/admin":"/app"}>{admin?"Administration":"Console"}</NavLink>
             {org&&<><ChevronRight size={13}/><span>{org.name}</span></>}
-            {routePath!==(admin?"/admin":"/app")&&<><ChevronRight size={13}/><span aria-current="page">{nav.find(([path])=>path===routePath)?.[1]??"Page"}</span></>}
+            {routePath!==(admin?"/admin":"/app")&&<><ChevronRight size={13}/><span aria-current="page">{nav.find(([path])=>path===routePath)?.[1]??Object.entries(resourceKinds).find(([kind])=>resourcePath(kind)===routePath)?.[1]??(routePath==="/app/resources/all"?"All resources":routePath.startsWith("/app/resources/detail/")?"Resource details":"Page")}</span></>}
           </nav>
           {navigation.state !== "idle" && <p role="status">Loading page…</p>}
           {admin&&!canAdmin&&identityOrg?.ssoRequired ? <SSORequired/> : admin&&!canAdmin&&identityOrg?.mfaRequired ? <Empty title="MFA required">Enable MFA from your account menu to continue.</Empty> : admin&&!canAdmin ? <Empty title="Administration access required">Your account has no administrative grants. Use the user console or ask an administrator for access.</Empty> : routePath==="/admin/health" ? (session.globalAdmin?<InstallationHealth/>:<Empty title="Global administrator required">This view requires installation access.</Empty>) : routePath==="/admin/installation-audit" ? (session.globalAdmin?<Audit installation/>:<Empty title="Global administrator required">This view requires installation access.</Empty>) : directory ? <>
@@ -819,8 +821,12 @@ function Connections() {
     </>
   );
 }
-const resourceKinds: Record<string,string> = { "storage.bucket":"Object storage buckets", "network.route_table":"Route tables", "network.internet_gateway":"Internet gateways", "network.nat_gateway":"NAT gateways", "organization.project":"Cloud projects", "application.app":"Applications", "dns.zone":"DNS zones", "dns.record":"DNS records / sets", "database.cluster":"Database clusters", "database.instance":"Database instances", "database.snapshot":"Database snapshots", "database.cluster_snapshot":"Database cluster snapshots", "kubernetes.node_group":"Kubernetes node groups", "kubernetes.cluster":"Kubernetes clusters", "network.certificate":"Certificates", "network.subnet":"Subnets", "network.ip":"Elastic / reserved IPv4", "network.reserved_ipv6":"Reserved IPv6", "network.primary_ip":"Primary IPs", "network.floating_ip":"Floating IPs", "compute.placement_group":"Placement groups", "compute.image":"Owned images", "access.ssh_key":"SSH keys", "compute.server":"Servers", "network.network":"Networks / VPCs", "network.firewall":"Firewalls / security groups", "storage.volume":"Volumes", "storage.snapshot":"Snapshots", "storage.backup":"Backups", "network.load_balancer":"Load balancers" };
-function Inventory() {
+
+function ResourceHome(){
+ const [params]=useSearchParams();
+ return params.has("filters")||params.has("view")?<Inventory/>:<ResourceOverview/>;
+}
+function Inventory({resourceKind=""}:{resourceKind?:string}) {
  const {org}=useOutletContext<Context>();
  const [params,setParams]=useSearchParams();const id=params.get("view")??"";
  let linked:InventoryViewSpec|undefined,linkError:unknown;
@@ -830,28 +836,22 @@ function Inventory() {
  if(linkError)return <><PageHeader eyebrow="Resource inventory" title="Inventory link unavailable" description="The filter link is malformed, ambiguous or too large."/><button onClick={()=>setParams(p=>{p.delete("filters");p.delete("view");p.delete("resource");return p;})}>Back to inventory</button></>;
 
  if(id&&(views.isPending||!view))return <><PageHeader eyebrow="Resource inventory" title={views.isPending?"Loading saved view…":"Saved view unavailable"} description="Saved views are private and require current organization access."/><ErrorNote error={views.error}/><button onClick={()=>setParams(p=>{p.delete("view");p.delete("resource");return p;})}>Back to inventory</button></>;
- return <InventoryContent key={org.id+":"+id+":"+(params.get("filters")??"")} initialView={view} linked={linked}/>;
+ return <InventoryContent key={org.id+":"+resourceKind+":"+id+":"+(params.get("filters")??"")} resourceKind={resourceKind} initialProvider={params.get("provider")??""} initialView={view} linked={linked}/>;
 }
-function InventoryContent({initialView,linked}:{initialView?:InventoryView;linked?:InventoryViewSpec}) {
+function InventoryContent({initialView,linked,resourceKind="",initialProvider=""}:{initialView?:InventoryView;linked?:InventoryViewSpec;resourceKind?:string;initialProvider?:string}) {
   const { org } = useOutletContext<Context>();
   const initial=linked??initialView?.spec;
+  const navigate=useNavigate();
   const [sorting,setSorting] = useState<SortingState>(initial?.sortBy?[{id:initial.sortBy,desc:initial.descending}]:[]);
   const [tags,setTags]=useState(initial?{tagKey:initial.tagKey,tagValue:initial.tagValue,tagName:initial.tagName,tagExists:initial.tagExists,tagConditions:initial.tagConditions,tagMatchAny:initial.tagMatchAny}:emptyTags);
   const [scope,setScope]=useState(initial?{connectionId:initial.connectionId,region:initial.region,status:initial.status}:emptyScope);
   const [tagEditor,setTagEditor]=useState(false);
-  const [visibility,setVisibility] = useState<Record<string,boolean>>(Object.fromEntries((initial?.hiddenColumns??[]).map(id=>[id,false])));
+  const [visibility,setVisibility] = useState<Record<string,boolean>>(Object.fromEntries((initial?.hiddenColumns??(resourceKind?["kind"]:[])).map(id=>[id,false])));
   const [search, setSearch] = useState(initial?.search??""),
-    [provider, setProvider] = useState(initial?.provider??""),
-    [kind, setKind] = useState(initial?.kind??""),
+    [provider, setProvider] = useState(initial?.provider??initialProvider),
+    [kind, setKind] = useState(resourceKind||initial?.kind||""),
     [page, setPage] = useState("");
   const [params,setParams]=useSearchParams();
-  const selected=params.get("resource")??"";
-  const setSelected=(id:string)=>setParams(previous=>{const next=new URLSearchParams(previous);if(id)next.set("resource",id);else next.delete("resource");return next;});
-  const detail = useQuery({
-    queryKey: ["resource", org.id, selected],
-    queryFn: () => api.getResource({ organizationId: org.id, id: selected }),
-    enabled: !!selected,
-  });
   const q = useQuery({
     queryKey: ["resources", org.id, search, provider, kind, page, sorting,tags,scope],
     queryFn: () =>
@@ -870,15 +870,16 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
     <>
       <PageHeader
         eyebrow="ACROSS YOUR CLOUDS"
-        title="Resource inventory"
-        description="Search the infrastructure your organization can access."
+        title={resourceKind?resourceKinds[resourceKind]:"All resources"}
+        description={resourceKind?`Manage your ${resourceKinds[resourceKind].toLowerCase()} across cloud connections.`:"Search all infrastructure your organization can access."}
       ><div className="row-actions"><InventoryViews org={org.id} spec={settings} onApply={(spec,id)=>{
         setScope({connectionId:spec.connectionId,region:spec.region,status:spec.status});
-        setTags({tagConditions:spec.tagConditions,tagMatchAny:spec.tagMatchAny,tagKey:spec.tagKey,tagValue:spec.tagValue,tagName:spec.tagName,tagExists:spec.tagExists});setSearch(spec.search);setProvider(spec.provider);setKind(spec.kind);
+        setTags({tagConditions:spec.tagConditions,tagMatchAny:spec.tagMatchAny,tagKey:spec.tagKey,tagValue:spec.tagValue,tagName:spec.tagName,tagExists:spec.tagExists});setSearch(spec.search);setProvider(spec.provider);setKind(resourceKind||spec.kind);
         setSorting(spec.sortBy ? [{id:spec.sortBy,desc:spec.descending}] : []);
         setVisibility(Object.fromEntries(spec.hiddenColumns.map(id=>[id,false])));
         setPage("");setParams(p=>{p.set("org",org.id);p.set("view",id);p.delete("filters");p.delete("resource");return p;});
       }}/><InventoryLink org={org.id} spec={settings}/><BulkPowerButton org={org} resources={q.data?.resources??[]}/><CreateResourceButton org={org}/></div></PageHeader>
+      <nav className="breadcrumbs" aria-label="Resource type navigation"><Link to={`/app/resources?org=${org.id}${provider?"&provider="+provider:""}`}>Resources</Link><ChevronRight size={13}/><span aria-current="page">{resourceKind?resourceKinds[resourceKind]:"All resources"}</span></nav>
       {linked&&<p className="notice">This link restores its filter snapshot. After editing, use Link to current filters to create an updated link. Access still follows your current permissions.</p>}
       {initialView&&<><nav className="breadcrumbs" aria-label="Saved view breadcrumb"><NavLink to="/app/resources">Inventory</NavLink><ChevronRight size={13}/><span aria-current="page">{initialView.name}</span></nav><p className="notice">This link restores the saved settings. Use Saved views to replace them after making changes.</p></>}
       <div className="filters">
@@ -909,10 +910,11 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
             </option>
           ))}
         </select>
-        <select aria-label="Filter resource type" value={kind} onChange={e => {setKind(e.target.value);setPage("");}}>
+        {resourceKind&&<select aria-label="Resource page" value={resourceKind} onChange={e=>navigate(resourcePath(e.target.value)+`?org=${org.id}${provider?"&provider="+provider:""}`)}>{Object.entries(resourceKinds).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>}
+        {!resourceKind&&<select aria-label="Filter resource type" value={kind} onChange={e => {setKind(e.target.value);setPage("");}}>
           <option value="">All resource types</option>
           {Object.entries(resourceKinds).map(([value,label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
+        </select>}
       </div>
       <ResourceScopes org={org.id} value={scope} onChange={v=>{setScope(v);setPage("");}}/>
       <TagConditions value={tags} onChange={v=>{setTags(v);setPage("");}}/>
@@ -945,9 +947,9 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
                 header: 'Resource',
                 cell: ({ row: { original: r } }) => (
                   <>
-                    <button onClick={() => setSelected(r.id)}>
+                    <Link to={`/app/resources/detail/${encodeURIComponent(r.id)}?org=${org.id}`}>
                       {r.name || r.nativeId}
-                    </button>
+                    </Link>
                     <small>{r.nativeId}</small>
                   </>
                 ),
@@ -1005,19 +1007,18 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
           </button>
         )}
       </div>
-      <Modal
-        open={!!selected}
-        onOpenChange={(v) => {
-          if (!v) setSelected("");
-        }}
-        title={<>{detail.data?.resource?.name || "Resource details"}</>}
-        description={
-          <>
-            <span>Inventory reflects the last successful observation. Refresh the connection for the latest state.</span>
-          </>
-        }
-      >
-        <nav className="breadcrumbs" aria-label="Resource breadcrumb"><NavLink aria-label="Back to inventory" to="/app/resources">Inventory</NavLink><ChevronRight size={13}/><span aria-current="page">{detail.data?.resource?.name||"Resource details"}</span></nav>
+
+    </>
+  );
+}
+function ResourceDetailPage(){
+  const {org}=useOutletContext<Context>();
+  const {resourceId=""}=useParams();
+  const detail=useQuery({queryKey:["resource",org.id,resourceId],queryFn:()=>api.getResource({organizationId:org.id,id:resourceId}),refetchInterval:15000});
+  const resource=detail.data?.resource;
+  return <>
+    <PageHeader eyebrow={resource?resourceKinds[resource.kind]??resource.kind:"RESOURCE"} title={resource?.name||resource?.nativeId||"Resource details"} description="Inventory reflects the last successful observation. Refresh the connection for the latest state."/>
+    <nav className="breadcrumbs" aria-label="Resource breadcrumb"><Link to={`/app/resources?org=${org.id}`}>Resources</Link>{resource&&<><ChevronRight size={13}/><Link to={resourcePath(resource.kind)+`?org=${org.id}`}>{resourceKinds[resource.kind]??resource.kind}</Link></>}<ChevronRight size={13}/><span aria-current="page">{resource?.name||"Resource details"}</span></nav>
         <ErrorNote error={detail.error} />
         {detail.isPending && <p>Loading resource…</p>}
         {detail.data?.resource && (
@@ -1036,7 +1037,7 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
               {!Object.keys(detail.data.resource.tags.labels).length&&!detail.data.resource.tags.names.length&&<p>No tags on the last observation.</p>}
             </> : <p>Tag metadata has not been collected for this resource.</p>}</section>
             <MetricsButton key={detail.data.resource.id} org={org} resource={detail.data.resource} supported={detail.data.metricsSupported} enabled={detail.data.connectionEnabled && detail.data.providerEnabled}/>
-            <PowerActions
+            <PowerActions key={detail.data.resource.id}
               org={org}
               resource={detail.data.resource}
               availableActions={detail.data.availableActions}
@@ -1066,9 +1067,8 @@ function InventoryContent({initialView,linked}:{initialView?:InventoryView;linke
             </dl>
           </>
         )}
-      </Modal>
-    </>
-  );
+    {!detail.isPending&&!detail.error&&!resource&&<Empty title="Resource unavailable">This resource is no longer available in this organization.</Empty>}
+  </>;
 }
 function Audit({installation=false}:{installation?:boolean}={}) {
   const context = useOutletContext<Context|undefined>();
@@ -1216,7 +1216,10 @@ const router = createBrowserRouter([
       { path: "admin/connections", Component: Connections },
       { path: "app/templates", lazy: async () => ({Component:(await import("./templates")).TemplatesPage}) },
       { path: "admin/modules", lazy: async () => ({Component:(await import("./modules")).ModulesPage}) },
-      { path: "app/resources", Component: Inventory },
+      { path: "app/resources", Component: ResourceHome },
+      { path: "app/resources/all", Component: Inventory },
+      { path: "app/resources/detail/:resourceId", Component: ResourceDetailPage },
+      ...Object.keys(resourceKinds).map(kind=>({path:resourcePath(kind).slice(1),element:<Inventory resourceKind={kind}/>})),
       { path: "app/dashboards", lazy: async () => ({Component:(await import("./dashboards")).DashboardsPage}) },
       { path: "admin/audit", Component: Audit },
       { path: "admin/installation-audit", Component: Audit },

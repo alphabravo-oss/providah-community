@@ -83,7 +83,7 @@ export function PowerActions({
       }),
     onSuccess: () => {
       void queries.invalidateQueries();
-      navigate("/operations");
+      navigate(`/app/operations?org=${org.id}`);
     },
   });
   if (

@@ -46,7 +46,7 @@ export function ManagedProjects({org,versions,sources,runnerConfigured}:{org:Org
     {org.permissions.includes("resources.read")&&<><ErrorNote error={ownership.error}/><DataTable label="Protected state references" data={ownership.error?[]:ownership.data?.pages.flatMap(p=>p.references)??[]} rowId={r=>JSON.stringify([r.kind,r.region,r.nativeId])} columns={[
      {accessorKey:"kind",header:"Resource type"},{accessorKey:"nativeId",header:"Provider ID"},{accessorKey:"region",header:"Project region"},
      {id:"conflict",header:"Ownership",cell:({row})=>row.original.conflicting?"Also referenced by another project":"Referenced by this project"},
-     {id:"inventory",header:"Inventory",cell:({row})=>row.original.resourceId?<Link to={`/app/resources?org=${org.id}&resource=${row.original.resourceId}`}>Open resource</Link>:"Not currently in inventory"}
+     {id:"inventory",header:"Inventory",cell:({row})=>row.original.resourceId?<Link to={`/app/resources/detail/${encodeURIComponent(row.original.resourceId)}?org=${org.id}`}>Open resource</Link>:"Not currently in inventory"}
     ]}/>{ownership.hasNextPage&&<button className="secondary" disabled={ownership.isFetchingNextPage} onClick={()=>void ownership.fetchNextPage()}>Load more protected references</button>}</>}
    </section>}
    <p className="notice">Run access and state recovery are not exposed here. A lock survives an interrupted writer until safely resolved.</p>
