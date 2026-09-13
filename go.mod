@@ -5,7 +5,7 @@ go 1.26.7
 require (
 	connectrpc.com/connect v1.20.0
 	filippo.io/age v1.3.2
-	github.com/aws/aws-sdk-go-v2 v1.46.0
+	github.com/aws/aws-sdk-go-v2 v1.47.0
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.3
 	github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.71.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.329.0
