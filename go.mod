@@ -5,9 +5,9 @@ go 1.26.7
 require (
 	connectrpc.com/connect v1.20.0
 	filippo.io/age v1.3.2
-	github.com/aws/aws-sdk-go-v2 v1.46.0
+	github.com/aws/aws-sdk-go-v2 v1.47.0
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.3
-	github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.71.0
+	github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.72.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.329.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.111.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.49.0
@@ -51,8 +51,8 @@ require (
 	filippo.io/hpke v0.4.0 // indirect
 	github.com/alphabravo-oss/ab-provider-modules v0.2.3
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.20 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.2 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.2 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.3 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.2 // indirect
