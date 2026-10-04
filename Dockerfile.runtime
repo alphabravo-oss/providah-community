@@ -13,7 +13,7 @@ ENTRYPOINT ["/egress-proxy"]
 FROM runtime AS provider
 COPY provider /provider
 ENTRYPOINT ["/provider"]
-FROM docker:cli@sha256:eccaacfeed644c7de222ff047483568cb988dde95476fbaaf10ea2d04921bb66 AS launcher
+FROM docker:cli@sha256:b1805116a6a86cc591b5d5f60a910a0715cdcc9d18d866ad68b1457ead25c35c AS launcher
 ARG EDITION=community
 ARG SOURCE=https://github.com/alphabravo-oss/providah-community
 ARG REVISION=development
