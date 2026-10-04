@@ -33,7 +33,7 @@ COPY --from=server --chown=65532:65532 /egress/ /run/egress/
 USER 65532:65532
 HEALTHCHECK --interval=1s --timeout=1s --retries=3 CMD ["/egress-proxy", "health"]
 ENTRYPOINT ["/egress-proxy"]
-FROM docker:cli@sha256:eccaacfeed644c7de222ff047483568cb988dde95476fbaaf10ea2d04921bb66 AS launcher
+FROM docker:cli@sha256:b1805116a6a86cc591b5d5f60a910a0715cdcc9d18d866ad68b1457ead25c35c AS launcher
 ARG EDITION=community
 ARG SOURCE=https://github.com/alphabravo-oss/providah-community
 ARG REVISION=development
